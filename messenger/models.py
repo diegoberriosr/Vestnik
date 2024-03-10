@@ -43,3 +43,52 @@ class User(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = ['name']
 
     objects = CustomUserManager()
+    
+    def serialize(self):
+        return {
+            'name' : self.name,
+            'info' : self.info,
+            'pfp' : self.pfp
+        }
+
+
+class Conversation(models.Model):
+    members = models.ManyToManyField(User, related_name='conversations')
+    active_members = models.ManyToManyField(User, related_name='active_conversations')
+    archived_by = models.ManyToManyField(User, related_name='archived_conversations')
+    
+    def serialize(self, user):
+
+        return {
+            'id' : self.id,
+            'members' : [member.serialize() for member in self.members.all()],
+            'active_members' : [member.serialize() for member in self.active_members.all()],
+            'messages' : [message.serialize(user) for message in self.messages.all()],
+            'unread_messages' : len([message for message in self.messages.all() if user not in message.read_by.all()])
+        }
+    
+    def inbox_serialize(self, user):
+        return {
+            'id' : self.id,
+            'members' : [member.serialize() for member in self.members.all()],
+            'unread_messages' : len([message for message in self.messages() if user not in message.read_by.all()])
+        }
+
+
+class Message(models.Model):
+    sender = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='messages', null=True)
+    conversation = models.ForeignKey(Conversation, on_delete=models.CASCADE, related_name='messages')
+    content = models.CharField(max_length=4000)
+    read_by = models.ManyToManyField(User, related_name='read_messages')
+    cleared_by = models.ManyToManyField(User, related_name='cleared_messages')
+    starred_by = models.ManyToManyField(User, related_name='starred_messages')
+
+    def serialize(self, user):
+        return {
+            'id' : self.id,
+            'conversation_id' : self.conversation.id,
+            'sender_id' : self.sender.id,
+            'content' : self.content,
+            'read' : user in self.read_by.all(),
+            'stared' : user in self.starred_by.all()
+        }
