@@ -9,43 +9,24 @@ import json
 
 class ConversationSetup():
 
-    def setUp(self):
-        user1 = User(email='test@mail.com', name='Test')
-        user1.save()
-        self.user1 = user1
+    def test_star_message(self):
 
-        user2 = User(email='test2@mail.com', name='Test 2')
-        user2.save()
-        self.user2 = user2
+        self.assertEqual(Conversation.objects.count(), 1)
+        self.assertEqual(Message.objects.count(), 3)
+        self.assertFalse(self.user1 in self.message2.starred_by.all())
 
-        user3 = User(email='test3@mail.com', name='Test 3')
-        user3.save()
-        self.user3 = user3
+        data = { 'message_id' : 2}
 
-        conversation = Conversation()
-        conversation.save() 
-        conversation.members.add(self.user1)
-        conversation.active_members.add(self.user1)
-        conversation.members.add(self.user2)
-        self.conversation = conversation    
+        request = self.factory.put(reverse('star message'), json.dumps(data), content_type='application/json')
+        force_authenticate(request=request, user=self.user1)
+        response = views.star_message(request)
 
-        message1 = Message(sender=user1, content='Test message 1')
-        message2 = Message(sender=user2, content='Test message 2')
-        message3 = Message(sender=user1, content='Test message 3')
+        self.message1.refresh_from_db()
 
-        message1.save()
-        message2.save()
-        message3.save()
-
-        self.message1 = message1
-        self.message2 = message2
-        self.message3 = message3
-
-        conversation.messages.add(message1)
-        conversation.messages.add(message2)
-        conversation.messages.add(message3)
-
-        self.factory = APIRequestFactory()
+        self.assertEqual(200, response.status_code)
+        self.assertEqual(Conversation.objects.count(), 1)
+        self.assertEqual(Message.objects.count(), 3)
+        self.assertTrue(self.user1 in self.message2.starred_by.all())
 
 
 class TestCreateConversation(TestCase, ConversationSetup):
