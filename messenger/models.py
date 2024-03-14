@@ -54,6 +54,8 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 
 class Conversation(models.Model):
+    name = models.CharField(max_length=100, null=True)
+    is_group_chat = models.BooleanField(default=False)
     members = models.ManyToManyField(User, related_name='conversations')
     active_members = models.ManyToManyField(User, related_name='active_conversations')
     archived_by = models.ManyToManyField(User, related_name='archived_conversations')
@@ -62,6 +64,8 @@ class Conversation(models.Model):
 
         return {
             'id' : self.id,
+            'name' : self.name,
+            'is_group_chat' : self.is_group_chat,
             'partners' : [member.serialize() for member in self.members.all() if member != user],
             'messages' : [message.serialize(user) for message in self.messages.all()],
             'unread_messages' : len([message for message in self.messages.all() if user not in message.read_by.all()])
@@ -70,6 +74,8 @@ class Conversation(models.Model):
     def inbox_serialize(self, user):
         return {
             'id' : self.id,
+            'name' : self.name,
+            'is_group_chat' : self.is_group_chat,
             'partners' : [member.serialize() for member in self.members.all() if member != user],
             'unread_messages' : len([message for message in self.messages.all() if user not in message.read_by.all()]),
             'last_message' : self.messages.last().serialize(user) if self.messages.last() else None

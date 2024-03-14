@@ -1,15 +1,25 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
+import axios from 'axios';
 import { useFormik } from 'formik';
-import  MoonLoader from 'react-spinners/MoonLoader';
 
 import { IoMdClose } from "react-icons/io";
 
-const NewConversation = ({ shrink, setShrink }) => {
+import  MoonLoader from 'react-spinners/MoonLoader';
+import Select from '../inputs/Select';
+
+import AuthContext from '../../context/AuthContext';
+import ConversationsContext from '../../context/ConversationsContext';
+
+
+const NewGroupChat = ({ shrink, setShrink }) => {
 
   const [loading, setLoading] = useState(false);
   const [disabled, setDisabled] = useState(true);
+  const [users, setUsers] = useState([]);
 
-  console.log('loading');
+  const { authTokens } = useContext(AuthContext);
+  const { setActiveConversation, setConversations} = useContext(ConversationsContext);
+
 
   const {values, handleChange, handleBlur} = useFormik({
     initialValues : {
@@ -21,23 +31,42 @@ const NewConversation = ({ shrink, setShrink }) => {
     if (e) e.preventDefault();
     if ( values.name.length === 0) return;
 
+    let headers;
+
+    if (authTokens){
+      headers = {
+        'Authorization' : 'Bearer ' + String(authTokens.access)
+      }
+    }
+
     setLoading(true);
+    axios({
+      url : 'http://127.0.0.1:8000/groups/create',
+      method : 'POST',
+      headers : headers,
+      data : { name : values.name, user_ids : users },
+    })
+    .then( res => {
+      setActiveConversation(res.data);
+      setConversations( prevStatus => {
+        if (prevStatus.length > 0) return [res.data, ...prevStatus];
+        return [res.data];
+      });
+      setShrink(true);
+    })
+    .catch( err => {
+      setLoading(false);
+      console.log(err);
+    })
 
   };
 
   useEffect( () => {
-    if (values.name.length === 0) setDisabled(true);
+    if (values.name.length === 0 || users.length === 0) setDisabled(true);
     else setDisabled(false);
-  }, [values]);
+  }, [values, users]);
 
-  useEffect( () => {
-    if (loading) {
-      const timer = setTimeout( () => {
-        setShrink(true);
-      }, 3000)
-      return () => clearTimeout(timer);
-    }
-  }, [loading])
+  console.log(users)
 
   return (
     <div className={`relative w-screen h-screen sm:w-[500px] sm:h-[400px] sm:mt-auto sm:mb-auto bg-white rounded-lg shadow ${ shrink ? 'animate-shrink' : 'animate-grow'} p-5`}>
@@ -51,10 +80,7 @@ const NewConversation = ({ shrink, setShrink }) => {
           className='w-full h-10 pl-2.5 border border-gray-600 focus:outline-none focus:border-2 focus:border-blue-300 rounded transition-colors duration-300 ' placeholder='Group name'
           onChange={handleChange} onBlur={handleBlur}/>
         </div>
-        <div className='mt-5 space-y-2'>
-          <label className='font-semibold'>Members</label> 
-          <input className='w-full h-10 pl-2.5 border border-gray-600 focus:outline-none focus:border-2 focus:border-blue-300 rounded transition-colors duration-300 ' placeholder='Members'/>
-        </div>
+        <Select setUsers={setUsers}/>
       </form>
       <div className='mt-10 h-20 w-full flex items-center justify-end space-x-5 border border-b-0 border-r-0 border-l-0'>
         <button onClick={() => setShrink(true)}>Cancel</button>
@@ -68,4 +94,4 @@ const NewConversation = ({ shrink, setShrink }) => {
   )
 }
 
-export default NewConversation
+export default NewGroupChat

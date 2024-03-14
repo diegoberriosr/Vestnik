@@ -6,12 +6,15 @@ import BarLoader from 'react-spinners/BarLoader';
 import UserMiniature from './UserMiniature';
 
 import ConversationsContext from '../../context/ConversationsContext';
+import AuthContext from '../../context/AuthContext';
 
 const NewConversation = () => {
   const [isFocused, setIsFocused] = useState(false);
   const [matches, setMatches] = useState([]);
   const [loading, setLoading] = useState(false);
   const { activeConversation } = useContext(ConversationsContext);
+  const { authTokens } = useContext(AuthContext);
+
   const {values, handleChange, handleBlur} = useFormik({
     initialValues: {
       's' : ''
@@ -20,10 +23,18 @@ const NewConversation = () => {
 
   useEffect( () => {
     if (values.s.length > 0 && isFocused) {
+      let headers;
+
+      if (authTokens) {
+        headers = {
+          'Authorization' : 'Bearer ' + String(authTokens.access)
+        }
+      }
       setLoading(true);
       axios({
         url : 'http://127.0.0.1:8000/users',
         method : 'GET',
+        headers : headers,
         params : {s : values.s}
       })
       .then( res => {
@@ -57,7 +68,6 @@ const NewConversation = () => {
           { matches.length > 0 && matches.map( (profile,index) => <UserMiniature key={index} profile={profile}/>)}
           { isFocused && !loading && matches.length === 0 && values.s.length > 0 && <div>No matches found</div>}
         </main>
-
     </div>
   )
 }

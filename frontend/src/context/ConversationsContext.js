@@ -33,12 +33,10 @@ export const ConversationsProvider = ({ children}) => {
         })
     }
 
-
     useEffect(() => {
         getConversations();
     }, []) 
 
-    console.log(conversations);
     
     const data = {
         conversations:conversations,

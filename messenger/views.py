@@ -1,6 +1,7 @@
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from django.http.response import HttpResponse, JsonResponse, Http404, HttpResponseBadRequest, HttpResponseForbidden
+from django.db.models import Q
 
 import json
 
@@ -24,12 +25,13 @@ def register_user(request):
 
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def get_users(request):
 
     # Get search string from request's params
     s = request.GET.get('s', '')
 
-    users = User.objects.filter(name__icontains=s) | User.objects.filter(email__icontains=s)
+    users = User.objects.filter(Q(name__icontains=s) | Q(email__icontains=s)).exclude(pk=request.user.id)
 
     return JsonResponse([ user.serialize() for user in users.all()], safe=False)
 
@@ -63,10 +65,41 @@ def create_conversation(request):
 
     for user in users:
         conversation.members.add(user)
-
+    
+    conversation.members.add(request.user)
     conversation.active_members.add(request.user)
 
     return JsonResponse( conversation.inbox_serialize(request.user), safe=False)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_group_chat(request):
+    # Get the group's name and ids of the users to be added to the conversation
+    name = json.loads(request.body).get('name')
+    user_ids = json.loads(request.body).get('user_ids')
+
+    users = []
+    users.append(request.user)
+
+    for user_id in user_ids:
+        try:
+            users.append(User.objects.get(id=user_id))
+        except User.DoesNotExist or user_id == request.user.id:
+            raise Http404(f'ERROR: invalid user id ({user_id})')
+
+    
+    new_group_chat = Conversation(name=name, is_group_chat=True)
+    new_group_chat.save()
+
+    for user in users:
+        new_group_chat.members.add(user)
+        new_group_chat.active_members.add(user)
+
+    new_group_chat.members.add(request.user)
+    new_group_chat.active_members.add(request.user)
+
+    return JsonResponse( new_group_chat.inbox_serialize(request.user), safe=False)
 
 
 @api_view(['PUT'])
