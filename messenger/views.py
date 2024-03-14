@@ -8,22 +8,37 @@ from .models import User, Conversation, Message
 
 # Create your views here.
 
+@api_view(['POST'])
+def register_user(request):
+
+    # Get e-mail address, username, and password from request's body
+    email = json.loads(request.body).get('email', '')
+    username = json.loads(request.body).get('username', '')
+    password = json.loads(request.body).get('password', '')
+
+    new_user = User(email=email, name=username)
+    new_user.set_password(password)
+    new_user.save()
+
+    return HttpResponse('Success.')
+
+
+@api_view(['GET'])
+def get_users(request):
+
+    # Get search string from request's params
+    s = request.GET.get('s', '')
+
+    users = User.objects.filter(name__icontains=s) | User.objects.filter(email__icontains=s)
+
+    return JsonResponse([ user.serialize() for user in users.all()], safe=False)
+
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_conversations(request):
-
-    # Get user id from the request's body.
-    user_id =  json.loads(request.body).get('user_id', '')   
-
-    # Get user by id, return an exception if it does not exist.
-    try:
-        user = User.objects.get(id=user_id)
     
-    except User.DoesNotExist:
-        raise Http404(f'ERROR: user with id={user_id} does not exist.')
-
-    return JsonResponse( [conversation.serialize() for conversation in request.user.active_conversations.all()], safe=False)
+    return JsonResponse( [conversation.serialize(request.user) for conversation in request.user.active_conversations.all()], safe=False)
 
 
 @api_view(['POST'])
@@ -47,11 +62,11 @@ def create_conversation(request):
     conversation.save()
 
     for user in users:
-        conversation.members.append(user)
+        conversation.members.add(user)
 
-    conversation.active_members.append(request.user)
+    conversation.active_members.add(request.user)
 
-    return JsonResponse( conversation.serialize(request.user), safe=False)
+    return JsonResponse( conversation.inbox_serialize(request.user), safe=False)
 
 
 @api_view(['PUT'])

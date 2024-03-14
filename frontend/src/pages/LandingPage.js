@@ -6,6 +6,8 @@ import { PiMessengerLogoLight } from "react-icons/pi";
 // Component imports
 import Modal from '../components/general/Modal';
 import Login from '../components/login/Login';
+import Register from '../components/register/Register';
+
 const LandingPage = () => {
 
   const [loginModal, setLoginModal] = useState(false);
@@ -82,7 +84,7 @@ const LandingPage = () => {
         <Login/>
     </Modal>
     <Modal isVisible={registerModal}>
-        <span onClick={handleRegisterModal}>Register modal</span>
+        <Register />
     </Modal>
     <Modal isVisible={resetModal}>
         <span onClick={handleResetModal}>Reset password</span>

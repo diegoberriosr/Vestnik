@@ -1,4 +1,4 @@
-import {useState, createContext} from 'react';
+import {useState, createContext } from 'react';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
@@ -26,7 +26,7 @@ export const AuthProvider = ({ children }) => {
             localStorage.setItem('authTokens', JSON.stringify(data));
             setUser(jwtDecode(res.data.access));
             setLoading(false);
-            navigate('/home');
+            navigate('/inbox');
         })
         .catch( err => {
             console.log(err);
@@ -35,10 +35,38 @@ export const AuthProvider = ({ children }) => {
         })
     }
 
+    const registerUser = (data, setLoading, setAlertMessage) => {
+        setLoading(true);
+        axios({
+            url : 'http://127.0.0.1:8000/register',
+            method : 'POST',
+            data : { email : data.email, username: data.username, password : data.password}
+        })
+        .then( () => 
+            loginUser(data, setLoading, setAlertMessage)
+        )
+        .catch( err => {
+            console.log(err);
+            setLoading(false);
+            setAlertMessage('An error ocurred during registration')
+        })
+    };
+
+
+    const logoutUser = () => {
+        setAuthTokens(null);
+        setUser(null);
+        localStorage.removeItem('authTokens');
+        localStorage.removeItem('user');
+        navigate('/login');
+    };
+
     const values = {
         authTokens:authTokens,
         user:user,
-        loginUser:loginUser
+        loginUser:loginUser,
+        logoutUser:logoutUser,
+        registerUser:registerUser
     };
 
     return <AuthContext.Provider value={values}>

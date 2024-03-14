@@ -6,7 +6,7 @@ import { CiLogout } from "react-icons/ci";
 
 const BottomBar = () => {
   return (
-    <ul className='block xl:hidden w-full h-14 flex'>
+    <ul className='fixed bottom-0 xl:hidden w-full h-14 flex'>
         <li className='w-4/12 h-full flex justify-center text-gray-600 text-4xl'>
             <AiFillMessage/>
         </li>

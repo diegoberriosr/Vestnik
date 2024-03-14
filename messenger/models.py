@@ -46,6 +46,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     
     def serialize(self):
         return {
+            'id' : self.id,
             'name' : self.name,
             'info' : self.info,
             'pfp' : self.pfp
@@ -61,8 +62,7 @@ class Conversation(models.Model):
 
         return {
             'id' : self.id,
-            'members' : [member.serialize() for member in self.members.all()],
-            'active_members' : [member.serialize() for member in self.active_members.all()],
+            'partners' : [member.serialize() for member in self.members.all() if member != user],
             'messages' : [message.serialize(user) for message in self.messages.all()],
             'unread_messages' : len([message for message in self.messages.all() if user not in message.read_by.all()])
         }
@@ -70,8 +70,9 @@ class Conversation(models.Model):
     def inbox_serialize(self, user):
         return {
             'id' : self.id,
-            'members' : [member.serialize() for member in self.members.all()],
-            'unread_messages' : len([message for message in self.messages() if user not in message.read_by.all()])
+            'partners' : [member.serialize() for member in self.members.all() if member != user],
+            'unread_messages' : len([message for message in self.messages.all() if user not in message.read_by.all()]),
+            'last_message' : self.messages.last().serialize(user) if self.messages.last() else None
         }
 
 

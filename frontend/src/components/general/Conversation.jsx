@@ -20,9 +20,11 @@ const Conversation = () => {
     <header className='w-full h-14 flex items-center justify-between px-5 shadow'>
         <div className='flex items-center'>
             <MdArrowBackIos className='block xl:hidden mr-5 text-blue-300 cursor-pointer' onClick={() => setActiveConversation(null)}/>
-            <div className='h-10 w-10 rounded-full bg-gray-600 mb-1'/>
+            <figure className='h-10 w-10 rounded-full mb-1'>
+                <img src={activeConversation.partners[0].pfp} alt='conversation partner pfp' className='w-full h-full rounded-full object-fill'/>
+            </figure>
             <div className='ml-2'>
-                <div className='font-bold p-0 mb-0 text-sm'>Username</div>
+                <div className='font-bold p-0 mb-0 text-sm'>{activeConversation.partners[0].name}</div>
                 <div className='text-gray-600 text-xs'>Online/offline</div>
             </div>
         </div>
