@@ -1,8 +1,7 @@
 import { useContext, useState, useEffect } from 'react';
+import { useFormik } from 'formik';
 
 // Icon imports
-import { MdArrowBackIos } from "react-icons/md";
-import { BsThreeDots } from "react-icons/bs";
 import { FaImage } from "react-icons/fa";
 import { BiSolidSend } from "react-icons/bi";
 
@@ -19,13 +18,29 @@ import ConversationsContext from '../../context/ConversationsContext';
 
 const Conversation = () => {
   const [displayInformation, setDisplayInformation] = useState(false);
+  const [disabled, setDisabled] = useState(true);
   const {activeConversation, setActiveConversation, messages} = useContext(ConversationsContext);
+
+
+  const {values, handleChange, handleBlur} = useFormik({
+    initialValues : {
+      'content' : ''
+    }
+  });
 
   useEffect( () => {
     setDisplayInformation(false);
-  }, [activeConversation])
+  }, [activeConversation]);
 
-  if (!activeConversation) return null;
+  useEffect( () => {
+    if (values.content.length === 0){
+      setDisabled(true);
+    }
+    else {
+      setDisabled(false);
+    }
+  }, [values.content]);
+
   return (
   <main className={`${ activeConversation ? 'w-screen' : ''} w-screen xl:w-[70%] h-screen border`}>
     <header className='w-full h-14 flex items-center justify-between px-5 shadow'>
@@ -39,8 +54,14 @@ const Conversation = () => {
     </ul>
     <footer className='w-full h-14 flex items-center justify-between px-5'>
         <FaImage className='text-3xl text-blue-300 cursor-pointer'/>
-        <input className='w-[90%] h-10 pl-5 bg-gray-100 rounded-full focus:outline-none focus:border-2 focus:border-blue-300 mx-2 sm:mx-0' placeholder='Type a message'/>
-        <button className='h-10 w-10 bg-blue-300 rounded-full text-center text-white flex items-center justify-center'>
+        <form className='w-[90%]'>
+          <input name='content' value={values.content} 
+          className='w-full h-10 pl-5 bg-gray-100 rounded-full focus:outline-none focus:border-2 focus:border-blue-300 mx-2 sm:mx-0' 
+          placeholder='Type a message'
+          onChange={handleChange}
+          onBlur={handleBlur}/>
+        </form>
+        <button disabled={disabled} className={`${disabled ? 'opacity-50' : ''} h-10 w-10 bg-blue-300 rounded-full text-center text-white flex items-center justify-center`}>
             <BiSolidSend className='text-2xl'/>
         </button>
     </footer>
