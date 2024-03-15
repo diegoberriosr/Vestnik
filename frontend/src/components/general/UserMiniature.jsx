@@ -36,7 +36,7 @@ const UserMiniature = ({ profile }) => {
     })
   };
 
-  console.log(profile.id);
+
 
   return (
     <article className='w-full h-20 flex items-center space-x-2.5 hover:bg-gray-100 p-1 cursor-pointer' onClick={handleNewConversation}>

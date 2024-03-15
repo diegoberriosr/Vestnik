@@ -40,7 +40,7 @@ def get_users(request):
 @permission_classes([IsAuthenticated])
 def get_conversations(request):
     
-    return JsonResponse( [conversation.serialize(request.user) for conversation in request.user.active_conversations.all()], safe=False)
+    return JsonResponse( [conversation.inbox_serialize(request.user) for conversation in request.user.active_conversations.all()], safe=False)
 
 
 @api_view(['POST'])
@@ -153,6 +153,20 @@ def clear_conversation(request):
         return HttpResponse('Success.')
 
     return JsonResponse( conversation.serialize(request.user), safe=False)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_conversation_messages(request):
+
+    conversation_id = request.GET.get('conversation_id', '')
+
+    try:
+        conversation = Conversation.objects.get(id=conversation_id)
+    except Conversation.DoesNotExist:
+        return Http404(f'ERROR : conversation with id={conversation_id} does not exist')
+    
+    return JsonResponse([message.serialize(request.user) for message in conversation.messages.all() if request.user not in message.cleared_by.all()], safe=False)
 
 
 @api_view(['GET'])

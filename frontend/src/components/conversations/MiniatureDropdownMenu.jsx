@@ -11,7 +11,7 @@ import ConversationsContext from '../../context/ConversationsContext';
 import AuthContext from '../../context/AuthContext';
 
 const MiniatureDropdownMenu = ({ conversationId, isGroup}) => {
-  console.log(conversationId);
+
   const [menuVisible, setMenuVisible] = useState(false);
   const { authTokens } = useContext(AuthContext);
   const { activeConversation, setActiveConversation, setConversations} = useContext(ConversationsContext);

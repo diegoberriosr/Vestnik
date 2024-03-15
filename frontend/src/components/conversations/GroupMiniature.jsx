@@ -6,7 +6,7 @@ import AuthContext from "../../context/AuthContext";
 const GroupMiniature = ({ group }) => {
   const {setActiveConversation } = useContext(ConversationsContext);
   const { user } = useContext(AuthContext);
-  console.log(group.id);
+  
   return (
     <li className='w-full h-14 p-5 flex items-center space-x-3 hover:bg-gray-100' onClick={() => setActiveConversation(group)}>
       {
@@ -36,7 +36,6 @@ const GroupMiniature = ({ group }) => {
             <MiniatureDropdownMenu conversationId={group.id} isGroup/>
         </div>
         <p className='text-gray-500 h-5'>{group.last_message && group.last_message.content}</p>
-
       </article>
     </li>
   )

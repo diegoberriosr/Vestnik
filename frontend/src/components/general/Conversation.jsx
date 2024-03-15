@@ -10,6 +10,8 @@ import { BiSolidSend } from "react-icons/bi";
 import ConversationHeader from '../conversations/ConversationHeader';
 import GroupChatHeader from '../conversations/GroupChatHeader';
 import ConversationDrawer from '../conversations/ConversationDrawer';
+import Message from '../messages/Message';
+import Notification from '../messages/Notification';
 
 // Context imports
 import ConversationsContext from '../../context/ConversationsContext';
@@ -17,7 +19,7 @@ import ConversationsContext from '../../context/ConversationsContext';
 
 const Conversation = () => {
   const [displayInformation, setDisplayInformation] = useState(false);
-  const {activeConversation, setActiveConversation} = useContext(ConversationsContext);
+  const {activeConversation, setActiveConversation, messages} = useContext(ConversationsContext);
 
   useEffect( () => {
     setDisplayInformation(false);
@@ -29,8 +31,11 @@ const Conversation = () => {
     <header className='w-full h-14 flex items-center justify-between px-5 shadow'>
         {activeConversation.is_group_chat ? <GroupChatHeader setDisplayInformation={setDisplayInformation}/> : <ConversationHeader setDisplayInformation={setDisplayInformation}/>}
     </header>
-    <ul className='w-full h-[calc(100vh-114px)] border overflow-y-auto'>
-        
+    <ul className='w-full h-[calc(100vh-114px)] border overflow-y-auto p-5'>
+        { messages.length > 0 && messages.map( message => {
+          if (message.is_notification) return <Notification messageContent={message.content} timestamp={message.timestamp}/>
+          return <Message message={message}/>
+        })}
     </ul>
     <footer className='w-full h-14 flex items-center justify-between px-5'>
         <FaImage className='text-3xl text-blue-300 cursor-pointer'/>

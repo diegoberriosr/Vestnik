@@ -8,8 +8,11 @@ export default ConversationsContext;
 export const ConversationsProvider = ({ children}) => {
     const [conversations, setConversations] = useState([]);
     const [activeConversation, setActiveConversation] = useState(null);
+    const [messages, setMessages] = useState([]);
+
     const { authTokens } = useContext(AuthContext); 
 
+    console.log(messages);
     
     const getConversations = () => {
         let headers;
@@ -35,14 +38,41 @@ export const ConversationsProvider = ({ children}) => {
 
     useEffect(() => {
         getConversations();
-    }, []) 
+    }, []);
 
     
+    useEffect( () => {
+        let headers;
+
+        if (authTokens){
+            headers = {
+                'Authorization' : 'Bearer ' + String(authTokens.access)
+            }
+        }
+        if (activeConversation) {
+            axios({
+                url: 'http://127.0.0.1:8000/conversations/messages',
+                method : 'GET',
+                headers : headers,
+                params : { conversation_id : activeConversation.id}
+            })
+            .then ( res => {
+                setMessages(res.data);
+            })
+            .catch( err => {
+                console.log(err)
+            });
+        };
+    }, [activeConversation])
+
+    console.log('Conversations', conversations);
+
     const data = {
         conversations:conversations,
         setConversations:setConversations,
         activeConversation:activeConversation,
-        setActiveConversation:setActiveConversation
+        setActiveConversation:setActiveConversation,
+        messages:messages
     }
 
     return <ConversationsContext.Provider value={data}>

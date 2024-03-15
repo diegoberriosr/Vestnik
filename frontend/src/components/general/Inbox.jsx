@@ -21,7 +21,7 @@ const Inbox = () => {
   const {conversations, activeConversation, setActiveConversation} = useContext(ConversationsContext)
   const [newGroupModal, setNewGroupModal] = useState(false);
   const [ shrink, setShrink] = useState(false);
-  console.log('loading inbox')
+
   useEffect( () => {
     if (shrink){
       const timer = setTimeout(() => {

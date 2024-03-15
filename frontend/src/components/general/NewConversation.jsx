@@ -49,7 +49,6 @@ const NewConversation = () => {
     else setMatches([]);
   }, [values.s])
 
-  console.log(loading);
 
   return (
     <div className={`${ activeConversation ? 'hidden xl:block w-[25%]' :  'w-screen xl:w-[25%]'} h-screen border `}>

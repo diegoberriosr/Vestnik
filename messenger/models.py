@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.utils.translation import gettext as _
+from django.utils import timezone
 
 # Create your models here.
 
@@ -89,6 +90,7 @@ class Message(models.Model):
     conversation = models.ForeignKey(Conversation, on_delete=models.CASCADE, related_name='messages')
     is_notification = models.BooleanField(default=False)
     content = models.CharField(max_length=4000)
+    timestamp = models.DateTimeField(default=timezone.now)
     read_by = models.ManyToManyField(User, related_name='read_messages')
     cleared_by = models.ManyToManyField(User, related_name='cleared_messages')
     starred_by = models.ManyToManyField(User, related_name='starred_messages')
@@ -97,8 +99,10 @@ class Message(models.Model):
         return {
             'id' : self.id,
             'conversation_id' : self.conversation.id,
-            'sender_id' : self.sender.id if self.sender else None,
+            'is_notification' : self.is_notification,
+            'sender' : self.sender.serialize() if self.sender else None, 
             'content' : self.content,
+            'timestamp': self.timestamp,
             'read' : user in self.read_by.all(),
             'stared' : user in self.starred_by.all()
         }
