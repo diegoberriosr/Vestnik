@@ -14,6 +14,7 @@ urlpatterns = [
     path('conversations', views.get_conversations, name='get conversations'),
     path('conversations/create', views.create_conversation, name='create conversation'),
     path('groups/create', views.create_group_chat, name='create group'),
+    path('groups/delete', views.delete_group_chat, name='delete group'),
     path('conversations/clear', views.clear_conversation, name='clear conversation'),
     path('messages/starred', views.get_starred_messages, name='starred messages'),
     path('messages/create', views.create_message, name='create message'),

@@ -56,6 +56,8 @@ class User(AbstractBaseUser, PermissionsMixin):
 class Conversation(models.Model):
     name = models.CharField(max_length=100, null=True)
     is_group_chat = models.BooleanField(default=False)
+    active = models.BooleanField(default=True)
+    admins = models.ManyToManyField(User, related_name='admin_conversations')
     members = models.ManyToManyField(User, related_name='conversations')
     active_members = models.ManyToManyField(User, related_name='active_conversations')
     archived_by = models.ManyToManyField(User, related_name='archived_conversations')
@@ -85,6 +87,7 @@ class Conversation(models.Model):
 class Message(models.Model):
     sender = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='messages', null=True)
     conversation = models.ForeignKey(Conversation, on_delete=models.CASCADE, related_name='messages')
+    is_notification = models.BooleanField(default=False)
     content = models.CharField(max_length=4000)
     read_by = models.ManyToManyField(User, related_name='read_messages')
     cleared_by = models.ManyToManyField(User, related_name='cleared_messages')
@@ -94,7 +97,7 @@ class Message(models.Model):
         return {
             'id' : self.id,
             'conversation_id' : self.conversation.id,
-            'sender_id' : self.sender.id,
+            'sender_id' : self.sender.id if self.sender else None,
             'content' : self.content,
             'read' : user in self.read_by.all(),
             'stared' : user in self.starred_by.all()

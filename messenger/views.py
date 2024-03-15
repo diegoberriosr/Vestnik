@@ -98,8 +98,35 @@ def create_group_chat(request):
 
     new_group_chat.members.add(request.user)
     new_group_chat.active_members.add(request.user)
+    new_group_chat.admins.add(request.user)
+
+    notification = Message(is_notification=True, conversation=new_group_chat, content=f'{request.user.name} created this group.')
+    notification.save()
 
     return JsonResponse( new_group_chat.inbox_serialize(request.user), safe=False)
+
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def delete_group_chat(request):
+
+    # Get conversation id from the request's body.
+    conversation_id = json.loads(request.body).get('conversation_id', '')
+
+    try:
+        conversation = Conversation.objects.get(id=conversation_id)
+    except Conversation.DoesNotExist:
+        raise Http404(f'ERROR : conversation with id {conversation_id} does not exist.')
+
+    for message in conversation.messages.all():
+        message.cleared_by.add(request.user) if request.user not in message.cleared_by.all() else None
+
+    
+    conversation.active_members.remove(request.user)
+    conversation.members.remove(request.user)
+    conversation.active = False
+
+    return HttpResponse('Success')
 
 
 @api_view(['PUT'])

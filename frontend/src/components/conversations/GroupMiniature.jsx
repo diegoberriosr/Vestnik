@@ -1,12 +1,12 @@
 import { useContext } from "react";
+import MiniatureDropdownMenu from "./MiniatureDropdownMenu";
 
 import ConversationsContext from "../../context/ConversationsContext";
 import AuthContext from "../../context/AuthContext";
-
 const GroupMiniature = ({ group }) => {
   const {setActiveConversation } = useContext(ConversationsContext);
   const { user } = useContext(AuthContext);
-  
+  console.log(group.id);
   return (
     <li className='w-full h-14 p-5 flex items-center space-x-3 hover:bg-gray-100' onClick={() => setActiveConversation(group)}>
       {
@@ -33,9 +33,10 @@ const GroupMiniature = ({ group }) => {
       <article className='w-10/12'>
         <div className='flex w-full items-center justify-between'>
             <h3 className='font-bold max-w-[70%] truncate'>{group.name}</h3>
-            <span className='text-xs text-gray-500'>Timestamp</span>
+            <MiniatureDropdownMenu conversationId={group.id} isGroup/>
         </div>
         <p className='text-gray-500 h-5'>{group.last_message && group.last_message.content}</p>
+
       </article>
     </li>
   )
