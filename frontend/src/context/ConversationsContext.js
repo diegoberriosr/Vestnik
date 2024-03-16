@@ -12,8 +12,6 @@ export const ConversationsProvider = ({ children}) => {
 
     const { authTokens } = useContext(AuthContext); 
 
-    console.log(messages);
-    
     const getConversations = () => {
         let headers;
 
@@ -65,14 +63,14 @@ export const ConversationsProvider = ({ children}) => {
         };
     }, [activeConversation])
 
-    console.log('Conversations', conversations);
 
     const data = {
         conversations:conversations,
         setConversations:setConversations,
         activeConversation:activeConversation,
         setActiveConversation:setActiveConversation,
-        messages:messages
+        messages:messages,
+        setMessages:setMessages
     }
 
     return <ConversationsContext.Provider value={data}>

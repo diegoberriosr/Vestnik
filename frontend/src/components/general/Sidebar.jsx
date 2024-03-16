@@ -45,7 +45,7 @@ const Sidebar = () => {
         </div>
         <div className='relative mt-auto h-10 w-10 rounded-full cursor-pointer' onClick={() => {setProfileModal(true)}}>
           <div className='absolute top-0 right-0 border-2 boder-white h-4 w-4 bg-green-600 rounded-full'/>
-          <img src={user.pfp} alt='user pfp' className='w-10 h-10 rounded-full object-fill'/>
+          <img src={user ? user.pfp : null} alt='user pfp' className='w-10 h-10 rounded-full object-fill'/>
         </div>
     </nav>
     <Modal isVisible={profileModal}>

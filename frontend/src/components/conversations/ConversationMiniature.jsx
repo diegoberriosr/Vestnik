@@ -15,7 +15,7 @@ const ConversationMiniature = ({ conversation }) => {
             <h3 className='font-bold'>{conversation.partners[0].name}</h3>
             <span className='text-xs text-gray-500'>Timestamp</span>
         </div>
-        <p className='text-gray-500 h-2'>{conversation.last_message && conversation.last_message.content}</p>
+        <p className='text-gray-500 h-2 max-w-full truncate'>{conversation.last_message && conversation.last_message.content}</p>
       </article>
     </li>
   )

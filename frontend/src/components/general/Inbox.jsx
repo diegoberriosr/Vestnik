@@ -1,6 +1,5 @@
 import { useState, useEffect, useContext } from 'react';
 
-
 // Icon imports
 import { MdOutlineGroupAdd } from "react-icons/md";
 
@@ -10,7 +9,6 @@ import ConversationMiniature from '../conversations/ConversationMiniature';
 import GroupMiniature from '../conversations/GroupMiniature';
 import Modal from '../general/Modal';
 import NewGroupChat from '../conversations/NewGroupChat';
-
 // Context imports
 import ConversationsContext from '../../context/ConversationsContext';
 
@@ -18,8 +16,9 @@ import ConversationsContext from '../../context/ConversationsContext';
 
 const Inbox = () => {
   
-  const {conversations, activeConversation, setActiveConversation} = useContext(ConversationsContext)
+  const {conversations, activeConversation} = useContext(ConversationsContext)
   const [newGroupModal, setNewGroupModal] = useState(false);
+
   const [ shrink, setShrink] = useState(false);
 
   useEffect( () => {
@@ -32,7 +31,7 @@ const Inbox = () => {
       }, 250)
     }
   }, [shrink])
-  
+
   return (
   <>
     <aside className={`${ activeConversation ? 'hidden xl:block w-[25%]' :  'w-screen xl:w-[25%]'} h-screen border`}>
@@ -45,10 +44,10 @@ const Inbox = () => {
       </header>
       {conversations.length > 0 ?
         <ul className='w-full h-[calc(100vh-113px)] xl:h-[calc(100vh-57px)] overflow-y-auto'>
-          {conversations.map( (conversation, index) => {
-            if( conversation.is_group_chat) return <GroupMiniature key={index} group={conversation}/>
-            return <ConversationMiniature key={index} conversation={conversation} />
-          })}
+        {conversations.map( conversation => {
+          if(conversation.is_group_chat) return <GroupMiniature group={conversation}/>
+          return <ConversationMiniature conversation={conversation}/>
+        })}
         </ul>
         :
         <div className='w-full mt-20 flex flex-col items-center justify-center'>

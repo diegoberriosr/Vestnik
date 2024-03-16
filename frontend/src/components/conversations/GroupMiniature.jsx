@@ -35,7 +35,7 @@ const GroupMiniature = ({ group }) => {
             <h3 className='font-bold max-w-[70%] truncate'>{group.name}</h3>
             <MiniatureDropdownMenu conversationId={group.id} isGroup/>
         </div>
-        <p className='text-gray-500 h-5'>{group.last_message && group.last_message.content}</p>
+        <p className='text-gray-500 max-w-full truncate text-sm'>{group.last_message && group.last_message.content}</p>
       </article>
     </li>
   )
