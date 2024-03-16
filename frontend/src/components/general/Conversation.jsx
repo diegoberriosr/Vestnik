@@ -2,6 +2,7 @@ import { useContext, useState, useEffect } from 'react';
 import { useFormik } from 'formik';
 import axios from 'axios';
 
+
 // Icon imports
 import { FaImage } from "react-icons/fa";
 import { BiSolidSend } from "react-icons/bi";
@@ -78,6 +79,7 @@ const Conversation = () => {
 
   if (!activeConversation) return null;
   
+
   return (
   <main className={`${ activeConversation ? 'w-screen' : ''} w-screen xl:w-[70%] h-screen border`}>
     <header className='w-full h-14 flex items-center justify-between px-5 shadow'>
