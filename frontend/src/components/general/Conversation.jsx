@@ -22,7 +22,7 @@ import AuthContext from '../../context/AuthContext';
 const Conversation = () => {
   const [displayInformation, setDisplayInformation] = useState(false);
   const [disabled, setDisabled] = useState(true);
-  const {activeConversation, messages, setMessages } = useContext(ConversationsContext);
+  const {activeConversation, messages, setMessages, setConversations } = useContext(ConversationsContext);
   const { authTokens } = useContext(AuthContext);
 
 
@@ -56,7 +56,17 @@ const Conversation = () => {
           setMessages( prevStatus => {
             if (prevStatus.length > 0) return [...prevStatus, res.data];
             return [res.data];
-          })
+          });
+          setConversations( prevStatus => {
+            console.log('Conversations', prevStatus);
+            let updatedStatus = [...prevStatus];
+            const index = updatedStatus.findIndex(conversation => activeConversation.id === conversation.id);
+
+            updatedStatus[index].last_message = res.data;
+            const arrangedArray =   [updatedStatus[index], ...updatedStatus.filter( conversation => conversation.id !== activeConversation.id )];
+            console.log('Arranged', arrangedArray);
+            return arrangedArray;
+          });
         })
         .catch( err => {
           console.log(err)

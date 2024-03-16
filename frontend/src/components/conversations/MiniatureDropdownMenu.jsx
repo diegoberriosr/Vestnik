@@ -14,7 +14,8 @@ const MiniatureDropdownMenu = ({ conversationId, isGroup}) => {
 
   const [menuVisible, setMenuVisible] = useState(false);
   const { authTokens } = useContext(AuthContext);
-  const { activeConversation, setActiveConversation, setConversations} = useContext(ConversationsContext);
+  const { activeConversation, setActiveConversation, setConversations, setMessages} = useContext(ConversationsContext);
+
 
   const handleDelete = (e) => {
         e.stopPropagation()
@@ -41,8 +42,51 @@ const MiniatureDropdownMenu = ({ conversationId, isGroup}) => {
         })
         .catch( err => {
             console.log(err);
-        })
+        });
   }
+
+  const handleClear = (e) => {
+    if(e) e.stopPropagation();
+
+    let headers;
+
+    if(authTokens){
+        headers = {
+            'Authorization' : 'Bearer ' + String(authTokens.access)
+        }
+    }
+    
+    axios({
+        url : 'http://127.0.0.1:8000/conversations/clear',
+        method : 'PUT',
+        headers : headers,
+        data : { conversation_id : conversationId } 
+    })
+    .then( () => {
+        if (activeConversation) setMessages([]);
+        setConversations(prevStatus => {
+            const updatedStatus = [...prevStatus];
+            const index = updatedStatus.findIndex(conversation => conversation.id === conversationId );
+            updatedStatus[index].last_message = null; 
+
+            return updatedStatus;
+        })
+    })
+    .catch( err => {
+        console.log(err);
+    })
+  }
+
+  const handlePin = (e) => {
+    if(e) e.preventDefault();
+    console.log('TO-DO');
+  }
+
+  const handleArchive = (e) => {
+    if(e) e.preventDefault();
+    console.log('TO-DO'); 
+  }
+
 
   return (
     <div className='relative flex justify-center'>
@@ -52,7 +96,7 @@ const MiniatureDropdownMenu = ({ conversationId, isGroup}) => {
                 <MdDelete className='text-red-900'/>
                 <span>Delete</span>
             </li>
-            <li className='flex items-center space-x-1 hover:bg-gray-100 px-1 py-0.5'>
+            <li className='flex items-center space-x-1 hover:bg-gray-100 px-1 py-0.5' onClick={e => handleClear(e)}>
                 <GrClearOption className='text-red-900'/>
                 <span>Clear</span>
             </li>
