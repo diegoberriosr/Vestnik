@@ -11,7 +11,7 @@ import Stories from '../components/stories/Stories';
 import { ConversationsProvider } from '../context/ConversationsContext';
 
 const MainPage = () => {
-  console.log('loading main')
+
   return (
     <div className='flex'>
       <ConversationsProvider>

@@ -25,7 +25,7 @@ const Conversation = () => {
   const [displayInformation, setDisplayInformation] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
   const [shrink, setShrink] = useState(false);
-  const [selectedMessageId, setSelectedMessageId] = useState(null);
+  const [selectedMessage, setSelectedMessage] = useState(null);
   
   const [disabled, setDisabled] = useState(true);
   
@@ -81,8 +81,8 @@ const Conversation = () => {
     }
   }
 
-  const handleOpenDeleteModal = (messageId) => {
-    setSelectedMessageId(messageId);
+  const handleOpenDeleteModal = (message) => {
+    setSelectedMessage(message);
     setDeleteModal(true);
   }
 
@@ -119,9 +119,9 @@ const Conversation = () => {
         {activeConversation && activeConversation.is_group_chat ? <GroupChatHeader setDisplayInformation={setDisplayInformation}/> : <ConversationHeader setDisplayInformation={setDisplayInformation}/>}
     </header>
     <ul className='w-full h-[calc(100vh-114px)] border overflow-y-auto p-5'>
-        { messages.length > 0 && messages.map( message => {
-          if (message.is_notification) return <Notification messageContent={message.content} timestamp={message.timestamp}/>
-          return <Message message={message} handleOpenDeleteModal={handleOpenDeleteModal}/>
+        { messages.length > 0 && messages.map( (message, index) => {
+          if (message.is_notification) return <Notification key={index} messageContent={message.content} timestamp={message.timestamp}/>
+          return <Message key={index} message={message} handleOpenDeleteModal={handleOpenDeleteModal}/>
         })}
         <TypingAlert pfp={activeConversation.partners[0].pfp}/>
     </ul>
@@ -140,7 +140,7 @@ const Conversation = () => {
     </footer>
     <ConversationDrawer isVisible={displayInformation} setDisplayInformation={setDisplayInformation}/>
     <Modal isVisible={deleteModal}>
-        <MessageMenu shrink={shrink} setShrink={setShrink} messageId={selectedMessageId}/>
+       { selectedMessage && <MessageMenu shrink={shrink} setShrink={setShrink} messageId={selectedMessage.id} senderId={selectedMessage.sender.id} isAdmin={selectedMessage.is_admin}/>}
     </Modal>
   </main>
   )

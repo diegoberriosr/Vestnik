@@ -219,7 +219,7 @@ def delete_message(request):
     except Message.DoesNotExist:
         return Http404(f'ERROR: message with id={message_id} does not exist.')
     
-    if request.user != message.sender:
+    if request.user != message.sender and request.user not in message.conversation.members.all():
         return HttpResponseForbidden('ERROR: requester does not have permission to delete this message.')
     
     if permanent:

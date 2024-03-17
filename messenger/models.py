@@ -100,6 +100,8 @@ class Message(models.Model):
             'id' : self.id,
             'conversation_id' : self.conversation.id,
             'is_notification' : self.is_notification,
+            'is_admin' : user in self.conversation.admins.all(),
+            'read' : user in self.read_by.all(),
             'sender' : self.sender.serialize() if self.sender else None, 
             'content' : self.content,
             'timestamp': self.timestamp,

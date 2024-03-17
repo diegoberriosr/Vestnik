@@ -1,8 +1,13 @@
 import { useContext } from "react";
+import { formatDate } from '../../utils/formatDate';
+
+// Icon imports
 import MiniatureDropdownMenu from "./MiniatureDropdownMenu";
 
+// Context imports
 import ConversationsContext from "../../context/ConversationsContext";
 import AuthContext from "../../context/AuthContext";
+
 const GroupMiniature = ({ group }) => {
   const {setActiveConversation } = useContext(ConversationsContext);
   const { user } = useContext(AuthContext);
@@ -35,7 +40,14 @@ const GroupMiniature = ({ group }) => {
             <h3 className='font-bold max-w-[70%] truncate'>{group.name}</h3>
             <MiniatureDropdownMenu conversationId={group.id} isGroup/>
         </div>
-        <p className='text-gray-500 max-w-full truncate text-sm'>{group.last_message && group.last_message.content}</p>
+        <p className='text-gray-500 w-full flex items-center justify-between'>
+            { group.last_message && 
+            <>
+              <span className='max-w-[60%] truncate text-sm'>{group.last_message.content}</span>
+              <span className='text-xs pt-1'>{formatDate(group.last_message.timestamp)}</span>
+            </>
+            }
+        </p>
       </article>
     </li>
   )

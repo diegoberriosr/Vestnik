@@ -7,12 +7,12 @@ import RoundedCheckbox from "../inputs/RoundedCheckbox"
 import AuthContext from '../../context/AuthContext';
 import ConversationsContext from '../../context/ConversationsContext';
 
-const MessageMenu = ({shrink, setShrink, messageId }) => {
+const MessageMenu = ({shrink, setShrink, messageId, senderId, isAdmin}) => {
   const [deleteAll, setDeleteAll] = useState(false);
   const [disabled, setDisabled] = useState(true);
   const [loading, setLoading] = useState(false);
 
-  const {authTokens} = useContext(AuthContext);
+  const {authTokens, user} = useContext(AuthContext);
   const { setMessages, setConversations, conversations } = useContext(ConversationsContext);
 
   const handleChange = (status) => {
@@ -53,12 +53,14 @@ const MessageMenu = ({shrink, setShrink, messageId }) => {
         <h3 className='text-lg'>Who do you want to remove this message for</h3>
         
         <form>
+            {(user.id === senderId || isAdmin) &&
             <RoundedCheckbox 
             value={true}
             handleChange={handleChange}
             containerStyle='mt-5 flex items-start' 
             labelText='Remove for everyone'
             descriptionText="You'll permanently remove this message for all chat members"/>
+            }
             <RoundedCheckbox 
             value={false}
             handleChange={handleChange}
