@@ -48,7 +48,7 @@ const Sidebar = () => {
           <img src={user ? user.pfp : null} alt='user pfp' className='w-10 h-10 rounded-full object-fill'/>
         </div>
     </nav>
-    <Modal isVisible={profileModal}>
+    <Modal isVisible={profileModal} full={true}>
       <EditProfile shrink={shrink} setShrink={setShrink}/>
     </Modal>
    </>

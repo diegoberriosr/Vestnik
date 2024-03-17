@@ -3,7 +3,7 @@ import { formatDate } from '../../utils/formatDate';
 
 import AuthContext from '../../context/AuthContext';
 
-const Message = ({ message }) => {
+const Message = ({ message, handleOpenDeleteModal }) => {
 
   const { user } = useContext(AuthContext);
   
@@ -18,7 +18,7 @@ const Message = ({ message }) => {
             <span className='text-gray-500 font-semibold'>{message.sender.name}</span>
             <span className='text-gray-400 text-sm'>{formatDate(message.timestamp)}</span>
           </p>
-        <div className={`max-w-[70%] ${ message.sender.id === user.id ? 'bg-blue-500 text-white' : 'bg-gray-200'} rounded-full rounded-full p-2.5 inline-block`}>
+        <div className={`max-w-[70%] ${ message.sender.id === user.id ? 'bg-blue-500 text-white' : 'bg-gray-200'} rounded-full rounded-full p-2.5 inline-block cursor-pointer`} onClick={ () => handleOpenDeleteModal(message.id)}>
           {message.content}
         </div>
         </div>

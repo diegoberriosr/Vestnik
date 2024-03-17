@@ -14,6 +14,8 @@ import ConversationDrawer from '../conversations/ConversationDrawer';
 import Message from '../messages/Message';
 import Notification from '../messages/Notification';
 import TypingAlert from '../alerts/TypingAlert';
+import Modal from './Modal';
+import MessageMenu from '../conversations/MessageMenu';
 
 // Context imports
 import ConversationsContext from '../../context/ConversationsContext';
@@ -21,7 +23,12 @@ import AuthContext from '../../context/AuthContext';
 
 const Conversation = () => {
   const [displayInformation, setDisplayInformation] = useState(false);
+  const [deleteModal, setDeleteModal] = useState(false);
+  const [shrink, setShrink] = useState(false);
+  const [selectedMessageId, setSelectedMessageId] = useState(null);
+  
   const [disabled, setDisabled] = useState(true);
+  
   const {activeConversation, messages, setMessages, setConversations } = useContext(ConversationsContext);
   const { authTokens } = useContext(AuthContext);
 
@@ -74,6 +81,11 @@ const Conversation = () => {
     }
   }
 
+  const handleOpenDeleteModal = (messageId) => {
+    setSelectedMessageId(messageId);
+    setDeleteModal(true);
+  }
+
   useEffect( () => {
     setDisplayInformation(false);
   }, [activeConversation]);
@@ -87,18 +99,29 @@ const Conversation = () => {
     }
   }, [values.content]);
 
+  useEffect( () => {
+    if( shrink) {
+      const timer = setTimeout( () => {
+        setDeleteModal(false);
+        setShrink(false);
+      }, 250)
+
+      return () => clearTimeout(timer);
+    }
+  }, [shrink])
+
   if (!activeConversation) return null;
   
 
   return (
-  <main className={`${ activeConversation ? 'w-screen' : ''} w-screen xl:w-[70%] h-screen border`}>
+  <main className={`relative ${ activeConversation ? 'w-screen' : ''} w-screen xl:w-[70%] h-screen border`}>
     <header className='w-full h-14 flex items-center justify-between px-5 shadow'>
         {activeConversation && activeConversation.is_group_chat ? <GroupChatHeader setDisplayInformation={setDisplayInformation}/> : <ConversationHeader setDisplayInformation={setDisplayInformation}/>}
     </header>
     <ul className='w-full h-[calc(100vh-114px)] border overflow-y-auto p-5'>
         { messages.length > 0 && messages.map( message => {
           if (message.is_notification) return <Notification messageContent={message.content} timestamp={message.timestamp}/>
-          return <Message message={message}/>
+          return <Message message={message} handleOpenDeleteModal={handleOpenDeleteModal}/>
         })}
         <TypingAlert pfp={activeConversation.partners[0].pfp}/>
     </ul>
@@ -116,6 +139,9 @@ const Conversation = () => {
         </button>
     </footer>
     <ConversationDrawer isVisible={displayInformation} setDisplayInformation={setDisplayInformation}/>
+    <Modal isVisible={deleteModal}>
+        <MessageMenu shrink={shrink} setShrink={setShrink} messageId={selectedMessageId}/>
+    </Modal>
   </main>
   )
 }

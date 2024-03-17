@@ -57,7 +57,7 @@ const Inbox = () => {
       }
       <BottomBar/>
     </aside>
-    <Modal isVisible={newGroupModal}>
+    <Modal isVisible={newGroupModal} full={true}>
       <NewGroupChat shrink={shrink} setShrink={setShrink}/>
     </Modal>
   </>

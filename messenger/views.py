@@ -209,6 +209,7 @@ def create_message(request):
 def delete_message(request):
 
     message_id = json.loads(request.body).get('message_id', '')
+    permanent = json.loads(request.body).get('permanent', '')
 
     if message_id is None or message_id == '':
         return HttpResponseBadRequest('ERROR: a valid message id must be provided.')
@@ -221,7 +222,10 @@ def delete_message(request):
     if request.user != message.sender:
         return HttpResponseForbidden('ERROR: requester does not have permission to delete this message.')
     
-    message.delete()
+    if permanent:
+        message.delete()
+    else:
+        message.cleared_by.add(request.user) if request.user not in message.cleared_by.all() else None
 
     return HttpResponse('Success.')
 
