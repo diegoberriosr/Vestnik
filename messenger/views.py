@@ -227,7 +227,7 @@ def delete_message(request):
     else:
         message.cleared_by.add(request.user) if request.user not in message.cleared_by.all() else None
 
-    return HttpResponse('Success.')
+    return JsonResponse(message.conversation.serialize(request.user), safe=False)
 
 
 @api_view(['PUT'])
