@@ -4,7 +4,7 @@ import axios from 'axios';
 import ReactSelect from 'react-select';
 import AuthContext from '../../context/AuthContext';
 
-const Select = ({ setUsers }) => {
+const Select = ({ setUsers, excludeList }) => {
   const [matches, setMatches] = useState([]);
   const [inputValue, setInputValue] = useState('');
 
@@ -37,7 +37,11 @@ const Select = ({ setUsers }) => {
         params : { s : inputValue}
     })
     .then( res => {
-        if (Array.isArray(res.data)) setMatches(res.data);
+        console.log(excludeList, res.data);
+        if (Array.isArray(res.data)) setMatches(prevStatus => {
+          if(excludeList) setMatches(res.data.filter( match => !excludeList.includes(match.id)))
+          return res.data;
+        });
         else setMatches([]);
     })
     .catch( err => {

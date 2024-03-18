@@ -32,7 +32,6 @@ const Conversation = () => {
   const {activeConversation, messages, setMessages, setConversations } = useContext(ConversationsContext);
   const { authTokens } = useContext(AuthContext);
 
-
   const {values, handleChange, handleBlur, setFieldValue} = useFormik({
     initialValues : {
       'content' : ''
@@ -138,7 +137,7 @@ const Conversation = () => {
             <BiSolidSend className='text-2xl'/>
         </button>
     </footer>
-    <ConversationDrawer isVisible={displayInformation} setDisplayInformation={setDisplayInformation}/>
+    <ConversationDrawer isVisible={displayInformation} setDisplayInformation={setDisplayInformation} isGroup={activeConversation.is_group_chat}/>
     <Modal isVisible={deleteModal}>
        { selectedMessage && <MessageMenu shrink={shrink} setShrink={setShrink} messageId={selectedMessage.id} senderId={selectedMessage.sender.id} isAdmin={selectedMessage.is_admin}/>}
     </Modal>

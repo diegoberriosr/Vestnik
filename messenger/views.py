@@ -131,6 +131,68 @@ def delete_group_chat(request):
 
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
+def update_group_members(request):
+
+    group_id = json.loads(request.body).get('group_id', '')
+    user_ids = json.loads(request.body).get('user_ids', '')
+
+    if group_id is None or user_ids is None:
+        return HttpResponseBadRequest('ERROR: a group id and a list of user ids must be provided.')
+    
+    try:
+        group = Conversation.objects.get(id=group_id)
+    except Conversation.DoesNotExist:
+        raise Http404('ERROR: group with id={group_id} does not exist.')
+    
+    if request.user not in group.admins.all():
+        return HttpResponseForbidden('ERROR: requester does not have permissions to perform this action.')
+    
+    for user_id in user_ids:
+        try:
+            user = User.objects.get(id=user_id)
+            group.members.add(user) if user not in group.members.all() else group.members.remove(user)
+            group.active_members.add(user) if user not in group.active_members.all() else group.active_members.remove(user)
+
+        except User.DoesNotExist:
+            raise Http404(f'ERROR: user with id={user_id} not found.')
+        
+        return HttpResponse('Success')
+
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def update_group_admins(request):
+
+    group_id = json.loads(request.body).get('group_id', '')
+    user_ids = json.loads(request.body).get('user_ids', '')
+
+    if group_id is None or user_ids is None:
+        return HttpResponseBadRequest('ERROR : a group id and a list of user ids must be provided.')
+    
+    try:
+        group = Conversation.objects.get(id=group_id)
+    except Conversation.DoesNotExist:
+        raise Http404(f'ERROR: group with id={group_id} does not exist.')
+    
+    if request.user not in group.admins.all():
+        return HttpResponseForbidden(f'ERROR: requester does not have permissions to perform this action.')
+
+    for user_id in user_ids:
+        try:
+            user = User.objects.get(id=user_id)
+
+            if user not in group.members.all() :
+                return HttpResponseForbidden(f'ERROR: user with id={user_id} is not a member of this group chat.')
+
+            group.admins.add(user) if user not in group.admins.all() else group.admins.remove(user)
+        except Conversation.DoesNotExist:
+            raise Http404('ERROR: user with id={id} does not exist.')
+        
+    return HttpResponse('Success')
+        
+    
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
 def clear_conversation(request):
 
     conversation_id = json.loads(request.body).get('conversation_id', '')

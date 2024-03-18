@@ -123,7 +123,7 @@ class TestDeleteMessage(TestCase):
         self.assertEqual(Message.objects.count(), 3)
         self.assertEqual(self.message1.sender, self.user1)
 
-        data = {'message_id' : 1}
+        data = {'message_id' : 1, 'permanent' : True}
 
         request = self.factory.put(reverse('delete message'), json.dumps(data), content_type='application/json')
         force_authenticate(request=request, user=self.user1)

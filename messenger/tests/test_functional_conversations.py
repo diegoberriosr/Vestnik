@@ -7,29 +7,38 @@ from django.urls import reverse
 import json
 
 
-class ConversationSetup():
+class TestCreateConversation(TestCase):
+    def setup(self):
+        user1 = User(email='test@mail.com', name='Test')
+        user1.save()
+        self.user1 = user1
 
-    def test_star_message(self):
+        user2 = User(email='test2@mail.com', name='Test 2')
+        user2.save()
+        self.user2 = user2
 
-        self.assertEqual(Conversation.objects.count(), 1)
-        self.assertEqual(Message.objects.count(), 3)
-        self.assertFalse(self.user1 in self.message2.starred_by.all())
+        user3 = User(email='test3@mail.com', name='Test 3')
+        user3.save()
+        self.user3 = user3
 
-        data = { 'message_id' : 2}
+        conversation = Conversation(is_group=True)
+        conversation.save()
+        self.conversation = conversation    
 
-        request = self.factory.put(reverse('star message'), json.dumps(data), content_type='application/json')
-        force_authenticate(request=request, user=self.user1)
-        response = views.star_message(request)
+        conversation.members.add(self.user1)
+        conversation.active_members.add(self.user1)
 
-        self.message1.refresh_from_db()
+        conversation.members.add(self.user2)
+        conversation.active_members.add(self.user2)
 
-        self.assertEqual(200, response.status_code)
-        self.assertEqual(Conversation.objects.count(), 1)
-        self.assertEqual(Message.objects.count(), 3)
-        self.assertTrue(self.user1 in self.message2.starred_by.all())
+        conversation.members.add(self.user3)
+        conversation.active_members.add(self.user3)
+
+        conversation.admins.add(self.user1)
+        conversation.admins.add(self.user2)
 
 
-class TestCreateConversation(TestCase, ConversationSetup):
+        self.factory = APIRequestFactory()
 
     def create_conversation(self):
         self.assertEqual(User.objects.count(), 2)
@@ -50,7 +59,7 @@ class TestCreateConversation(TestCase, ConversationSetup):
         self.assertTrue(self.user1 in conversation.active_members.all())
         self.assertTrue(self.user2 not in conversation.active_members.all())
 
-class TestDeleteConversation(TestCase, ConversationSetup):
+class TestDeleteConversation(TestCase):
    
     def setUp(self):
         user1 = User(email='test@mail.com', name='Test')
@@ -137,6 +146,221 @@ class TestDeleteConversation(TestCase, ConversationSetup):
 
         self.conversation.refresh_from_db()
         self.message1.refresh_from_db()
+
+
+class TestUpdateAdmins(TestCase):
+    def setUp(self):
+        user1 = User(email='test@mail.com', name='Test')
+        user1.save()
+        self.user1 = user1
+
+        user2 = User(email='test2@mail.com', name='Test 2')
+        user2.save()
+        self.user2 = user2
+
+        user3 = User(email='test3@mail.com', name='Test 3')
+        user3.save()
+        self.user3 = user3
+
+        conversation = Conversation(is_group_chat=True, name='Test group')
+        conversation.save()
+        self.conversation = conversation    
+
+        conversation.members.add(self.user1)
+        conversation.active_members.add(self.user1)
+
+        conversation.members.add(self.user2)
+        conversation.active_members.add(self.user2)
+
+        conversation.members.add(self.user3)
+        conversation.active_members.add(self.user3)
+
+        conversation.admins.add(self.user1)
+        conversation.admins.add(self.user2)
+
+
+        self.factory = APIRequestFactory()
+
+    def test_add_admin(self):
+        self.assertEqual(User.objects.count(), 3)
+        self.assertEqual(Conversation.objects.count(), 1)
+        self.assertEqual(self.conversation.admins.count(), 2)
+
+        data = {
+            'group_id' : 1,
+            'user_ids' : [3]
+        }
+
+        request = self.factory.put(reverse('update group admins'), data=json.dumps(data), content_type='application/json')
+        force_authenticate(request=request, user=self.user1)
+        response = views.update_group_admins(request)
+
+        self.conversation.refresh_from_db()
+
+        self.assertEqual(200, response.status_code)
+        self.assertEqual(User.objects.count(), 3)
+        self.assertEqual(Conversation.objects.count(), 1)
+        self.assertEqual(self.conversation.admins.count(), 3)
+
+    def test_add_admin(self):
+        self.assertEqual(User.objects.count(), 3)
+        self.assertEqual(Conversation.objects.count(), 1)
+        self.assertEqual(self.conversation.admins.count(), 2)
+
+        data = {
+            'group_id' : 1,
+            'user_ids' : [3]
+        }
+
+        request = self.factory.put(reverse('update group admins'), data=json.dumps(data), content_type='application/json')
+        force_authenticate(request=request, user=self.user1)
+        response = views.update_group_admins(request)
+
+        self.conversation.refresh_from_db()
+
+        self.assertEqual(200, response.status_code)
+        self.assertEqual(User.objects.count(), 3)
+        self.assertEqual(Conversation.objects.count(), 1)
+        self.assertEqual(self.conversation.admins.count(), 3)
+
+    def test_remove_admin(self):
+        self.assertEqual(User.objects.count(), 3)
+        self.assertEqual(Conversation.objects.count(), 1)
+        self.assertEqual(self.conversation.admins.count(), 2)
+
+        data = {
+            'group_id' : 1,
+            'user_ids' : [2]
+        }
+
+        request = self.factory.put(reverse('update group admins'), data=json.dumps(data), content_type='application/json')
+        force_authenticate(request=request, user=self.user1)
+        response = views.update_group_admins(request)
+
+        self.conversation.refresh_from_db()
+
+        self.assertEqual(200, response.status_code)
+        self.assertEqual(User.objects.count(), 3)
+        self.assertEqual(Conversation.objects.count(), 1)
+        self.assertEqual(self.conversation.admins.count(), 1)
+
+
+    def test_add_admin_without_permissions(self):
+        self.assertEqual(User.objects.count(), 3)
+        self.assertEqual(Conversation.objects.count(), 1)
+        self.assertEqual(self.conversation.admins.count(), 2)
+
+        data = {
+            'group_id' : 1,
+            'user_ids' : [3]
+        }
+
+        request = self.factory.put(reverse('update group admins'), data=json.dumps(data), content_type='application/json')
+        force_authenticate(request=request, user=self.user3)
+        response = views.update_group_admins(request)
+
+        self.conversation.refresh_from_db()
+
+        self.assertEqual(403, response.status_code)
+        self.assertEqual(User.objects.count(), 3)
+        self.assertEqual(Conversation.objects.count(), 1)
+        self.assertEqual(self.conversation.admins.count(), 2)
+
+
+class TestUpdateGroupMembers(TestCase):
+    def setUp(self):
+        user1 = User(email='test@mail.com', name='Test')
+        user1.save()
+        self.user1 = user1
+
+        user2 = User(email='test2@mail.com', name='Test 2')
+        user2.save()
+        self.user2 = user2
+
+        user3 = User(email='test3@mail.com', name='Test 3')
+        user3.save()
+        self.user3 = user3
+
+        conversation = Conversation(is_group_chat=True, name='Test group')
+        conversation.save()
+        self.conversation = conversation    
+
+        conversation.members.add(self.user1)
+        conversation.active_members.add(self.user1)
+
+        conversation.members.add(self.user2)
+        conversation.active_members.add(self.user2)
+
+        conversation.admins.add(self.user1)
+        conversation.admins.add(self.user2)
+
+
+        self.factory = APIRequestFactory()
+
+    def test_add_member(self):
+        self.assertEqual(User.objects.count(), 3)
+        self.assertEqual(Conversation.objects.count(), 1)
+        self.assertEqual(self.conversation.members.count(), 2)
+
+        data = {
+            'group_id' : 1,
+            'user_ids' : [3]
+        }
+
+        request = self.factory.put(reverse('update group members'), data=json.dumps(data), content_type='application/json')
+        force_authenticate(request=request, user=self.user1)
+        response = views.update_group_members(request)
+
+        self.conversation.refresh_from_db()
+
+        self.assertEqual(200, response.status_code)
+        self.assertEqual(User.objects.count(), 3)
+        self.assertEqual(Conversation.objects.count(), 1)
+        self.assertEqual(self.conversation.members.count(), 3)
+
+
+    def test_remove_member(self):
+        self.assertEqual(User.objects.count(), 3)
+        self.assertEqual(Conversation.objects.count(), 1)
+        self.assertEqual(self.conversation.members.count(), 2)
+
+        data = {
+            'group_id' : 1,
+            'user_ids' : [2]
+        }
+
+        request = self.factory.put(reverse('update group members'), data=json.dumps(data), content_type='application/json')
+        force_authenticate(request=request, user=self.user1)
+        response = views.update_group_members(request)
+
+        self.conversation.refresh_from_db()
+
+        self.assertEqual(200, response.status_code)
+        self.assertEqual(User.objects.count(), 3)
+        self.assertEqual(Conversation.objects.count(), 1)
+        self.assertEqual(self.conversation.members.count(), 1)
+
+
+    def test_add_member_without_permissions(self):
+        self.assertEqual(User.objects.count(), 3)
+        self.assertEqual(Conversation.objects.count(), 1)
+        self.assertEqual(self.conversation.members.count(), 2)
+
+        data = {
+            'group_id' : 1,
+            'user_ids' : [3]
+        }
+
+        request = self.factory.put(reverse('update group members'), data=json.dumps(data), content_type='application/json')
+        force_authenticate(request=request, user=self.user3)
+        response = views.update_group_members(request)
+
+        self.conversation.refresh_from_db()
+
+        self.assertEqual(403, response.status_code)
+        self.assertEqual(User.objects.count(), 3)
+        self.assertEqual(Conversation.objects.count(), 1)
+        self.assertEqual(self.conversation.members.count(), 2)
 
 
 

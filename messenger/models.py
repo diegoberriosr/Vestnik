@@ -48,6 +48,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     def serialize(self):
         return {
             'id' : self.id,
+            'email' : self.email,
             'name' : self.name,
             'info' : self.info,
             'pfp' : self.pfp
@@ -69,6 +70,7 @@ class Conversation(models.Model):
             'id' : self.id,
             'name' : self.name,
             'is_group_chat' : self.is_group_chat,
+            'is_admin' : user in self.admins.all(),
             'partners' : [member.serialize() for member in self.members.all() if member != user],
             'messages' : [message.serialize(user) for message in self.messages.all()],
             'unread_messages' : len([message for message in self.messages.all() if user not in message.read_by.all()])
