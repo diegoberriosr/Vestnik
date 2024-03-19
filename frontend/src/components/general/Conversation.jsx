@@ -64,13 +64,11 @@ const Conversation = () => {
             return [res.data];
           });
           setConversations( prevStatus => {
-            console.log('Conversations', prevStatus);
             let updatedStatus = [...prevStatus];
             const index = updatedStatus.findIndex(conversation => activeConversation.id === conversation.id);
 
             updatedStatus[index].last_message = res.data;
             const arrangedArray =   [updatedStatus[index], ...updatedStatus.filter( conversation => conversation.id !== activeConversation.id )];
-            console.log('Arranged', arrangedArray);
             return arrangedArray;
           });
         })
@@ -111,7 +109,6 @@ const Conversation = () => {
 
   if (!activeConversation) return null;
   
-
   return (
   <main className={`relative ${ activeConversation ? 'w-screen' : ''} w-screen xl:w-[70%] h-screen border`}>
     <header className='w-full h-14 flex items-center justify-between px-5 shadow'>

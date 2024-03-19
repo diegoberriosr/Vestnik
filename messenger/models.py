@@ -53,6 +53,16 @@ class User(AbstractBaseUser, PermissionsMixin):
             'info' : self.info,
             'pfp' : self.pfp
         }
+    
+    def g_serialize(self, conversation):
+        return {
+            'id' : self.id,
+            'email' : self.email,
+            'is_admin' : self in conversation.admins.all(),
+            'name' : self.name,
+            'info' : self.info,
+            'pfp' : self.pfp
+        }
 
 
 class Conversation(models.Model):
@@ -71,19 +81,21 @@ class Conversation(models.Model):
             'name' : self.name,
             'is_group_chat' : self.is_group_chat,
             'is_admin' : user in self.admins.all(),
-            'partners' : [member.serialize() for member in self.members.all() if member != user],
+            'partners' : [member.g_serialize(self) for member in self.members.all() if member != user],
             'messages' : [message.serialize(user) for message in self.messages.all()],
             'unread_messages' : len([message for message in self.messages.all() if user not in message.read_by.all()])
         }
     
     def inbox_serialize(self, user):
+        last_message = self.messages.exclude(cleared_by__in =[user]).last()
         return {
             'id' : self.id,
             'name' : self.name,
+            'is_admin' : user in self.admins.all(),
             'is_group_chat' : self.is_group_chat,
-            'partners' : [member.serialize() for member in self.members.all() if member != user],
+            'partners' : [member.g_serialize(self) for member in self.members.all() if member != user],
             'unread_messages' : len([message for message in self.messages.all() if user not in message.read_by.all()]),
-            'last_message' : self.messages.last().serialize(user) if self.messages.last() else None
+            'last_message' : last_message.serialize(user) if last_message else None
         }
 
 

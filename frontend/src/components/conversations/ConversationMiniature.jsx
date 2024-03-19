@@ -28,11 +28,11 @@ const ConversationMiniature = ({ conversation }) => {
         <p className='text-gray-500 w-full flex items-center justify-between'>
             { conversation.last_message && 
             <>
-              <div className='max-w-[60%] truncate text-sm flex items-center space-x-1'>
+              <span className='max-w-[60%] truncate text-sm flex items-center space-x-1'>
                 {conversation.last_message.sender.id === user.id && <BsArrowReturnRight/>}
                 {conversation.last_message.sender.id !== user.id && !conversation.last_message.read &&  <UnreadMessages number={conversation.unread_messages}/>}
                 <span className={ (!conversation.last_message.read && conversation.last_message.sender.id !== user.id) ? 'font-semibold' : ''}>{conversation.last_message.content}</span>
-              </div>
+              </span>
               <span className='max-w-[40%] truncate text-xs pt-1'>{formatDate(conversation.last_message.timestamp)}</span>
             </>
             }

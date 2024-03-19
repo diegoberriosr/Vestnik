@@ -13,7 +13,7 @@ const MessageMenu = ({shrink, setShrink, messageId, senderId, isAdmin}) => {
   const [loading, setLoading] = useState(false);
 
   const {authTokens, user} = useContext(AuthContext);
-  const { setMessages, setConversations, conversations } = useContext(ConversationsContext);
+  const { setMessages, setConversations, activeConversation } = useContext(ConversationsContext);
 
   const handleChange = (status) => {
     if(disabled) setDisabled(false);
@@ -36,7 +36,13 @@ const MessageMenu = ({shrink, setShrink, messageId, senderId, isAdmin}) => {
         headers : headers,   
         data : { message_id : messageId, permanent : deleteAll}
     })
-    .then( () => {
+    .then( (res) => {
+        setConversations( prevStatus => {
+            const index = prevStatus.findIndex( conversation => conversation.id === activeConversation.id);
+            let updatedStatus = [...prevStatus];
+            updatedStatus[index].last_message = res.data
+            return updatedStatus;
+        })
         setMessages( prevStatus => {
             return prevStatus.filter( message => message.id !== messageId);
         })

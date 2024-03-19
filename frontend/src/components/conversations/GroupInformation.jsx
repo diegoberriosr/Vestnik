@@ -7,7 +7,7 @@ import { IoAddOutline } from "react-icons/io5";
 import AuthContext from '../../context/AuthContext'
 import ConversationsContext from '../../context/ConversationsContext'
 
-const GroupInformation = ({ setAddUsersModal }) => {
+const GroupInformation = ({ setAddUsersModal, handleUserMenuModal }) => {
   const { user } = useContext(AuthContext);
   const { activeConversation} = useContext(ConversationsContext)
   return (
@@ -25,18 +25,18 @@ const GroupInformation = ({ setAddUsersModal }) => {
                         <img src={user.pfp} alt='user pfp' className='w-full h-full rounded-full object-fit'/>
                     </figure>
                     <p className='w-full flex items-center justify-between'>
-                        <span>You</span>
+                        <span>You {activeConversation.is_admin ? 'ADMIN' : ''}</span>
                         <span>Leave this group</span>
                     </p>
                 </div>
                 {activeConversation.partners.map( (partner,index) =>
-                    <div className='flex space-x-2.5 p-2 bg-white' key={index}>
+                    <div className='flex space-x-2.5 p-2 bg-white' key={index} onClick={() => {handleUserMenuModal(partner)}}>
                         <figure className='w-10 h-10'>
                             <img key={index} src={partner.pfp} alt={`partner ${index + 1} pfp`} className='w-full h-full rounded-full object-fit'/>
                         </figure>
                         <div className='w-full flex items-start justify-between border border-r-0 border-t-0 border-l-0'>
                             <p className='w-full'>
-                                <span>{partner.name}</span>
+                                <span>{partner.name} {partner.is_admin ? 'ADMIN' : ''}</span>
                                 <span className='max-w-full truncate'>{partner.info}</span>
                             </p>
                             <span>~{partner.email}</span>

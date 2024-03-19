@@ -37,7 +37,6 @@ const Select = ({ setUsers, excludeList }) => {
         params : { s : inputValue}
     })
     .then( res => {
-        console.log(excludeList, res.data);
         if (Array.isArray(res.data)) setMatches(prevStatus => {
           if(excludeList) setMatches(res.data.filter( match => !excludeList.includes(match.id)))
           return res.data;

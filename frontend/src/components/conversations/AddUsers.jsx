@@ -8,13 +8,12 @@ import ConversationsContext from "../../context/ConversationsContext"
 import AuthContext from '../../context/AuthContext';
 
 const AddUsers = ({ shrink, setShrink}) => {
-  const {activeConversation, setMessages, setConversations} = useContext(ConversationsContext);
+  const {activeConversation, setMessages, messages, setConversations, setActiveConversation} = useContext(ConversationsContext);
   const {authTokens} = useContext(AuthContext);
 
   const [disabled, setDisabled] = useState(true);
   const [loading, setLoading] = useState(false);
   const [userIds, setUserIds] = useState([]);
-
   const partnerIds = activeConversation.partners.map( partner => partner.id);
 
   const handleCreateGroup = (e) => {
@@ -31,16 +30,33 @@ const AddUsers = ({ shrink, setShrink}) => {
 
     setLoading(true);
     axios({
-      url : 'http://127.0.0.1:8000/groups/create',
-      method : 'POST',
+      url : 'http://127.0.0.1:8000/groups/members/update',
+      method : 'PUT',
       headers : headers,
-      data : { user_ids : userIds },
+      data : { group_id : activeConversation.id, user_ids : userIds },
     })
     .then( res => {
-      setConversations( prevStatus => {
-        if (prevStatus.length > 0) return [res.data, ...prevStatus];
-        return [res.data];
+      const notifications = res.data.map( profile => ({ is_notification: true , content : `${profile.name} was added to this group.`, timestamp : new Date().getTime() }))
+      console.log('Notifications', notifications);
+      setActiveConversation( prevStatus => {
+        let updatedStatus = {...prevStatus};
+        updatedStatus.partners = [...updatedStatus.partners, ...res.data];
+        return updatedStatus;
       });
+
+      setConversations( prevStatus => {
+        let updatedStatus = [...prevStatus];
+        const index = updatedStatus.findIndex( conversation => conversation.id === activeConversation.id);
+        updatedStatus[index].lastMessage = notifications[notifications.length -1]
+
+        return updatedStatus
+      });
+
+      setMessages( prevStatus => {
+        if (prevStatus.length > 0) return [...prevStatus, ...notifications]
+        return [...notifications]
+      });
+      
       setShrink(true);
     })
     .catch( err => {

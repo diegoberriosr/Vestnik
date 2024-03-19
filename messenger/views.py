@@ -59,10 +59,15 @@ def create_conversation(request):
         except User.DoesNotExist or user_id == request.user.id:
             raise Http404(f'ERROR: invalid user id ({user_id})')
 
+    conversations = Conversation.objects.filter(members__in=users)
+    conversation_exists = any( list(conversation.members.all()) == list(users) for conversation in conversations)
+
+    if conversation_exists:
+        return HttpResponseForbidden('ERROR : Conversation already exists.')
     
     conversation = Conversation()
     conversation.save()
-
+      
     for user in users:
         conversation.members.add(user)
     
@@ -147,16 +152,30 @@ def update_group_members(request):
     if request.user not in group.admins.all():
         return HttpResponseForbidden('ERROR: requester does not have permissions to perform this action.')
     
+    users = []
+
     for user_id in user_ids:
         try:
             user = User.objects.get(id=user_id)
             group.members.add(user) if user not in group.members.all() else group.members.remove(user)
             group.active_members.add(user) if user not in group.active_members.all() else group.active_members.remove(user)
 
+            if user in group.admins.all():
+                group.admins.remove(user)
+
+            users.append(user)
+
+            for message in group.messages.all():
+                message.cleared_by.add(user) if user not in message.cleared_by.all() else None
+
+            content = f'{user.name} was removed from this group' if user not in group.members.all() else f'{user.name} was added to this group'
+            notification = Message(conversation=group, sender=None, content=content, is_notification=True)
+            notification.save()
+
         except User.DoesNotExist:
             raise Http404(f'ERROR: user with id={user_id} not found.')
         
-        return HttpResponse('Success')
+        return JsonResponse([user.serialize() for user in users], safe=False)
 
 
 @api_view(['PUT'])
@@ -185,6 +204,9 @@ def update_group_admins(request):
                 return HttpResponseForbidden(f'ERROR: user with id={user_id} is not a member of this group chat.')
 
             group.admins.add(user) if user not in group.admins.all() else group.admins.remove(user)
+            content = f'{user.name} is no longer an admin for this group' if user not in group.admins.all() else f'{user.name} is now an admin for this group'
+            notification = Message(conversation=group, sender=None, content=content, is_notification=True)
+            notification.save()
         except Conversation.DoesNotExist:
             raise Http404('ERROR: user with id={id} does not exist.')
         
@@ -284,12 +306,15 @@ def delete_message(request):
     if request.user != message.sender and request.user not in message.conversation.members.all():
         return HttpResponseForbidden('ERROR: requester does not have permission to delete this message.')
     
+    conversation = message.conversation
+
     if permanent:
         message.delete()
+
     else:
         message.cleared_by.add(request.user) if request.user not in message.cleared_by.all() else None
 
-    return JsonResponse(message.conversation.serialize(request.user), safe=False)
+    return JsonResponse(conversation.messages.exclude(cleared_by__in=[request.user]).last().serialize(request.user), safe=False)
 
 
 @api_view(['PUT'])

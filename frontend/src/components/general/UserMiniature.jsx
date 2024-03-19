@@ -5,10 +5,18 @@ import ConversationsContext from '../../context/ConversationsContext';
 import AuthContext from '../../context/AuthContext';
 
 const UserMiniature = ({ profile }) => {
-  const { setActiveConversation, setConversations } = useContext(ConversationsContext);
+  const { setActiveConversation, setConversations, conversations} = useContext(ConversationsContext);
   const { authTokens } = useContext(AuthContext);
 
   const handleNewConversation = () => {
+
+    const filteredConversations = conversations.filter( conversation => !conversation.is_group_chat) // filter group chats
+    const index = filteredConversations.findIndex( conversation => conversation.partners[0].id === profile.id);
+
+    if (index > -1) {
+      setActiveConversation(conversations[index]);
+      return;
+    };
 
     let headers;
 

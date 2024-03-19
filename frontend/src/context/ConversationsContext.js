@@ -8,10 +8,12 @@ export default ConversationsContext;
 export const ConversationsProvider = ({ children}) => {
     const [conversations, setConversations] = useState([]);
     const [activeConversation, setActiveConversation] = useState(null);
+    const activeConversationId = activeConversation ? activeConversation.id : null;
     const [messages, setMessages] = useState([]);
 
     const { authTokens } = useContext(AuthContext); 
-
+    if (activeConversation) console.log(activeConversation.partners);
+    
     const getConversations = () => {
         let headers;
 
@@ -61,7 +63,7 @@ export const ConversationsProvider = ({ children}) => {
                 console.log(err)
             });
         };
-    }, [activeConversation])
+    }, [activeConversationId])
 
 
     const data = {
