@@ -43,9 +43,9 @@ module.exports = {
         }
       },
       colors : {
-        'cream' : '#FAF2EF',
-        'salmon' : '#F68A8A',
-        'dark-salmon' : '#F54F51'
+        'cream' : '#EEEEEE',
+        'dark-blue' : '#2d3d8b',
+        'light-blue' : '#7fbbca'
       }
     },
   },

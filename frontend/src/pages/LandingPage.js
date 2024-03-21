@@ -1,7 +1,9 @@
 import { useState } from 'react';
+import LayingDoodle from '../assets/LayingDoodle.png';
 
 // Icon Imports
 import { PiMessengerLogoLight } from "react-icons/pi";
+import { FaFacebookMessenger } from "react-icons/fa";
 
 // Component imports
 import Modal from '../components/general/Modal';
@@ -34,51 +36,35 @@ const LandingPage = () => {
 
   return (
     <>
-    <div className='bg-cream'>
-      <nav className="w-full h-14 shadow flex items-center justify-between px-10">
-        <div className='flex items-center text-lg font-bold text-dark-salmon'>
-            <PiMessengerLogoLight className='text-4xl'/>
-            <span>Vestnik</span>
+    <div className='bg-cream h-screen overflow-y-invisible'>
+      <nav className="w-full flex items-center justify-between px-1.5 sm:px-2.5 md:px-5 lg:px-10 py-5 text-xs sm:text-sm md:text-md lg:text-lg">
+        <div className='flex items-center text-sm sm:text-md md:text-lg lg:text-xl font-bold text-sky-500 space-x-2'>
+            <FaFacebookMessenger className='text-lg sm:text-lg md:text-2xl lg:text-4xl'/>
+            <span className='text-gray-900'>Vestnik</span>
         </div>
         <div className='flex items-center space-x-5'>
+            <span>Privacy policy</span>
+            <span>Terms of service</span>
             <span>About</span>
-            <button className='px-2.5 py-0.5 bg-salmon font-bold border border-black rounded-full hover:opacity-90' onClick={handleLoginModal}>
+            <button className='px-2.5 py-0.5 bg-sky-300 text-white font-semibold border border-dark-blue rounded-full hover:opacity-90' onClick={handleLoginModal}>
                 Log in
             </button>
-            <button className='px-2.5 py-0.5 bg-dark-salmon font-bold border border-black rounded-full hover:opacity-90' onClick={handleRegisterModal}>
+            <button className='px-2.5 py-0.5 bg-sky-500 text-white font-semibold border border-dark-blue rounded-full hover:opacity-90' onClick={handleRegisterModal}>
                 Register
             </button>
         </div>
       </nav>
-      <main className='w-full h-[calc(100vh-56px)] flex-col-reverse flex items-center md:flex-row  px-10'>
-        <div className='w-6/12 h-full md:py-32'>
-            <h3 className='sm:text-4xl md:text-6xl font-bold'>You can chat anywhere, anytime</h3>
-            <p className='mt-5'>Нет никого, кто любил бы боль саму по себе, кто искал бы её и кто хотел бы иметь её просто потому, что это боль..</p>
-            <button className='mt-5 py-1 px-5 flex items-center border border-black text-white rounded-full text-xl bg-gradient-to-t from-dark-salmon to-salmon hover:opacity-90' onClick={handleRegisterModal}>
-                <PiMessengerLogoLight className='text-3xl mr-1.5'/>
-                Give Vestnik a try
+      <main className='relative w-full flex-col mt-10 px-4 md:px-8 lg:px-16'>
+        <div className='absolute top-0 w-6/12 h-full'>
+            <h3 className='text-lg sm:text-xl md:text-2xl lg:text-6xl font-bold'>You can chat anywhere, anytime</h3>
+            <p className='mt-5'>Stay connected with ease, wherever you are - chat anytime, anywhere, effortlessly engage in conversation</p>
+            <button className='mt-5 py-1 px-5 flex items-center border border-dark-blue text-white rounded-full text-xl bg-gradient-to-t from-sky-500 to-sky-300 hover:opacity-90' onClick={handleRegisterModal}>
+                <PiMessengerLogoLight className='text-sm sm:text-md md:text-xl lg:text-3xl mr-1.5'/>
+               <span className='text-xs sm:text-sm md:text'>Give Vestnik a try</span>
             </button>
-            <div className='flex mt-5 space-x-5'>
-                <button className='flex items-center bg-black border border-gray-500 py-1.5 px-5 rounded-lg text-white hover:opacity-90 cursor-not-allowed'>
-                    <img src='https://freelogopng.com/images/all_img/1664285914google-play-logo-png.png' alt='google play store icon' width='30'/>
-                    <div className='pl-2.5 flex flex-col items-start'>
-                        <span className='text-xs'>GET IT ON</span>
-                        <span className='font-bold'>Google Play</span>
-                    </div>
-                </button>
-                <button className='flex items-center bg-black border border-gray-500 py-1.5 px-5 rounded-lg text-white hover:opacity-90 cursor-not-allowed'>
-                    <img src='https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Apple_logo_white.svg/1200px-Apple_logo_white.svg.png' alt='google play store icon' width='30'/>
-                    <div className='pl-2.5 flex flex-col items-start'>
-                        <span className='text-xs'>Download on the </span>
-                        <span className='font-bold'>Mac App Store</span>
-                    </div>
-                </button>
-            </div>
-        </div>
-        <div className='w-6/12 h-full'>
-            <img src='https://opendoodles.s3-us-west-1.amazonaws.com/laying.png' alt='woman holding phone doodle'/>
         </div>
       </main>
+      <img src={LayingDoodle} alt='woman holding phone doodle' className='fixed -bottom-10 sm:-bottom-10 md:-bottom-20 lg:-bottom-40 right-0 w-6/12'/>
     </div>
     <Modal isVisible={loginModal}>
         <Login handleLoginModal={handleLoginModal} handleRegisterModal={handleRegisterModal}/>
