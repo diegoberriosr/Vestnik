@@ -4,7 +4,7 @@ module.exports = {
   theme: {
     extend: {
       animation : {
-        'alert-downwards' : 'downwards 3s forwards',
+        'alert-downwards' : 'alert-downwards 3s forwards',
         'grow' : 'grow 0.250s forwards',
         'shrink' : 'shrink 0.250s forwards',
         'bounce-1' : 'bounce-1 1s infinite',
@@ -13,11 +13,10 @@ module.exports = {
       },
       keyframes : {
         'alert-downwards' : {
-          '0%' : { transform : 'translateY(0px)', opacity : 0},
-          '15%' : {transform : 'translateY(50px)', opacity: 1},
-          '85%' : {transform : 'translateY(50px)', opacity: 1},
-          '95%' : {opacity : 0.5},
-          '100%' : {transform : 'translateY(0px)', opacity:0}
+          '0%' : { transform : 'translateY(-64px)', opacity : 0},
+          '15%' : {transform : 'translateY(0px)', opacity: 1},
+          '85%' : {transform: 'translateY(0px)', opacity: 1},
+          '100%' : {transform : 'translateY(-64px)', opacity:0}
         },
         'grow' : {
           '0%' : { transform : 'scale(0.5)', opacity: 0},

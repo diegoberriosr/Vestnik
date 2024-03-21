@@ -1,35 +1,15 @@
-
-import { useState, useContext } from 'react';
-import { useFormik } from 'formik';
-
+// Icon imports
+import { FaFacebookMessenger } from "react-icons/fa";
 
 // Component imports
-import PopUpAlert from '../alerts/PopUpAlert';
+import RegisterForm from "./RegisterForm";
 
-// Context imports
-import AuthContext from "../../context/AuthContext"
-
-const Register = () => {
-
-  const [loading, setLoading ] = useState(false);
-  const [alertMessage, setAlertMessage] = useState(null);
-  const {registerUser} = useContext(AuthContext);
-
-  const { values, handleChange, handleBlur } = useFormik({
-    initialValues : {
-        'email' : '',
-        'username' : '',
-        'password' : ''
-    }
-  });
-  
+const Register = ({ handleLoginModal, handleRegisterModal }) => {
   return (
-    <div className='w-screen h-screen sm:w-[500px] sm:h-[600px] bg-white rounded shadow p-5'>
-      <input value={values.email} name='email' placeholder='E-mail address' className='w-full h-10 border focus:outline-none' onChange={handleChange} onBlur={handleBlur}/>
-      <input value={values.username} name='username' placeholder='Username' className='w-full h-10 border focus:outline-none' onChange={handleChange} onBlur={handleBlur}/>
-      <input value={values.password} name='password' placeholder='Password' className='w-full h-10 border focus:outline-none' onChange={handleChange} onBlur={handleBlur}/>
-      <button className='bg-dark-salmon border border-black' onClick={() => registerUser(values, setLoading, setAlertMessage)}>{ loading ? 'Loading' : 'Register'}</button>
-      {alertMessage && <PopUpAlert>{alertMessage}</PopUpAlert>}
+    <div className='flex flex-col items-center justify-center'>
+      <FaFacebookMessenger className='text-sky-500 text-4xl'/>
+      <h3 className='mt-3 font-bold text-3xl text-gray-900'>Create an account</h3>
+      <RegisterForm handleLoginModal={handleLoginModal} handleRegisterModal={handleRegisterModal}/>
     </div>
   )
 }

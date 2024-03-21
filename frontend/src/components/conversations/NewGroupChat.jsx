@@ -84,8 +84,8 @@ const NewGroupChat = ({ shrink, setShrink }) => {
       </form>
       <div className='mt-10 h-20 w-full flex items-center justify-end space-x-5 border border-b-0 border-r-0 border-l-0'>
         <button onClick={() => setShrink(true)}>Cancel</button>
-        <button disabled={disabled} className={`w-[80px] h-10 flex items-center justify-center text-white bg-blue-500\
-         rounded-lg ${ disabled || loading ? 'opacity-50' : 'hover:bg-blue-600 hover:text-gray-50'} transition-colors duration-300`}
+        <button disabled={disabled} className={`w-[80px] h-10 flex items-center justify-center text-white bg-sky-400
+         rounded-lg ${ disabled || loading ? 'opacity-50' : 'hover:bg-sky-500 hover:text-gray-50'} transition-colors duration-300`}
          onClick={handleCreateGroup}>
           { loading ? <MoonLoader loading={loading} color='#FFFFFF' size={25}/> : 'Continue'}
         </button>  

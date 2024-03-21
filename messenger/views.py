@@ -313,8 +313,10 @@ def delete_message(request):
 
     else:
         message.cleared_by.add(request.user) if request.user not in message.cleared_by.all() else None
+    
+    last_message = conversation.messages.exclude(cleared_by__in=[request.user]).last()
 
-    return JsonResponse(conversation.messages.exclude(cleared_by__in=[request.user]).last().serialize(request.user), safe=False)
+    return JsonResponse(last_message.serialize(request.user) if last_message else None, safe=False)
 
 
 @api_view(['PUT'])
@@ -338,4 +340,18 @@ def star_message(request):
     message.starred_by.add(request.user) if request.user not in message.starred_by.all() else message.starred_by.remove(request.user)
     
     return HttpResponse('Success.')
+
+@api_view(['GET'])
+def check_email(request):
+
+    email = request.GET.get('email', '')
+    email_exists = True
+
+    try:
+        user = User.objects.get(email=email)
+    except User.DoesNotExist:
+        email_exists = False
+
+
+    return JsonResponse( { 'email_exists' : email_exists }, safe=False)
 

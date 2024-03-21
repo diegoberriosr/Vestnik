@@ -43,7 +43,7 @@ const Inbox = () => {
         </i>
       </header>
       {conversations.length > 0 ?
-        <ul className='w-full h-[calc(100vh-113px)] xl:h-[calc(100vh-57px)] overflow-y-auto'>
+        <ul className='w-full h-[calc(100vh-113px)] xl:h-[calc(100vh-57px)] overflow-y-auto px-2.5'>
         {conversations.map( (conversation, index) => {
           if(conversation.is_group_chat) return <GroupMiniature key={index} group={conversation}/>
           return <ConversationMiniature key={index} conversation={conversation}/>

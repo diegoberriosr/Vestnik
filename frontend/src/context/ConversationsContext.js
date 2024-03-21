@@ -12,7 +12,6 @@ export const ConversationsProvider = ({ children}) => {
     const [messages, setMessages] = useState([]);
 
     const { authTokens } = useContext(AuthContext); 
-    if (activeConversation) console.log(activeConversation.partners);
     
     const getConversations = () => {
         let headers;
@@ -64,7 +63,6 @@ export const ConversationsProvider = ({ children}) => {
             });
         };
     }, [activeConversationId])
-
 
     const data = {
         conversations:conversations,

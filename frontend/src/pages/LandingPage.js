@@ -81,10 +81,10 @@ const LandingPage = () => {
       </main>
     </div>
     <Modal isVisible={loginModal}>
-        <Login/>
+        <Login handleLoginModal={handleLoginModal} handleRegisterModal={handleRegisterModal}/>
     </Modal>
-    <Modal isVisible={registerModal}>
-        <Register />
+    <Modal isVisible={registerModal} >
+        <Register handleRegisterModal={handleRegisterModal} handleLoginModal={handleLoginModal}/>
     </Modal>
     <Modal isVisible={resetModal}>
         <span onClick={handleResetModal}>Reset password</span>

@@ -9,11 +9,12 @@ import ConversationsContext from "../../context/ConversationsContext";
 import AuthContext from "../../context/AuthContext";
 
 const GroupMiniature = ({ group }) => {
-  const {setActiveConversation } = useContext(ConversationsContext);
+  const {setActiveConversation, activeConversation } = useContext(ConversationsContext);
   const { user } = useContext(AuthContext);
+  const activeConversationId = activeConversation ? activeConversation.id : null
   
   return (
-    <li className='w-full h-14 p-5 flex items-center space-x-3 hover:bg-gray-100' onClick={() => setActiveConversation(group)}>
+    <li className={`w-full h-14 p-5 flex items-center space-x-3 ${ group.id === activeConversationId ? 'bg-gray-200' : '' } hover:bg-gray-100 rounded transition-colors duration-300`} onClick={() => setActiveConversation(group)}>
       {
         group.partners.length >= 2 &&
         <figure className='relative w-10 h-10'>
@@ -38,7 +39,9 @@ const GroupMiniature = ({ group }) => {
       <article className='w-10/12'>
         <div className='flex w-full items-center justify-between'>
             <h3 className='font-bold max-w-[70%] truncate'>{group.name}</h3>
-            <MiniatureDropdownMenu conversationId={group.id} isGroup/>
+            <div className='h-5 w-5 flex items-center justify-center rounded hover:bg-gray-300 transition-colors duration-300 rounded-full'>
+              <MiniatureDropdownMenu conversationId={group.id}/>
+            </div>
         </div>
         <p className='text-gray-500 w-full flex items-center justify-between'>
             { group.last_message && 

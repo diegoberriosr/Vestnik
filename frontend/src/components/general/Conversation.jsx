@@ -110,27 +110,27 @@ const Conversation = () => {
   if (!activeConversation) return null;
   
   return (
-  <main className={`relative ${ activeConversation ? 'w-screen' : ''} w-screen xl:w-[70%] h-screen border`}>
-    <header className='w-full h-14 flex items-center justify-between px-5 shadow'>
+  <main className={`relative ${ activeConversation ? 'w-screen' : ''} w-screen xl:w-[70%] h-screen`}>
+    <header className='w-full h-16 flex items-center justify-between px-5 shadow'>
         {activeConversation && activeConversation.is_group_chat ? <GroupChatHeader setDisplayInformation={setDisplayInformation}/> : <ConversationHeader setDisplayInformation={setDisplayInformation}/>}
     </header>
-    <ul className='w-full h-[calc(100vh-114px)] border overflow-y-auto p-5'>
+    <ul className='w-full h-[calc(100vh-129px)] overflow-y-auto p-5'>
         { messages.length > 0 && messages.map( (message, index) => {
           if (message.is_notification) return <Notification key={index} messageContent={message.content} timestamp={message.timestamp}/>
           return <Message key={index} message={message} handleOpenDeleteModal={handleOpenDeleteModal}/>
         })}
         <TypingAlert pfp={activeConversation.partners[0].pfp}/>
     </ul>
-    <footer className='w-full h-14 flex items-center justify-between px-5'>
-        <FaImage className='text-3xl text-blue-300 cursor-pointer'/>
+    <footer className='w-full h-16 flex items-center justify-between px-5  border border-l-0 border-r-0 border-b-0'>
+        <FaImage className='text-3xl text-sky-500 cursor-pointer'/>
         <form className='w-[90%]' onSubmit={e => handleSendMessage(e)}>
           <input name='content' value={values.content} 
-          className='w-full h-10 pl-5 bg-gray-100 rounded-full focus:outline-none focus:border-2 focus:border-blue-300 mx-2 sm:mx-0' 
+          className='w-full h-10 pl-5 bg-gray-100 rounded-full focus:outline-none focus:border-2 focus:border-sky-500 mx-2 sm:mx-0' 
           placeholder='Type a message'
           onChange={handleChange}
           onBlur={handleBlur}/>
         </form>
-        <button disabled={disabled} className={`${disabled ? 'opacity-50' : ''} h-10 w-10 bg-blue-300 rounded-full text-center text-white flex items-center justify-center`} onClick={handleSendMessage}>
+        <button disabled={disabled} className={`${disabled ? 'opacity-50' : ''} h-10 w-10 bg-sky-500 rounded-full text-center text-white flex items-center justify-center`} onClick={handleSendMessage}>
             <BiSolidSend className='text-2xl'/>
         </button>
     </footer>

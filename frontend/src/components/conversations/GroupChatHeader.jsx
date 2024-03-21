@@ -25,7 +25,7 @@ const GroupChatHeader = ({ setDisplayInformation }) => {
   return (
     <>
         <div className='flex items-center'>
-            <MdArrowBackIos className='block xl:hidden mr-5 text-blue-300 cursor-pointer' onClick={() => setActiveConversation(null)}/>
+            <MdArrowBackIos className='block xl:hidden mr-5 text-sky-500 cursor-pointer' onClick={() => setActiveConversation(null)}/>
             {activeConversation.partners.length > 1 &&
             <figure className='relative h-10 w-10 rounded-full mb-1'>
                 <img src={user.pfp} alt='conversation partner pfp' className='ml-2.5 w-5 h-5 rounded-full object-fill'/>
@@ -45,9 +45,9 @@ const GroupChatHeader = ({ setDisplayInformation }) => {
                 <div className='text-gray-600 text-xs'>{message}</div>
             </div>
         </div>
-        <div>
-            <BsThreeDots onClick={() => setDisplayInformation(true)}/>
-        </div>    
+        <div className='w-8 h-8 flex items-center justify-center hover:bg-gray-200 rounded-full transition-colors duration-300 cursor-pointer'>
+            <BsThreeDots className='text-sky-500 text-2xl' onClick={() => setDisplayInformation(true)}/>
+        </div>
     </>
   )
 }
