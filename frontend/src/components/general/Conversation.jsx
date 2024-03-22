@@ -29,7 +29,7 @@ const Conversation = () => {
   
   const [disabled, setDisabled] = useState(true);
   
-  const {activeConversation, messages, setMessages, setConversations } = useContext(ConversationsContext);
+  const {activeConversation, messages, setMessages, setConversations, chatSocket } = useContext(ConversationsContext);
   const { authTokens } = useContext(AuthContext);
 
   const {values, handleChange, handleBlur, setFieldValue} = useFormik({
@@ -71,6 +71,13 @@ const Conversation = () => {
             const arrangedArray =   [updatedStatus[index], ...updatedStatus.filter( conversation => conversation.id !== activeConversation.id )];
             return arrangedArray;
           });
+
+          chatSocket.send(JSON.stringify({
+            'type' : 'new_message',
+            'receiver_ids' : activeConversation.partners.map( partner => partner.id),
+            'message_id' : res.data.id,
+            'conversation_id' : activeConversation.id
+          }))
         })
         .catch( err => {
           console.log(err)

@@ -300,6 +300,26 @@ def get_conversation_messages(request):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
+def get_message(request):
+    
+    message_id = request.GET.get('message_id')
+
+    if message_id is None or message_id == '':
+        return HttpResponseBadRequest('ERROR: a valid message id must be provided')
+
+    try:
+        message = Message.objects.get(id=message_id)
+    except Message.DoesNotExist:
+        raise Http404(f'ERROR: message with id={message_id} does not exist.')
+    
+    if request.user not in message.conversation.members.all():
+        return HttpResponseForbidden('ERROR: requester does not have permissions to perform this action.')
+
+    return JsonResponse( message.serialize(request.user), safe=False)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def get_starred_messages(request):
 
     return JsonResponse([message.serialize(request.user) for message in request.user.starred_messages.all()], safe=False)
@@ -362,6 +382,23 @@ def delete_message(request):
     last_message = conversation.messages.exclude(cleared_by__in=[request.user]).last()
 
     return JsonResponse(last_message.serialize(request.user) if last_message else None, safe=False)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_last_message(request):
+
+    conversation_id = request.GET.get('conversation_id', '')
+
+    try:
+        conversation = Conversation.objects.get(id=conversation_id)
+    except Conversation.DoesNotExist:
+        raise Http404(f'ERROR : conversation with id={conversation_id} does not exist')
+    
+    if request.user not in conversation.members.all():
+        return HttpResponseForbidden('ERROR: requester does not have permissions to perform this action')
+    
+    return JsonResponse( conversation.messages.last().serialize(request.user) if conversation.messages.last() else None, safe=False)
 
 
 @api_view(['PUT'])

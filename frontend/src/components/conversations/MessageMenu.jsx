@@ -13,7 +13,7 @@ const MessageMenu = ({shrink, setShrink, messageId, senderId, isAdmin}) => {
   const [loading, setLoading] = useState(false);
 
   const {authTokens, user} = useContext(AuthContext);
-  const { setMessages, setConversations, activeConversation } = useContext(ConversationsContext);
+  const { setMessages, setConversations, activeConversation, chatSocket } = useContext(ConversationsContext);
 
   const handleChange = (status) => {
     if(disabled) setDisabled(false);
@@ -45,7 +45,15 @@ const MessageMenu = ({shrink, setShrink, messageId, senderId, isAdmin}) => {
         })
         setMessages( prevStatus => {
             return prevStatus.filter( message => message.id !== messageId);
-        })
+        });
+
+        if (deleteAll) chatSocket.send(JSON.stringify({
+            'type' : 'delete_message',
+            'receiver_ids' : activeConversation.partners.map( partner => partner.id),
+            'message_id' : messageId,
+            'last_message_id' : res.data.id,
+            'conversation_id' : activeConversation.id,
+        })) 
         setShrink(true);
     })
     .catch( err => {

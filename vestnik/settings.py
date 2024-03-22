@@ -28,16 +28,11 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND' : 'channels.layers.InMemoryChannelLayer'
-    }
-}
-
 # Application definition
 
 INSTALLED_APPS = [
     'daphne',
+    'channels',
     'messenger',
     'rest_framework',
     'corsheaders',
@@ -134,6 +129,12 @@ SIMPLE_JWT = {
 
 WSGI_APPLICATION = 'vestnik.wsgi.application'
 ASGI_APPLICATION = "vestnik.asgi.application"
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
+    },
+}
+
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
