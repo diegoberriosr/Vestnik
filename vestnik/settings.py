@@ -28,10 +28,16 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND' : 'channels.layers.InMemoryChannelLayer'
+    }
+}
 
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'messenger',
     'rest_framework',
     'corsheaders',
@@ -125,8 +131,9 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSlidingSerializer",
 }
 
-WSGI_APPLICATION = 'vestnik.wsgi.application'
 
+WSGI_APPLICATION = 'vestnik.wsgi.application'
+ASGI_APPLICATION = "vestnik.asgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
