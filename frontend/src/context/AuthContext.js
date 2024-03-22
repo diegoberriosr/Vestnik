@@ -64,6 +64,7 @@ export const AuthProvider = ({ children }) => {
     const values = {
         authTokens:authTokens,
         user:user,
+        setUser:setUser,
         loginUser:loginUser,
         logoutUser:logoutUser,
         registerUser:registerUser

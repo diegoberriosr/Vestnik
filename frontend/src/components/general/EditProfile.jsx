@@ -1,5 +1,6 @@
 import { useState, useEffect, useContext } from 'react';
 import { useFormik } from 'formik';
+import axios from 'axios';
 
 // Icon imports
 import { IoMdClose } from "react-icons/io";
@@ -14,38 +15,59 @@ const EditProfile = ({ shrink, setShrink }) => {
 
   const [disabled, setDisabled] = useState(true);
   const [loading, setLoading] = useState(false);
-  const {user} = useContext(AuthContext);
+  const {user, authTokens, setUser} = useContext(AuthContext);
 
   const {values, handleChange, handleBlur} = useFormik({
     initialValues : {
-        'username' : user.name,
+        'name' : user.name,
+        'info' : user.info,
         'pfp' :  user.pfp
     }
   });
 
   const handleEditProfile = (e) => {
     if (e) e.preventDefault();
-    if (values.username.length === 0 ) return;
+    if (values.name.length === 0 ) return;
 
     setLoading(true);
+    let headers;
+
+    if (authTokens) {
+      headers = {
+        'Authorization' : 'Bearer ' + String(authTokens.access)
+      }
+    };
+
+    axios({
+      url : 'http://127.0.0.1:8000/update/profile',
+      method : 'PUT',
+      headers : headers,
+      data : { name : values.name, info : values.info,  pfp : values.pfp}
+    })
+    .then( () => {
+      setUser( prevStatus => {
+        console.log(user);
+        let updatedStatus = {...prevStatus};
+        updatedStatus.name = values.name;
+        return updatedStatus;
+      });
+
+      setLoading(false);
+      setShrink(true);
+    })
+    .catch ( err => {
+      console.log(err);
+      setLoading(false);
+    });
 
   } 
 
   useEffect( () => {
-    if (values.username.length === 0 || values.username === user.name) setDisabled(true);
+    if (values.name.length === 0 || values.name === user.name) setDisabled(true);
     else setDisabled(false);
   }, [values]);
 
-  useEffect( () => {
-    if(loading){
-        const timer = setTimeout( () => {
-            setShrink(true);
-        }, 3000)
-
-        return () => clearTimeout(timer);
-    }
-  }, [loading]);
-
+ 
   return (
     <div className={`relative w-screen h-screen sm:w-[500px] sm:h-[400px] shadow p-5 ${ shrink ? 'animate-shrink' : 'animate-grow' } bg-white mt-auto mb-auto rounded`}>
         <IoMdClose className='absolute top-3 right-3 text-2xl text-gray-400 cursor pointer' onClick={() => setShrink(true)}/>
@@ -54,7 +76,7 @@ const EditProfile = ({ shrink, setShrink }) => {
         <form onSubmit={e => handleEditProfile(e)}>
             <div className='mt-10 space-y-2'>
             <label className='font-semibold'>Name</label>
-            <input value={values.username} name='username' id='name'
+            <input value={values.name} name='name' id='name'
             className='w-full h-10 pl-2.5 border border-gray-600 focus:outline-none focus:border-2 focus:border-blue-300 rounded transition-colors duration-300 ' placeholder="Your profile's name"
             onChange={handleChange} onBlur={handleBlur}/>
             </div>

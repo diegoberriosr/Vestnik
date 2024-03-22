@@ -2,7 +2,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from django.http.response import HttpResponse, JsonResponse, Http404, HttpResponseBadRequest, HttpResponseForbidden
 from django.db.models import Q
-
+from django.db.models import Max
 import json
 
 from .models import User, Conversation, Message
@@ -24,6 +24,22 @@ def register_user(request):
     return HttpResponse('Success.')
 
 
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def edit_profile(request):
+
+    name = json.loads(request.body).get('name', '')
+    info = json.loads(request.body).get('info', '')
+    pfp = json.loads(request.body).get('pfp', '')
+
+
+    user = request.user
+    user.name = name
+    user.save()
+
+    return HttpResponse('Success')
+
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_users(request):
@@ -39,8 +55,12 @@ def get_users(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_conversations(request):
+
+    conversations = request.user.active_conversations.annotate(
+        last_message_timestamp = Max('messages__timestamp')
+    ).order_by('-last_message_timestamp')
     
-    return JsonResponse( [conversation.inbox_serialize(request.user) for conversation in request.user.active_conversations.all()], safe=False)
+    return JsonResponse( [conversation.inbox_serialize(request.user) for conversation in conversations], safe=False)
 
 
 @api_view(['POST'])
@@ -109,6 +129,31 @@ def create_group_chat(request):
     notification.save()
 
     return JsonResponse( new_group_chat.inbox_serialize(request.user), safe=False)
+
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def update_group_name(request):
+
+    group_id = json.loads(request.body).get('group_id', '')
+    name = json.loads(request.body).get('name', '')
+
+    if group_id is None or group_id == '' or name is None or name == '':
+        return HttpResponseBadRequest('ERROR: a valid group_id and name string must be provided.')
+
+    try:
+        group = Conversation.objects.get(id=group_id)
+    except Conversation.DoesNotExist:
+        raise Http404(f'ERROR: group with id={group_id} does not exist.')
+
+    group.name = name
+    group.save()
+
+    content = f"{request.user.name} changed this group's name to {name}"
+    notification = Message(is_notification=True, conversation=group, content=content)
+    notification.save()
+
+    return JsonResponse( notification.serialize(request.user), safe=False)
 
 
 @api_view(['PUT'])

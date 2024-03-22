@@ -130,7 +130,7 @@ const Conversation = () => {
           onChange={handleChange}
           onBlur={handleBlur}/>
         </form>
-        <button disabled={disabled} className={`${disabled ? 'opacity-50' : ''} h-10 w-10 bg-sky-500 rounded-full text-center text-white flex items-center justify-center`} onClick={handleSendMessage}>
+        <button disabled={disabled} className={`${disabled ? 'opacity-50' : ''} ml-3 md:ml-0 h-10 w-10 bg-sky-500 rounded-full text-center text-white flex items-center justify-center`} onClick={handleSendMessage}>
             <BiSolidSend className='text-2xl'/>
         </button>
     </footer>
