@@ -34,7 +34,7 @@ const Inbox = () => {
 
   return (
   <>
-    <aside className={`${ activeConversation ? 'hidden xl:block w-[25%]' :  'w-screen xl:w-[25%]'} h-screen border`}>
+    <aside className={`${ activeConversation ? 'hidden xl:block w-[25%]' :  'w-screen xl:w-[25%]'} h-screen border border-l-0`}>
       
       <header className='h-14 w-full flex items-center justify-between px-5'>
         <h6 className='text-2xl font-bold'>Messages</h6>
