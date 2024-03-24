@@ -48,8 +48,16 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     'type' : type,
                     'conversation_id' : data['conversation_id'],
                     'target_ids' : data['target_ids'],
-                     })                       
-                                
+                     })                  
+
+               elif type == 'update_group_name':
+                   await self.channel_layer.group_send(
+                    f'chat_{receiver_id}', {
+                    'type' : type,
+                    'conversation_id' : data['conversation_id'],
+                    'new_name' : data['new_name'],
+                     })       
+                                                        
                else:
                    await self.channel_layer.group_send(
                      f'chat_{receiver_id}', {
@@ -101,7 +109,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
         }))
 
     async def update_group_name(self, event):
-        pass
+        print('changing group name')
+        await self.send(text_data=json.dumps({
+            'type' : event['type'],
+            'conversation_id' : event['conversation_id'],
+            'new_name' : event['new_name']
+        }))
 
     async def typing_alert(self, event):
         pass

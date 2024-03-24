@@ -10,7 +10,7 @@ import AuthContext from '../../context/AuthContext';
 const ChangeName = ({ shrink, setShrink}) => {
   const [disabled, setDisabled] = useState(true);
   const [loading, setLoading] = useState(false);
-  const { activeConversation, setActiveConversation, setConversations, setMessages } = useContext(ConversationsContext);
+  const { activeConversation, setActiveConversation, setConversations, setMessages, chatSocket } = useContext(ConversationsContext);
   const { authTokens } = useContext(AuthContext);
 
   const { values, handleBlur, handleChange } = useFormik({
@@ -57,6 +57,13 @@ const ChangeName = ({ shrink, setShrink}) => {
             if (prevStatus.length > 0) return [...prevStatus, res.data];
             return [res.data];
         });
+
+        chatSocket.send(JSON.stringify({
+          'type' : 'update_group_name',
+          'receiver_ids' : activeConversation.partners.map( partner => partner.id),
+          'conversation_id' : activeConversation.id,
+          'new_name' : values.name,
+        }));
 
         setShrink(true);
     })

@@ -224,6 +224,38 @@ export const ConversationsProvider = ({ children}) => {
         });
     };
 
+    const handleSocketUpdateGroupName = (data) => {
+
+        const content =  `The group's name was changed to ${data.new_name}`;
+        const notification = { is_notification : true, sender : null, content : content, timestamp : new Date().getTime()};
+
+        setConversations( prevStatus => {
+            let updatedStatus = [...prevStatus];
+            const index = updatedStatus.findIndex( conversation => Number(conversation.id) === Number(data.conversation_id));
+
+            updatedStatus[index].name = data.new_name;
+
+            updatedStatus[index].last_message = notification;
+
+            const filteredConversations = updatedStatus.filter( conversation => conversation.id !== Number(data.conversation_id));
+            
+            return [updatedStatus[index], ...filteredConversations];
+        });
+
+        if (activeConversation) {
+            setActiveConversation( prevStatus => {
+                let updatedStatus = {...prevStatus};
+                updatedStatus.name = data.new_name;
+
+                updatedStatus.last_message = notification;
+                return updatedStatus;
+            });
+
+            setMessages( prevStatus => [...prevStatus, notification]);
+        }
+    };
+
+
     // Load conversations for the first time
     useEffect(() => {
         getConversations();
@@ -312,6 +344,10 @@ export const ConversationsProvider = ({ children}) => {
             if ( data.type === 'add_members') {
                 handleSocketAddMember(data);
             };
+
+            if ( data.type === 'update_group_name'){
+                handleSocketUpdateGroupName(data);
+            }
         };
 
         socket.onopen = () => {
