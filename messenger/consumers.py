@@ -25,36 +25,80 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         for receiver_id in receiver_ids:
                print(f'sending to {receiver_id}')
-               await self.channel_layer.group_send(
-                f'chat_{receiver_id}', {
+               if (type == 'update_group_admin'):
+                   await self.channel_layer.group_send(
+                    f'chat_{receiver_id}', {
+                    'type' : type,
+                    'conversation_id' : data['conversation_id'],
+                    'target_id' : data['target_id'],
+                     })      
+               elif  type == 'remove_member':
+                   await self.channel_layer.group_send(
+                    f'chat_{receiver_id}', {
+                    'type' : type,
+                    'conversation_id' : data['conversation_id'],
+                    'target_id' : data['target_id'],
+                    'target_name' : data['target_name']
+                     })  
+
+               elif type == 'add_members':
+                   print(data['target_ids'])
+                   await self.channel_layer.group_send(
+                    f'chat_{receiver_id}', {
+                    'type' : type,
+                    'conversation_id' : data['conversation_id'],
+                    'target_ids' : data['target_ids'],
+                     })                       
+                                
+               else:
+                   await self.channel_layer.group_send(
+                     f'chat_{receiver_id}', {
                     'type' : type,
                     'message_id' : data['message_id'],
-                    'conversation_id' : conversation_id
-                }
-            )
+                    'conversation_id' : conversation_id,
+                    })
 
     async def new_message(self, event):
         print('on custom send')
         await self.send(text_data=json.dumps({
             'type' : event['type'],
             'message_id' : event['message_id'],
-            'conversation_id' : event['conversation_id']
+            'conversation_id' : event['conversation_id'],
         }))
 
 
     async def delete_message(self, event):
-        print('on custom delete')
         await self.send(text_data=json.dumps({
             'type' : event['type'],
             'message_id' : event['message_id'],
             'conversation_id' : event['conversation_id'],
+            'target_id' : event['target_id']
         }))
 
     async def update_group_admin(self, event):
-        pass
+        print('updating admin')
+        await self.send(text_data=json.dumps({
+            'type' : event['type'],
+            'conversation_id' : event['conversation_id'],
+            'target_id' : event['target_id'],
+        }))
 
-    async def update_group_member(self, event):
-        pass
+    async def remove_member(self, event):
+        print('removing member')
+        await self.send(text_data=json.dumps({
+            'type' : event['type'],
+            'conversation_id' : event['conversation_id'],
+            'target_id' : event['target_id'],
+            'target_name' : event['target_name']
+        }))
+
+    async def add_members(self, event):
+        print('adding member(s)')
+        await self.send(text_data=json.dumps({
+            'type' : event['type'],
+            'conversation_id' : event['conversation_id'],
+            'target_ids' : event['target_ids']
+        }))
 
     async def update_group_name(self, event):
         pass

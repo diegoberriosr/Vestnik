@@ -35,7 +35,194 @@ export const ConversationsProvider = ({ children}) => {
         .catch( err => {
             console.log(err);
         })
-    }
+    };
+
+    const handleSocketNewMessage = (data, res) => {
+        setConversations( prevStatus => {
+            let updatedStatus = [...prevStatus];
+            const index = updatedStatus.findIndex( conversation => conversation.id === data.conversation_id);
+
+            updatedStatus[index].last_message = res.data;
+
+            if ( updatedStatus.length > 0 ) {
+                let filteredConversations = updatedStatus.filter( conversation => conversation.id !== data.conversation_id);
+                return [updatedStatus[index], ...filteredConversations]                            
+            }
+
+            return [updatedStatus];
+        });
+
+        if (activeConversation) {
+            setActiveConversation( prevStatus => {
+                let updatedStatus = {...prevStatus};
+                updatedStatus.last_message = res.data;
+                return updatedStatus;
+            });
+            
+            setMessages( prevStatus => {
+
+                let updatedStatus = [...prevStatus];
+                
+                if (updatedStatus.length > 0) return [...prevStatus, res.data];
+                return [res.data];
+            })
+        }
+    };
+
+    const handleSocketDeleteMessage = (data, res) => {
+        setConversations( prevStatus => {
+            let updatedStatus = [...prevStatus];
+            const index = updatedStatus.findIndex( conversation => Number(conversation.id) === Number(data.conversation_id));
+
+            updatedStatus[index].last_message = res.data;
+            return updatedStatus;
+        });
+
+        if (activeConversation){
+                setActiveConversation( prevStatus => {
+                    let updatedStatus = {...prevStatus};
+                    updatedStatus.last_message = res.data;
+                    return updatedStatus;
+                })
+
+                setMessages( prevStatus => {
+                    return prevStatus.filter( message => message.id !== data.message_id);
+                });                   
+        }
+    };
+
+    const handleSocketUpdateAdmins = (data) => {
+        let headers;
+
+        if (authTokens) {
+            headers = {
+                'Authorization' : 'Bearer ' + String(authTokens.access)
+            }
+        }
+
+        axios({
+            url : 'http://127.0.0.1:8000/users/ids',
+            method : 'GET',
+            headers : headers,
+            params: { conversation_id : data.conversation_id, user_ids : [data.target_id]}
+        })
+        .then( res => { 
+
+            const content = `${res.data[0].name} is ${ res.data[0].is_admin ? 'now' : 'no longer' } an admin of this group.`
+            const notification = { is_notification : true, sender : null, content : content, timestamp : new Date().getTime()}
+
+            
+            setConversations( prevStatus => {
+                let updatedStatus = [...prevStatus];
+                const index = updatedStatus.findIndex( conversation => Number(conversation.id) === Number(data.conversation_id)); 
+                const partners = updatedStatus[index].partners.filter(partner => partner)
+
+                const partnerIndex = partners.findIndex( partner => Number(partner.id) === Number(data.target_id))
+
+                updatedStatus[index].partners[partnerIndex].is_admin = res.data[0].is_admin; 
+                updatedStatus[index].last_message = notification;
+                return updatedStatus;
+            });
+
+            if (activeConversation) {
+                setActiveConversation(prevStatus => {
+                    let updatedStatus = {...prevStatus};
+                    const partnerIndex = updatedStatus.partners.findIndex( partner => partner.id === data.target_id);
+
+                    updatedStatus.partners[partnerIndex].is_admin = res.data[0].is_admin; 
+                    updatedStatus.last_message = notification;
+                    return updatedStatus;
+                });
+
+                setMessages( prevStatus => {
+                    return [...prevStatus, notification];
+                });
+            }
+        })
+        .catch( err => {
+            console.log(err);
+        })
+    };
+
+    const handleSocketRemoveMember = (data) => {
+        const content = `${data.target_name} was removed from the group.`;
+        const notification = { is_notification : true, sender : null, content : content, timestamp : new Date().getTime() };
+        setConversations( prevStatus => {
+
+            const updatedStatus = [...prevStatus];
+            const index = prevStatus.findIndex( conversation => Number(conversation.id) === Number(data.conversation_id));
+
+
+
+            updatedStatus[index].partners = updatedStatus[index].partners.filter( partner => partner.id !== data.target_id);
+            updatedStatus[index].last_message = notification;
+
+            return updatedStatus;
+        });
+
+        if (activeConversation) {
+            setActiveConversation( prevStatus => {
+                const updatedStatus = {...prevStatus};
+                updatedStatus.partners = updatedStatus.partners.filter( partner => partner.id !== data.target_id);
+                updatedStatus.last_message = notification;
+    
+                return updatedStatus;               
+            });
+
+            setMessages( prevStatus => {
+                return [...prevStatus, notification];
+            })
+        }
+    };
+
+    const handleSocketAddMember = (data) => {
+        let headers;
+
+        if (authTokens) {
+            headers = {
+                'Authorization' : 'Bearer ' + String(authTokens.access)
+            }
+        };
+
+        axios({
+            url : 'http://127.0.0.1:8000/users/ids',
+            method : 'GET',
+            headers : headers,
+            params : {user_ids : data.target_ids, conversation_id : data.conversation_id}
+        })
+        .then( res => {
+            const notifications = res.data.map( account => ({
+                is_notification : true, 
+                sender : null,
+                content : `${account.name} was added to the group.`, 
+                timestamp : new Date().getTime() })
+                );
+            
+            setConversations( prevStatus => {
+                let updatedStatus = [...prevStatus];
+                const index = updatedStatus.findIndex( conversation => Number(conversation.id) === Number(data.conversation_id));
+
+                updatedStatus[index].partners = [...updatedStatus[index].partners, ...res.data]
+                updatedStatus[index].last_message = notifications[notifications.length - 1];
+
+                const filteredConversations = updatedStatus.filter( conversation => conversation.id !== Number(data.conversation_id));
+                return [updatedStatus[index], ...filteredConversations];
+            });
+
+            if (activeConversation){
+                setActiveConversation( prevStatus => {
+                    let updatedStatus = {...prevStatus};
+                    updatedStatus.partners = [...updatedStatus.partners, ...res.data]
+                    updatedStatus.last_message = notifications[notifications.length - 1];
+                    return updatedStatus;
+                                    
+                });
+                setMessages( prevStatus => {
+                    return [...prevStatus, ...res.data];
+                });
+            }
+        });
+    };
 
     // Load conversations for the first time
     useEffect(() => {
@@ -73,7 +260,6 @@ export const ConversationsProvider = ({ children}) => {
         let url = `ws://127.0.0.1:8000/ws/${user.user_id}/`
         const socket = new WebSocket(url);
         setChatSocket(socket);
-
         socket.onmessage = (e) => {
             let headers;
         
@@ -84,6 +270,7 @@ export const ConversationsProvider = ({ children}) => {
             }
 
             let data = JSON.parse(e.data);
+
             if (data.type === 'new_message') {
                 axios({
                     url : 'http://127.0.0.1:8000/message',
@@ -92,37 +279,12 @@ export const ConversationsProvider = ({ children}) => {
                     params : { message_id : data.message_id}
                 })
                 .then( res => {
-                    setConversations( prevStatus => {
-                        let updatedStatus = [...prevStatus];
-                        const index = updatedStatus.findIndex( conversation => conversation.id === data.conversation_id);
-
-                        updatedStatus[index].last_message = res.data;
-
-                        if ( updatedStatus.length > 0 ) {
-                            let filteredConversations = updatedStatus.filter( conversation => conversation.id !== data.conversation_id);
-                            return [updatedStatus[index], ...filteredConversations]                            
-                        }
-
-                        return [updatedStatus];
-                    });
-
-                    if (activeConversation) {
-                        setActiveConversation( prevStatus => {
-                            let updatedStatus = {...prevStatus};
-                            updatedStatus.last_message = res.data;
-                            return updatedStatus;
-                        });
-                        
-                        setMessages( prevStatus => {
-                            console.log('adding a message...')
-                            let updatedStatus = [...prevStatus];
-                            
-                            if (updatedStatus.length > 0) return [...prevStatus, res.data];
-                            return [res.data];
-                        })
-                    }
+                    handleSocketNewMessage(data, res);
                 })
-            }
+                .catch( err => {
+                    console.log(err);
+                })
+            };
 
             if (data.type === 'delete_message') {
                 axios({
@@ -132,32 +294,25 @@ export const ConversationsProvider = ({ children}) => {
                     params : { conversation_id : data.conversation_id}
                 })
                 .then( res => {
-
-                    setConversations( prevStatus => {
-                        let updatedStatus = [...prevStatus];
-                        const index = updatedStatus.findIndex( conversation => conversation.id === data.conversation_id);
-
-                        updatedStatus[index].last_message = res.data;
-                        return updatedStatus;
-                    });
-
-                    if (activeConversation){
-                            setActiveConversation( prevStatus => {
-                                let updatedStatus = {...prevStatus};
-                                updatedStatus.last_message = res.data;
-                                return updatedStatus;
-                            })
-            
-                            setMessages( prevStatus => {
-                                return prevStatus.filter( message => message.id !== data.message_id);
-                            });                   
-                    }
+                    handleSocketDeleteMessage(data, res)
                 })
                 .catch( err => {
                     console.log(err);
                 })
-            }
-        }
+            };
+
+            if (data.type === 'update_group_admin'){
+                handleSocketUpdateAdmins(data);
+            };
+
+            if (data.type === 'remove_member'){
+                handleSocketRemoveMember(data);
+            };
+
+            if ( data.type === 'add_members') {
+                handleSocketAddMember(data);
+            };
+        };
 
         socket.onopen = () => {
             console.log('Open');
@@ -178,9 +333,9 @@ export const ConversationsProvider = ({ children}) => {
         messages:messages,
         setMessages:setMessages,
         chatSocket:chatSocket
-    }
+    };
 
-    return <ConversationsContext.Provider value={data}>
+   return <ConversationsContext.Provider value={data}>
         {children}
     </ConversationsContext.Provider>
 }

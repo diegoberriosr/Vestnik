@@ -8,7 +8,7 @@ import ConversationsContext from "../../context/ConversationsContext"
 import AuthContext from '../../context/AuthContext';
 
 const AddUsers = ({ shrink, setShrink}) => {
-  const {activeConversation, setMessages, messages, setConversations, setActiveConversation} = useContext(ConversationsContext);
+  const {activeConversation, setMessages, setConversations, setActiveConversation, chatSocket} = useContext(ConversationsContext);
   const {authTokens} = useContext(AuthContext);
 
   const [disabled, setDisabled] = useState(true);
@@ -57,6 +57,13 @@ const AddUsers = ({ shrink, setShrink}) => {
         return [...notifications]
       });
       
+      chatSocket.send(JSON.stringify({
+        'type' : 'add_members',
+        'conversation_id' : activeConversation.id,
+        'receiver_ids' : activeConversation.partners.map( partner => partner.id ),
+        'target_ids' : userIds
+      }))
+
       setShrink(true);
     })
     .catch( err => {

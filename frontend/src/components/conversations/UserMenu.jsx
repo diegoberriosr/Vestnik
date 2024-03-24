@@ -14,7 +14,7 @@ const UserMenu = ({ shrink, setShrink, user }) => {
   const [option, setOption] = useState('');
   
   const { authTokens } = useContext(AuthContext);
-  const { setMessages, activeConversation, setConversations, setActiveConversation, conversations } = useContext(ConversationsContext);
+  const { setMessages, activeConversation, setConversations, setActiveConversation, conversations, chatSocket } = useContext(ConversationsContext);
 
   const handleContinue = () => {
     setLoading(true);
@@ -84,7 +84,15 @@ const UserMenu = ({ shrink, setShrink, user }) => {
         setMessages(prevStatus => {
           if (prevStatus.length > 0) return [...prevStatus, lastMessage];
           return [lastMessage];
-        })
+        });
+
+        chatSocket.send(JSON.stringify({
+          'type' : 'remove_member',
+          'conversation_id' : activeConversation.id,
+          'receiver_ids' : activeConversation.partners.map( partner => partner.id ),
+          'target_id' : user.id,
+          'target_name' : user.name
+        }));
       };
 
       if (option === 'admin') {
@@ -103,7 +111,14 @@ const UserMenu = ({ shrink, setShrink, user }) => {
         setMessages(prevStatus => {
           if (prevStatus.length > 0) return [...prevStatus, lastMessage];
           return [lastMessage];
-        })
+        });
+
+        chatSocket.send(JSON.stringify({
+          'type' : 'update_group_admin',
+          'conversation_id' : activeConversation.id,
+          'receiver_ids' : activeConversation.partners.map( partner => partner.id ),
+          'target_id' : user.id,
+        }));
       };
 
       if ( option === 'message') {

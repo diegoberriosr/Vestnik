@@ -51,6 +51,32 @@ def get_users(request):
 
     return JsonResponse([ user.serialize() for user in users.all()], safe=False)
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_users_by_id(request):
+
+    user_ids = request.GET.getlist('user_ids[]', '')
+    conversation_id = request.GET.get('conversation_id', '')
+
+    print(user_ids)
+    if user_ids is None or conversation_id is None or conversation_id == '':
+        return HttpResponseBadRequest('ERROR: at least one valid user id must be provided')
+    
+    try:
+        conversation = Conversation.objects.get(id=conversation_id)
+    except Conversation.DoesNotExist:
+        raise Http404(f'ERROR: conversation with id={conversation_id} does not exist')
+
+    users = []
+
+    for user_id in user_ids:
+        try:
+            user = User.objects.get(id=user_id)
+            users.append(user)
+        except User.DoesNotExist:
+            raise Http404(f'ERROR : user with id={user_id} does not exist')
+        
+    return JsonResponse([ user.g_serialize(conversation) for user in users], safe=False)
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -240,7 +266,7 @@ def update_group_admins(request):
     
     if request.user not in group.admins.all():
         return HttpResponseForbidden(f'ERROR: requester does not have permissions to perform this action.')
-
+    
     for user_id in user_ids:
         try:
             user = User.objects.get(id=user_id)
@@ -252,6 +278,7 @@ def update_group_admins(request):
             content = f'{user.name} is no longer an admin for this group' if user not in group.admins.all() else f'{user.name} is now an admin for this group'
             notification = Message(conversation=group, sender=None, content=content, is_notification=True)
             notification.save()
+
         except Conversation.DoesNotExist:
             raise Http404('ERROR: user with id={id} does not exist.')
         
@@ -389,6 +416,9 @@ def delete_message(request):
 def get_last_message(request):
 
     conversation_id = request.GET.get('conversation_id', '')
+    is_notification = request.GET.get('is_notification', '')
+
+
 
     try:
         conversation = Conversation.objects.get(id=conversation_id)
@@ -398,7 +428,9 @@ def get_last_message(request):
     if request.user not in conversation.members.all():
         return HttpResponseForbidden('ERROR: requester does not have permissions to perform this action')
     
-    return JsonResponse( conversation.messages.last().serialize(request.user) if conversation.messages.last() else None, safe=False)
+    message = conversation.messages.filter(is_notification=True).last() if is_notification else conversation.messages.last()
+
+    return JsonResponse( message.serialize(request.user) if message else None, safe=False)
 
 
 @api_view(['PUT'])
