@@ -9,7 +9,10 @@ module.exports = {
         'shrink' : 'shrink 0.250s forwards',
         'bounce-1' : 'bounce-1 1s infinite',
         'bounce-2' : 'bounce-2 1s infinite',
-        'bounce-3' : 'bounce-3 1s infinite'
+        'bounce-3' : 'bounce-3 1s infinite',
+        'blink' : 'blink 1s infinite',
+        'typewriter' : 'typewriter 3s steps(25) infinite, blink 1s infinite',
+        'float' : 'float 5s infinite'
       },
       keyframes : {
         'alert-downwards' : {
@@ -40,7 +43,20 @@ module.exports = {
           '20%' : {transform : 'translateY(0px)'},
           '60%' : {transform : 'translateY(-50%)'},
           '100%' : {transform : 'translateY(0px)'}
-        }
+        },
+        'blink': {
+          '50%' : { borderColor : 'transparent'}
+        },
+        'typewriter' : {
+          '0%' : { width : '0%'}, 
+          '75%' : {width : '70%'},
+          '100%' : {width: '70%'}
+        },
+        'float' : { 
+          '0%': { transform: 'translateY(0px)' },
+          '50%': { transform: 'translateY(-10px)' },
+          '100%': { transform: 'translateY(0px)' },
+        },
       },
       colors : {
         'cream' : '#EEEEEE',
