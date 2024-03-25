@@ -4,7 +4,6 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { AiFillMessage } from "react-icons/ai";
 import { MdPeopleAlt } from "react-icons/md";
 import { CiLogout } from "react-icons/ci";
-import { GiConcentricCrescents } from "react-icons/gi";
 
 import Modal from './Modal';
 import EditProfile from './EditProfile';
@@ -36,10 +35,7 @@ const Sidebar = () => {
         </div>
         <div className={`h-10 w-10 ${ currentUrl === '/users' ? 'bg-gray-200' : 'hover:bg-gray-100'} rounded-lg flex items-center justify-center cursor-pointer transition-colors duration-500`} onClick={() => navigate('/users')}>
           <MdPeopleAlt className='text-2xl text-gray-600'/>
-        </div>
-        <div className='h-10 w-10 hover:bg-gray-100 rounded-lg flex items-center justify-center cursor-pointer transition-colors duration-500' onClick={() => {navigate('/stories')}}>
-          <GiConcentricCrescents className='text-2xl text-gray-600'/>
-        </div>  
+        </div> 
         <div className='h-10 w-10 hover:bg-gray-100 rounded-lg flex items-center justify-center cursor-pointer transition-colors duration-500' onClick={logoutUser}>
           <CiLogout className='text-2xl text-gray-600'/>
         </div>

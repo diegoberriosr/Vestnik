@@ -4,11 +4,11 @@ import { useState, useEffect, useContext } from 'react';
 import { MdOutlineGroupAdd } from "react-icons/md";
 
 // Component imports
-import BottomBar from './BottomBar';
 import ConversationMiniature from '../conversations/ConversationMiniature';
 import GroupMiniature from '../conversations/GroupMiniature';
 import Modal from '../general/Modal';
 import NewGroupChat from '../conversations/NewGroupChat';
+
 // Context imports
 import ConversationsContext from '../../context/ConversationsContext';
 
@@ -55,7 +55,6 @@ const Inbox = () => {
           <button className='mt-2 w-6/12 h-10 bg-blue-600 rounded-full text-white hover:opacity-90' onClick={() => setNewGroupModal(true)}>Start a new one</button>
         </div>
       }
-      <BottomBar/>
     </aside>
     <Modal isVisible={newGroupModal} full={true}>
       <NewGroupChat shrink={shrink} setShrink={setShrink}/>

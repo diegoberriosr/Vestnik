@@ -5,8 +5,7 @@ import Sidebar from '../components/general/Sidebar'
 import Inbox from '../components/general/Inbox';
 import Conversation from '../components/general/Conversation';
 import NewConversation from '../components/general/NewConversation';
-import Stories from '../components/stories/Stories';
-
+import BottomBar from '../components/general/BottomBar';
 // Provider imports
 import { ConversationsProvider } from '../context/ConversationsContext';
 
@@ -19,10 +18,10 @@ const MainPage = () => {
         <Routes>
             <Route element={<Inbox/>} path='/inbox' />
             <Route element={<NewConversation/>} path='/users' />
-            <Route element={<Stories/>} path='/stories'/>
         </Routes>
         <Conversation/>
       </ConversationsProvider>
+      <BottomBar/>
     </div>
   )
 }

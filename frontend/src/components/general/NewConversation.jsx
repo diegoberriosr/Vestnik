@@ -62,11 +62,11 @@ const NewConversation = () => {
             onChange={handleChange} onBlur={handleBlur}/>
         </header>
         <div className='w-full min-h-[5px]'>
-          {loading && <BarLoader loading={loading} color='#000000' cssOverride={{width : '100%'}}/> }
+          {loading && <BarLoader loading={loading} color='#0ea5e9' cssOverride={{width : '100%'}}/> }
         </div>
         <main className='px-5'>
           { matches.length > 0 && matches.map( (profile,index) => <UserMiniature key={index} profile={profile}/>)}
-          { isFocused && !loading && matches.length === 0 && values.s.length > 0 && <div>No matches found</div>}
+          { isFocused && !loading && matches.length === 0 && values.s.length > 0 && <h3 className='font-bold text-2xl text-center pt-10'>No matches found</h3>}
         </main>
     </div>
   )
