@@ -77,6 +77,7 @@ const ChangeName = ({ shrink, setShrink}) => {
   useEffect( () => {
     if (values.name.length === 0 || values.name === activeConversation.name) setDisabled(true);
     else setDisabled(false);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [values])
 
   return (

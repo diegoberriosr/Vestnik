@@ -259,6 +259,7 @@ export const ConversationsProvider = ({ children}) => {
     // Load conversations for the first time
     useEffect(() => {
         getConversations();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     // Load a conversation's messages
@@ -284,6 +285,7 @@ export const ConversationsProvider = ({ children}) => {
                 console.log(err)
             });
         };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [activeConversationId]);
 
     // Web sockets
@@ -359,6 +361,7 @@ export const ConversationsProvider = ({ children}) => {
         }
 
         return () => socket.close()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const data = {

@@ -28,6 +28,13 @@ const LoginForm = ({ handleLoginModal, handleRegisterModal }) => {
     }
   });
 
+  const handleSubmit = (event) => {
+    if(disabled) return;
+
+    event.preventDefault()
+    loginUser(values, setLoading, setAlertMessage);
+  }
+
   useEffect( () => {
     if ( values.email.length === 0 || values.password.length === 0) setDisabled(true);
     else setDisabled(false);
@@ -51,12 +58,14 @@ const LoginForm = ({ handleLoginModal, handleRegisterModal }) => {
       onClick={handleLoginModal}>
         <IoCloseSharp/>
       </div>
-      <Input name='email' type='email' value={values.email} id='email' label='E-mail address' handleChange={handleChange} handleBlur={handleBlur}/>
-      <Input name='password' type='password' value={values.password} id='password' label='Password' handleChange={handleChange} handleBlur={handleBlur}/>
-      <button disabled={disabled} onClick={() => loginUser(values, setLoading, setAlertMessage)}
-      className={`${disabled ? 'opacity-50' : 'hover:bg-opacity-90'} mt-5 h-8 w-full flex items-center justify-center text-white bg-sky-500 rounded`}>
-        { loading ? <ClipLoader loading={loading} size={25} color='#FFFFFF'/> : 'Log in' }
-      </button>
+      <form onSubmit={(e) => handleSubmit(e)}>
+        <Input name='email' type='email' value={values.email} id='email' label='E-mail address' handleChange={handleChange} handleBlur={handleBlur}/>
+        <Input name='password' type='password' value={values.password} id='password' label='Password' handleChange={handleChange} handleBlur={handleBlur}/>
+        <button disabled={disabled} onClick={() => loginUser(values, setLoading, setAlertMessage)}
+        className={`${disabled ? 'opacity-50' : 'hover:bg-opacity-90'} mt-5 h-8 w-full flex items-center justify-center text-white bg-sky-500 rounded`}>
+          { loading ? <ClipLoader loading={loading} size={25} color='#FFFFFF'/> : 'Log in' }
+        </button>
+      </form>
       <div className='mt-5 relative w-full flex items-center justify-center text-sm text-gray-500'> 
         <span className='w-full h-1 border-t border-gray-300'/>
         <span className='absolute bg-white px-2 pb-1.5'>Or continue with</span>

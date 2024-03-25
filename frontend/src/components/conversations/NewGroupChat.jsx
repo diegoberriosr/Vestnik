@@ -66,8 +66,6 @@ const NewGroupChat = ({ shrink, setShrink }) => {
     else setDisabled(false);
   }, [values, users]);
 
-  console.log(users)
-
   return (
     <div className={`relative w-screen h-screen sm:w-[500px] sm:h-[400px] sm:mt-auto sm:mb-auto bg-white rounded-lg shadow ${ shrink ? 'animate-shrink' : 'animate-grow'} p-5`}>
       <IoMdClose className='absolute top-3 right-3 text-xl text-gray-400 font-bold cursor-pointer' onClick={() => setShrink(true)}/>

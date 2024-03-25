@@ -37,7 +37,6 @@ const AddUsers = ({ shrink, setShrink}) => {
     })
     .then( res => {
       const notifications = res.data.map( profile => ({ is_notification: true , content : `${profile.name} was added to this group.`, timestamp : new Date().getTime() }))
-      console.log('Notifications', notifications);
       setActiveConversation( prevStatus => {
         let updatedStatus = {...prevStatus};
         updatedStatus.partners = [...updatedStatus.partners, ...res.data];

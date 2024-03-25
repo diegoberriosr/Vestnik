@@ -4,10 +4,6 @@ import DoogieDoodle from '../assets/DoogieDoodle.png';
 import DogJumpDoodle from '../assets/DogJumpDoodle.png';
 import LovingDoodle from '../assets/LovingDoodle.png';
 import SelfieDoodle from '../assets/SelfieDoodle.png';
-import DumpingDoodle from '../assets/DumpingDoodle.png';
-import SitReadingDoodle from '../assets/SitReadingDoodle.png';
-import ballet from '../assets/ballet.png';
-import swinging from '../assets/swinging.png';
 import clumsy from '../assets/clumsy.png';
 
 // Icon Imports
@@ -85,9 +81,9 @@ const LandingPage = () => {
       <footer>
         <img src={LayingDoodle} alt='woman holding phone doodle' className='z-[25] fixed -bottom-10 sm:-bottom-10 md:-bottom-20 lg:-bottom-40 right-0 w-6/12'/>
         <svg xmlns="http://www.w3.org/2000/svg" className='fixed bottom-0' viewBox="0 0 1440 320">
-  <path fill="#0ea5e9" fill-opacity="1" d="M0,192L80,165.3C160,139,320,85,480,96C640,107,800,181,960,181.3C1120,181,1280,107,1360,69.3L1440,32L1440,320L1360,320C1280,320,1120,320,960,320C800,320,640,320,480,320C320,320,160,320,80,320L0,320Z"></path>
+  <path fill="#0ea5e9" fillOpacity="1" d="M0,192L80,165.3C160,139,320,85,480,96C640,107,800,181,960,181.3C1120,181,1280,107,1360,69.3L1440,32L1440,320L1360,320C1280,320,1120,320,960,320C800,320,640,320,480,320C320,320,160,320,80,320L0,320Z"></path>
 </svg>
-              <img src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png' width='200' className='fixed bottom-0 left-1 z-[40]'/>
+              <img src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png' alt='google store logo' width='200' className='fixed bottom-0 left-1 z-[40]'/>
       </footer>
     </div>
     <Modal isVisible={loginModal}>
