@@ -22,6 +22,7 @@ import ConversationsContext from '../../context/ConversationsContext';
 import AuthContext from '../../context/AuthContext';
 
 const Conversation = () => {
+  
   const [displayInformation, setDisplayInformation] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
   const [shrink, setShrink] = useState(false);
@@ -30,7 +31,8 @@ const Conversation = () => {
   const [disabled, setDisabled] = useState(true);
   
   const {activeConversation, messages, setMessages, setConversations, chatSocket } = useContext(ConversationsContext);
-  const { authTokens } = useContext(AuthContext);
+  const { authTokens, user } = useContext(AuthContext);
+
 
   const {values, handleChange, handleBlur, setFieldValue} = useFormik({
     initialValues : {
@@ -114,8 +116,21 @@ const Conversation = () => {
     }
   }, [shrink])
 
+  useEffect(  () => {
+    if (values.content.length > 0){
+        chatSocket.send(JSON.stringify({
+          'type' : 'typing_alert',
+          'conversation_id' : activeConversation.id,
+          'origin_id' : user.id,
+          'receiver_ids' : activeConversation.partners.map( partner => partner.id)
+        }));
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [values.content])
+  
   if (!activeConversation) return null;
   
+
   return (
   <main className={`relative ${ activeConversation ? 'w-screen' : ''} w-screen xl:w-[70%] h-screen`}>
     <header className='w-full h-16 flex items-center justify-between px-5 shadow'>
@@ -128,7 +143,7 @@ const Conversation = () => {
         })}
         <TypingAlert pfp={activeConversation.partners[0].pfp}/>
     </ul>
-    <footer className='w-full h-16 flex items-center justify-between px-5  border border-l-0 border-r-0 border-b-0'>
+    <footer className='w-full h-16 flex items-center justify-between px-5  border border-l-0 border-r-0 border-b-0 z-[25]'>
         <FaImage className='text-3xl text-sky-500 cursor-pointer'/>
         <form className='w-[90%]' onSubmit={e => handleSendMessage(e)}>
           <input name='content' value={values.content} 

@@ -4,6 +4,7 @@ import axios from 'axios';
 
 import BarLoader from 'react-spinners/BarLoader';
 import UserMiniature from './UserMiniature';
+import BottomBar from './BottomBar';
 
 import ConversationsContext from '../../context/ConversationsContext';
 import AuthContext from '../../context/AuthContext';
@@ -68,6 +69,7 @@ const NewConversation = () => {
           { matches.length > 0 && matches.map( (profile,index) => <UserMiniature key={index} profile={profile}/>)}
           { isFocused && !loading && matches.length === 0 && values.s.length > 0 && <h3 className='font-bold text-2xl text-center pt-10'>No matches found</h3>}
         </main>
+        <BottomBar/>
     </div>
   )
 }

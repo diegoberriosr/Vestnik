@@ -14,7 +14,7 @@ const BottomBar = () => {
   const currentUrl = useLocation().pathname;
   const navigate = useNavigate();
   return (
-    <ul className='fixed bottom-0 xl:hidden w-full h-14 flex'>
+    <ul className='fixed bottom-0 xl:hidden w-full h-14 flex z-[10]'>
         <li className={` ${currentUrl === '/inbox' ? 'bg-gray-200' : 'hover:bg-gray-100'} w-4/12 h-full flex justify-center items-center text-gray-600 text-4xl transition-colors duration-300 cursor-pointer`} onClick={() => navigate('/inbox')}>
             <AiFillMessage/>
         </li>

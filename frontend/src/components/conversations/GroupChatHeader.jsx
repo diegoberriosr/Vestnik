@@ -10,7 +10,7 @@ import ConversationsContext from '../../context/ConversationsContext';
 import AuthContext from '../../context/AuthContext';
 
 const GroupChatHeader = ({ setDisplayInformation }) => {
-  const {activeConversation, setActiveConversation} = useContext(ConversationsContext);
+  const {activeConversation, setActiveConversation, typingAlerts } = useContext(ConversationsContext);
   const { user } = useContext(AuthContext);
 
   let message;
@@ -19,6 +19,13 @@ const GroupChatHeader = ({ setDisplayInformation }) => {
   else if (activeConversation.partners.length === 2) message = `${activeConversation.partners[0].name}, ${activeConversation.partners[1].name}, and you.`
   else if (activeConversation.partners.length === 3) message = `${activeConversation.partners[0].name}, ${activeConversation.partners[1].name}, ${activeConversation.partners[2].name}, and you.`
   else message = `You, ${activeConversation.partners[0].name}, and ${activeConversation.partners.length - 2} others.`
+
+  if (typingAlerts.length > 0) console.log( typingAlerts[0].conversation_id, activeConversation.id, typingAlerts[0].conversation_id === activeConversation.id);
+
+  const typingPartners = typingAlerts.length > 0 ? typingAlerts.filter( alert => alert.conversation_id === activeConversation.id): null;
+  let typingMessage;
+
+  if (typingPartners && typingPartners.length > 0) typingMessage = typingPartners.length === 1 ? `${typingPartners[0].name} is typing...` : `${typingPartners[0]} and ${typingPartners.length -1} others are typing...`
 
 
 
@@ -42,7 +49,11 @@ const GroupChatHeader = ({ setDisplayInformation }) => {
             }
             <div className='ml-2'>
                 <div className='font-bold p-0 mb-0 text-sm'>{activeConversation.name}</div>
+                { typingMessage ? 
+                <div className='text-xs w-full text-truncate text-sky-500 italic'>{typingMessage}</div>
+                :
                 <div className='text-gray-600 text-xs'>{message}</div>
+                }
             </div>
         </div>
         <div className='w-8 h-8 flex items-center justify-center hover:bg-gray-200 rounded-full transition-colors duration-300 cursor-pointer'>

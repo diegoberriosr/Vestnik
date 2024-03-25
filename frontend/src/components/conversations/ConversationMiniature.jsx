@@ -12,8 +12,15 @@ import ConversationContext from '../../context/ConversationsContext';
 import AuthContext from '../../context/AuthContext';
 
 const ConversationMiniature = ({ conversation }) => {
-  const { setActiveConversation, activeConversation } = useContext(ConversationContext);
+  const { setActiveConversation, activeConversation, typingAlerts} = useContext(ConversationContext);
   const {user} = useContext(AuthContext);
+
+  if (typingAlerts.length > 0) console.log( typingAlerts[0].conversation_id, conversation.id, typingAlerts[0].conversation_id === conversation.id);
+  const typingPartner = typingAlerts.length > 0 ? typingAlerts.filter( alert => alert.conversation_id === conversation.id): null;
+  
+  let typingMessage;
+  if (typingPartner && typingPartner.length > 0) typingMessage = 'typing...'
+
   const activeConversationId = activeConversation ? activeConversation.id : null
   return (
     <li className={`w-full h-14 p-5 flex items-center space-x-3 ${ conversation.id === activeConversationId ? 'bg-gray-200' : '' } hover:bg-gray-100  rounded transition-colors duration-300`} onClick={() => setActiveConversation(conversation)}>
@@ -28,7 +35,7 @@ const ConversationMiniature = ({ conversation }) => {
             </div>
         </div>
         <p className='text-gray-500 w-full flex items-center justify-between'>
-            { conversation.last_message && 
+            { conversation.last_message && !typingMessage &&
             <>
               <span className='max-w-[60%] truncate text-sm flex items-center space-x-1'>
                 {conversation.last_message.sender.id === user.id && <BsArrowReturnRight/>}
@@ -37,6 +44,9 @@ const ConversationMiniature = ({ conversation }) => {
               </span>
               <span className='max-w-[40%] truncate text-xs pt-1'>{formatDate(conversation.last_message.timestamp)}</span>
             </>
+            }
+            { typingMessage &&
+              <span className='w-full text-truncate text-xs text-sky-500 italic'>typing...</span>
             }
         </p>
       </article>

@@ -6,7 +6,8 @@ import AuthContext from '../../context/AuthContext';
 const Message = ({ message, handleOpenDeleteModal }) => {
 
   const { user } = useContext(AuthContext);
-    
+
+  
   return (
     <li className={`mt-5 max-w-6/12 flex ${message.sender.id === user.id ?  'flex-row-reverse' : 'justify-start'} space-x-3.5`}>
         <figure className='relative w-10 h-10 rounded-full'>
@@ -19,7 +20,7 @@ const Message = ({ message, handleOpenDeleteModal }) => {
             <span className='text-gray-400 text-sm'>{formatDate(message.timestamp)}</span>
           </p>
         <div className={`max-w-[70%] ${ message.sender.id === user.id ? 'bg-sky-500 text-white' : 'bg-gray-100'} rounded-full rounded-full p-2.5 inline-block cursor-pointer`} onClick={ () => handleOpenDeleteModal(message)}>
-          {message.content}
+          { message.content}
         </div>
         </div>
       </li>

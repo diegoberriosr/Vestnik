@@ -56,7 +56,16 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     'type' : type,
                     'conversation_id' : data['conversation_id'],
                     'new_name' : data['new_name'],
-                     })       
+                     })   
+
+               elif type == 'typing_alert':
+                    await self.channel_layer.group_send(
+                        f'chat_{receiver_id}', {
+                            'type' : type,
+                            'conversation_id' : data['conversation_id'],
+                            'origin_id' : data['origin_id']
+                        }
+                    )
                                                         
                else:
                    await self.channel_layer.group_send(
@@ -117,4 +126,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
         }))
 
     async def typing_alert(self, event):
-        pass
+        print('typing alert')
+        await self.send(text_data=json.dumps({
+            'type' : event['type'],
+            'conversation_id' : event['conversation_id'],
+            'origin_id' : event['origin_id']
+        }))

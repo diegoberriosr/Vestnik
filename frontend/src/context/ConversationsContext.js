@@ -9,7 +9,8 @@ export const ConversationsProvider = ({ children}) => {
     const [conversations, setConversations] = useState([]);
     const [activeConversation, setActiveConversation] = useState(null);
     const [chatSocket, setChatSocket] = useState(null);
-
+    const [typingAlerts, setTypingAlerts] = useState([]);
+    console.log(typingAlerts);
     const activeConversationId = activeConversation ? activeConversation.id : null;
     const [messages, setMessages] = useState([]);
 
@@ -350,6 +351,24 @@ export const ConversationsProvider = ({ children}) => {
             if ( data.type === 'update_group_name'){
                 handleSocketUpdateGroupName(data);
             }
+
+            if (data.type === 'typing_alert'){
+                const index = conversations.findIndex( conversation => Number(conversation.id) === Number(data.conversation_id));
+                const typer = conversations[index].partners.filter( partner => Number(partner.id) === Number(data.origin_id))
+                
+                setTypingAlerts( prevStatus => {
+                     return  [...prevStatus, { conversation_id : data.conversation_id, origin_id : data.origin_id, name : typer[0].name}];
+                });
+
+                const timer = setTimeout( () => {
+                    setTypingAlerts( prevStatus => {
+                        return prevStatus.filter( alert => alert.conversation_id !== data.conversation_id && alert.origin_id !== data.origin_id);
+                    });
+                    console.log('Alert typing is over');
+                }, 10000);
+
+                return () => clearTimeout(timer);
+            }
         };
 
         socket.onopen = () => {
@@ -371,7 +390,8 @@ export const ConversationsProvider = ({ children}) => {
         setActiveConversation:setActiveConversation,
         messages:messages,
         setMessages:setMessages,
-        chatSocket:chatSocket
+        chatSocket:chatSocket,
+        typingAlerts:typingAlerts
     };
 
    return <ConversationsContext.Provider value={data}>

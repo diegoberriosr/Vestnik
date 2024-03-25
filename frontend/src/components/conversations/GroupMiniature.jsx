@@ -9,8 +9,15 @@ import ConversationsContext from "../../context/ConversationsContext";
 import AuthContext from "../../context/AuthContext";
 
 const GroupMiniature = ({ group }) => {
-  const {setActiveConversation, activeConversation } = useContext(ConversationsContext);
+  const {setActiveConversation, activeConversation, typingAlerts } = useContext(ConversationsContext);
   const { user } = useContext(AuthContext);
+
+  if (typingAlerts.length > 0) console.log( typingAlerts[0].conversation_id, group.id, typingAlerts[0].conversation_id === group.id);
+
+  const typingPartners = typingAlerts.length > 0 ? typingAlerts.filter( alert => alert.conversation_id === group.id): null;
+  let typingMessage;
+
+  if (typingPartners && typingPartners.length > 0) typingMessage = typingPartners.length === 1 ? `${typingPartners[0].name} is typing...` : `${typingPartners[0]} and ${typingPartners.length -1} others are typing...`
   const activeConversationId = activeConversation ? activeConversation.id : null
   
   return (
@@ -44,7 +51,8 @@ const GroupMiniature = ({ group }) => {
             </div>
         </div>
         <p className='text-gray-500 w-full flex items-center justify-between'>
-            { group.last_message && 
+            { typingMessage && <span className='text-sky-500 w-full text-truncate font-bold text-xs italic'>{typingMessage}</span> }
+            { group.last_message && !typingMessage &&
             <>
               <span className='max-w-[60%] truncate text-sm'>{group.last_message.content}</span>
               <span className='text-xs pt-1'>{formatDate(group.last_message.timestamp)}</span>

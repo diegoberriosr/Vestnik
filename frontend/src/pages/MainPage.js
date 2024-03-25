@@ -5,7 +5,7 @@ import Sidebar from '../components/general/Sidebar'
 import Inbox from '../components/general/Inbox';
 import Conversation from '../components/general/Conversation';
 import NewConversation from '../components/general/NewConversation';
-import BottomBar from '../components/general/BottomBar';
+
 // Provider imports
 import { ConversationsProvider } from '../context/ConversationsContext';
 
@@ -21,7 +21,6 @@ const MainPage = () => {
         </Routes>
         <Conversation/>
       </ConversationsProvider>
-      <BottomBar/>
     </div>
   )
 }
