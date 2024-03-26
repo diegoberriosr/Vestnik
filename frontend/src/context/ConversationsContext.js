@@ -11,12 +11,13 @@ export const ConversationsProvider = ({ children }) => {
     const [activeConversation, setActiveConversation] = useState(null);
     const [chatSocket, setChatSocket] = useState(null);
     const [typingAlerts, setTypingAlerts] = useState([]);
+
     const [messages, setMessages] = useState([]);
 
     const activeConversationId = activeConversation ? activeConversation.id : null;
 
     const { authTokens, user} = useContext(AuthContext); 
-    
+
     const getConversations = () => {
         let headers;
 
@@ -345,6 +346,19 @@ export const ConversationsProvider = ({ children }) => {
             })
             .then ( res => {
                 setMessages(res.data);
+                setConversations( prevStatus => {
+                    let updatedStatus = [...prevStatus];
+                    const index = updatedStatus.findIndex( conversation => Number(conversation.id) === Number(activeConversation.id))
+
+                    let last_message = updatedStatus[index].last_message;
+                    if (!last_message.read) {
+                        last_message.read = true;
+                        updatedStatus[index].last_message = last_message;
+                        updatedStatus[index].unread_messages = 0;
+                    }
+
+                    return updatedStatus;
+                });
             })
             .catch( err => {
                 console.log(err)
