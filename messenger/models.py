@@ -83,7 +83,7 @@ class Conversation(models.Model):
             'is_admin' : user in self.admins.all(),
             'partners' : [member.g_serialize(self) for member in self.members.all() if member != user],
             'messages' : [message.serialize(user) for message in self.messages.all()],
-            'unread_messages' : len([message for message in self.messages.all() if user not in message.read_by.all()])
+            'unread_messages' : len([message for message in self.messages.all() if user not in message.read_by.all() and message.is_notification is not True])
         }
     
     def inbox_serialize(self, user):
@@ -120,6 +120,5 @@ class Message(models.Model):
             'sender' : self.sender.serialize() if self.sender else None, 
             'content' : self.content,
             'timestamp': self.timestamp,
-            'read' : user in self.read_by.all(),
             'stared' : user in self.starred_by.all()
         }

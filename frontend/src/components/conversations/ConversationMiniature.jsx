@@ -15,7 +15,6 @@ const ConversationMiniature = ({ conversation }) => {
   const { setActiveConversation, activeConversation, typingAlerts} = useContext(ConversationContext);
   const {user} = useContext(AuthContext);
 
-  if (typingAlerts.length > 0) console.log( typingAlerts[0].conversation_id, conversation.id, typingAlerts[0].conversation_id === conversation.id);
   const typingPartner = typingAlerts.length > 0 ? typingAlerts.filter( alert => alert.conversation_id === conversation.id): null;
   
   let typingMessage;

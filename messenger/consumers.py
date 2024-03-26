@@ -57,6 +57,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     'conversation_id' : data['conversation_id'],
                     'new_name' : data['new_name'],
                      })   
+                   
+               elif type == 'update_unseen_messages':
+                   await self.channel_layer.group_send(
+                       f'chat_{receiver_id}', {
+                           'type' : type,
+                           'conversation_id' : data['conversation_id']
+                       }
+                   )
 
                elif type == 'typing_alert':
                     await self.channel_layer.group_send(
@@ -85,11 +93,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
 
     async def delete_message(self, event):
+        print('---- message deletion -----')
         await self.send(text_data=json.dumps({
             'type' : event['type'],
             'message_id' : event['message_id'],
             'conversation_id' : event['conversation_id'],
-            'target_id' : event['target_id']
         }))
 
     async def update_group_admin(self, event):
@@ -125,10 +133,19 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'new_name' : event['new_name']
         }))
 
+
     async def typing_alert(self, event):
         print('typing alert')
         await self.send(text_data=json.dumps({
             'type' : event['type'],
             'conversation_id' : event['conversation_id'],
             'origin_id' : event['origin_id']
+        }))
+
+
+    async def update_unseen_messages(self, event):
+        print('updating seen status')
+        await self.send(text_data=json.dumps({
+            'type' : event['type'],
+            'conversation_id' : event['conversation_id']
         }))

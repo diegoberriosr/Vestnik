@@ -12,7 +12,6 @@ import ConversationsContext from '../../context/ConversationsContext';
 const ConversationHeader = ({ setDisplayInformation}) => {
   const {activeConversation, setActiveConversation, typingAlerts } = useContext(ConversationsContext);
 
-  if (typingAlerts.length > 0) console.log( typingAlerts[0].conversation_id, activeConversation.id, typingAlerts[0].conversation_id === activeConversation.id);
   const typingPartner = typingAlerts.length > 0 ? typingAlerts.filter( alert => alert.conversation_id === activeConversation.id): null;
   
   let typingMessage;

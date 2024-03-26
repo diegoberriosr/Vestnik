@@ -12,8 +12,6 @@ const GroupMiniature = ({ group }) => {
   const {setActiveConversation, activeConversation, typingAlerts } = useContext(ConversationsContext);
   const { user } = useContext(AuthContext);
 
-  if (typingAlerts.length > 0) console.log( typingAlerts[0].conversation_id, group.id, typingAlerts[0].conversation_id === group.id);
-
   const typingPartners = typingAlerts.length > 0 ? typingAlerts.filter( alert => alert.conversation_id === group.id): null;
   let typingMessage;
 

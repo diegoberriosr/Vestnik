@@ -30,8 +30,11 @@ const Conversation = () => {
   
   const [disabled, setDisabled] = useState(true);
   
-  const {activeConversation, messages, setMessages, setConversations, chatSocket } = useContext(ConversationsContext);
+  const {activeConversation, messages, setMessages, setConversations, chatSocket, typingAlerts } = useContext(ConversationsContext);
   const { authTokens, user } = useContext(AuthContext);
+
+  const typingPartnerIds = typingAlerts.map( alert => Number(alert.origin_id));
+  const typingPartners = activeConversation ? activeConversation.partners.filter( partner => typingPartnerIds.includes(Number(partner.id))) : [];
 
 
   const {values, handleChange, handleBlur, setFieldValue} = useFormik({
@@ -144,7 +147,9 @@ const Conversation = () => {
           numberOfPartners={activeConversation.partners.length} 
           handleOpenDeleteModal={handleOpenDeleteModal}/>
         })}
-        <TypingAlert pfp={activeConversation.partners[0].pfp}/>
+        { typingPartners.length > 0 && typingPartners.length < 4 && typingPartners.map( (partner, index) => 
+        <TypingAlert key={index} pfp={partner.pfp}/>
+        )}
     </ul>
     <footer className='w-full h-16 flex items-center justify-between px-5  border border-l-0 border-r-0 border-b-0 z-[25]'>
         <FaImage className='text-3xl text-sky-500 cursor-pointer'/>

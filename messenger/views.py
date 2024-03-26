@@ -326,10 +326,13 @@ def clear_conversation(request):
         return HttpResponseForbidden('ERROR: requester does not have permission to delete this conversation.')
     
     for message in conversation.messages.all():
+        print(request.user in message.cleared_by.all())
         message.cleared_by.add(request.user) if request.user not in message.cleared_by.all() else None
+        message.read_by.add(request.user) if request.user not in message.read_by.all() else None
 
     if remove_from_inbox and request.user in conversation.active_members.all():
         conversation.active_members.remove(request.user)
+        conversation.save()
         return HttpResponse('Success.')
 
     return JsonResponse( conversation.serialize(request.user), safe=False)

@@ -1,4 +1,4 @@
-import { useState, createContext, useEffect, useContext } from "react";
+import { useState, createContext, useEffect, useContext, useRef} from "react";
 import axios from "axios";
 import AuthContext from "./AuthContext";
 
@@ -13,6 +13,13 @@ export const ConversationsProvider = ({ children }) => {
     const [typingAlerts, setTypingAlerts] = useState([]);
 
     const [messages, setMessages] = useState([]);
+
+    const conversationsRef = useRef(conversations);
+    const activeConversationRef = useRef(activeConversation);
+
+    useEffect(() => {
+    conversationsRef.current = conversations;
+    }, [conversations]);
 
     const activeConversationId = activeConversation ? activeConversation.id : null;
 
@@ -40,98 +47,71 @@ export const ConversationsProvider = ({ children }) => {
         })
     };
 
-    const handleSocketNewMessage = (data, res) => {
-        
-        console.log(conversations)
-        
-        const index = conversations.findIndex( conversation => conversation.id === data.conversation_id);
+    const handleSocketNewMessage = (data, conversations, activeConversation) => {
+        const index = conversations.findIndex( conversation => Number(conversation.id) === Number(data.conversation_id));
 
-        if (index === -1) {
-            
-            let headers;
-        
-            if (authTokens){
-                headers = {
-                    'Authorization' : 'Bearer ' + String(authTokens.access)
-                }
-            };
-            
-            axios({
-                url : 'http://127.0.0.1:8000/conversation',
-                method : 'GET',
-                headers: headers,
-                params : { conversation_id : data.conversation_id }
-                
-            })
-            .then( response => {
-                setConversations( prevStatus => {
-                    return [response.data, ...prevStatus];
-                })
-            })
-            .catch( error => {
-                console.log(error);
-            })
+        let headers;
+
+        if (authTokens) {
+            headers = {
+                'Authorization' : 'Bearer ' + String(authTokens.access)
+            }
         }
 
-        if (activeConversation && Number(activeConversation.id) === Number(data.conversation_id)) {
-            let headers;
-        
-            if (authTokens){
-                headers = {
-                    'Authorization' : 'Bearer ' + String(authTokens.access)
-                }
-            };
-
+        if (index > -1) {
             axios({
-                url : 'http://127.0.0.1:8000/messages/see',
-                method : 'PUT',
+                url : 'http://127.0.0.1:8000/message',
+                method : 'GET',
                 headers : headers,
-                data : { 'message_id' : data.message_id}
+                params : { 'message_id' : data.message_id}
             })
-            .then( response => {
+            .then( res => {
                 setConversations( prevStatus => {
                     let updatedStatus = [...prevStatus];
-                    const index = updatedStatus.findIndex( conversation => Number(conversation.id) === Number(data.conversation_id));
-                    console.log(index, 'IIIIIINDEX')
-                    updatedStatus[index].last_message = response.data
-                    const filteredConversations = updatedStatus.filter( conversation => Number(conversation.id) !== Number(data.conversation_id));
-                    return [updatedStatus[index], ...filteredConversations];
-                })
+                    updatedStatus[index].last_message = res.data;
+                    const unread_messages = updatedStatus[index].unread_messages + 1;
 
-                setActiveConversation( prevStatus => {
-                    let updatedStatus = {...prevStatus};
-                    updatedStatus.last_message = response.data;
-                    return updatedStatus;
+                    if(activeConversation && Number(activeConversation.id) === Number(data.conversation_id) ) updatedStatus[index].last_message.read = true;
+                    else updatedStatus[index].unread_messages = unread_messages;
+
+                    if( updatedStatus.length > 0){
+                        const filteredConversations = conversations.filter( conversation => Number(conversation.id) !== Number(data.conversation_id));
+                        return [updatedStatus[index], ...filteredConversations];
+                    }
+
+                    return [updatedStatus];
                 });
-                
-                setMessages( prevStatus => {
-    
-                    let updatedStatus = [...prevStatus];
-                    
-                    if (updatedStatus.length > 0) return [...prevStatus, response.data];
-                    return [res.data];
-                })
+
+                if (activeConversation && Number(activeConversation.id) === Number(data.conversation_id)) {
+                    setActiveConversation(conversations[index]);
+                    setMessages( prevStatus => {
+                        if (prevStatus.length > 0) return [...prevStatus, res.data];
+                        return [res.data];
+                    })
+                }
             })
-            .catch( error => {
-                console.log(error)
-            })
+            .catch( error => console.log(error));
         }
 
         else {
-            setConversations( prevStatus => {
-                let updatedStatus = [...prevStatus];
-                const index = updatedStatus.findIndex( conversation => conversation.id === data.conversation_id);
-    
-                updatedStatus[index].last_message = res.data;
-    
-                if ( updatedStatus.length > 0 ) {
-                    let filteredConversations = updatedStatus.filter( conversation => conversation.id !== data.conversation_id);
-                    return [updatedStatus[index], ...filteredConversations]                            
-                }
-    
-                return [updatedStatus];
-            });    
-        };
+           console.log('index not found');
+           axios({
+            url : 'http://127.0.0.1:8000/conversation',
+            method : 'GET',
+            headers : headers,
+            params :  { conversation_id : data.conversation_id}
+           })
+           .then( res => {
+            console.log(res.data);
+            setConversations(prevStatus => {
+                const updatedConversations = prevStatus.length > 0 ? [...res.data, ...prevStatus] : [...res.data];
+                console.log('Updated conversations:', updatedConversations);
+                return updatedConversations;
+            })
+            console.log(conversations);
+           })
+           .catch( error => console.log(error))
+        }
     };
 
     const handleSocketDeleteMessage = (data, res) => {
@@ -320,6 +300,39 @@ export const ConversationsProvider = ({ children }) => {
         }
     };
 
+    const handleUpdateUnseenMessages = (data, activeConversation) => {
+        if (activeConversation && Number(activeConversation.id) === Number(data.conversation_id)) {
+            setMessages( prevStatus => {
+                let updatedStatus = [...prevStatus];
+
+                updatedStatus.forEach( message => {
+                    if (message.read_count < activeConversation.partners.length) message.read_count++; 
+                });
+                return updatedStatus
+            });
+        };
+    }
+
+    const handleTypingAlert = (data, conversations) => {
+        if (conversations.length > 0){
+            const index = conversations.findIndex( conversation => Number(conversation.id) === Number(data.conversation_id));
+            const typer = conversations[index].partners.filter( partner => Number(partner.id) === Number(data.origin_id))
+            
+            setTypingAlerts( prevStatus => {
+                 return  [...prevStatus, { conversation_id : data.conversation_id, origin_id : data.origin_id, name : typer[0].name}];
+            });
+
+            const timer = setTimeout( () => {
+                setTypingAlerts( prevStatus => {
+                    return prevStatus.filter( alert => alert.conversation_id !== data.conversation_id && alert.origin_id !== data.origin_id);
+                });
+
+            }, 10000);
+
+            return () => clearTimeout(timer);
+        }
+    };
+
 
     // Load conversations for the first time
     useEffect(() => {
@@ -330,6 +343,7 @@ export const ConversationsProvider = ({ children }) => {
     // Load a conversation's messages
     useEffect( () => {
         setMessages([]);
+        activeConversationRef.current = activeConversation
         let headers;
 
         if (authTokens){
@@ -351,7 +365,7 @@ export const ConversationsProvider = ({ children }) => {
                     const index = updatedStatus.findIndex( conversation => Number(conversation.id) === Number(activeConversation.id))
 
                     let last_message = updatedStatus[index].last_message;
-                    if (!last_message.read) {
+                    if (last_message && !last_message.read) {
                         last_message.read = true;
                         updatedStatus[index].last_message = last_message;
                         updatedStatus[index].unread_messages = 0;
@@ -359,6 +373,11 @@ export const ConversationsProvider = ({ children }) => {
 
                     return updatedStatus;
                 });
+                chatSocket.send(JSON.stringify({
+                    'type' : 'update_unseen_messages',
+                    'receiver_ids' : activeConversation.partners.map( partner => partner.id),
+                    'conversation_id' : activeConversation.id
+                }))
             })
             .catch( err => {
                 console.log(err)
@@ -385,18 +404,7 @@ export const ConversationsProvider = ({ children }) => {
             let data = JSON.parse(e.data);
 
             if (data.type === 'new_message') {
-                axios({
-                    url : 'http://127.0.0.1:8000/message',
-                    method : 'GET',
-                    headers : headers,
-                    params : { message_id : data.message_id}
-                })
-                .then( res => {
-                    handleSocketNewMessage(data, res);
-                })
-                .catch( err => {
-                    console.log(err);
-                })
+                handleSocketNewMessage(data, conversationsRef.current, activeConversationRef.current)
             };
 
             if (data.type === 'delete_message') {
@@ -431,38 +439,17 @@ export const ConversationsProvider = ({ children }) => {
             }
 
             if (data.type === 'typing_alert'){
-                console.log(conversations);
-                if (conversations.length > 0){
-                    const index = conversations.findIndex( conversation => Number(conversation.id) === Number(data.conversation_id));
-                    const typer = conversations[index].partners.filter( partner => Number(partner.id) === Number(data.origin_id))
-                    
-                    setTypingAlerts( prevStatus => {
-                         return  [...prevStatus, { conversation_id : data.conversation_id, origin_id : data.origin_id, name : typer[0].name}];
-                    });
-    
-                    const timer = setTimeout( () => {
-                        setTypingAlerts( prevStatus => {
-                            return prevStatus.filter( alert => alert.conversation_id !== data.conversation_id && alert.origin_id !== data.origin_id);
-                        });
-                        console.log('Alert typing is over');
-                    }, 10000);
-    
-                    return () => clearTimeout(timer);
-                }
+                handleTypingAlert(data, conversationsRef.current);
+            };
+
+            if (data.type === 'update_unseen_messages') {
+                handleUpdateUnseenMessages(data, activeConversationRef.current);
             }
-        };
 
-        socket.onopen = () => {
-            console.log('Open');
-        };
-
-        socket.onclose = () => {
-            console.log('Closed')
-        }
-
+        };      
         return () => socket.close()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [conversations]);
 
     const data = {
         conversations:conversations,

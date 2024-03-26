@@ -20,8 +20,6 @@ const GroupChatHeader = ({ setDisplayInformation }) => {
   else if (activeConversation.partners.length === 3) message = `${activeConversation.partners[0].name}, ${activeConversation.partners[1].name}, ${activeConversation.partners[2].name}, and you.`
   else message = `You, ${activeConversation.partners[0].name}, and ${activeConversation.partners.length - 2} others.`
 
-  if (typingAlerts.length > 0) console.log( typingAlerts[0].conversation_id, activeConversation.id, typingAlerts[0].conversation_id === activeConversation.id);
-
   const typingPartners = typingAlerts.length > 0 ? typingAlerts.filter( alert => alert.conversation_id === activeConversation.id): null;
   let typingMessage;
 
