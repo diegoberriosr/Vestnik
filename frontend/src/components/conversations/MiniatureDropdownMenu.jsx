@@ -76,18 +76,6 @@ const MiniatureDropdownMenu = ({ conversationId, isGroup}) => {
         console.log(err);
     })
   }
-
-  const handlePin = (e) => {
-    if(e) e.preventDefault();
-    console.log('TO-DO');
-  }
-
-  const handleArchive = (e) => {
-    if(e) e.preventDefault();
-    console.log('TO-DO'); 
-  }
-
-
   return (
     <div className='relative flex justify-center'>
         <PiDotsThreeBold className='text-xl cursor-pointer' onClick={(e) => { e.stopPropagation(); setMenuVisible(!menuVisible)}}/>

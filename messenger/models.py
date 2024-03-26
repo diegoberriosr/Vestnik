@@ -116,6 +116,7 @@ class Message(models.Model):
             'is_notification' : self.is_notification,
             'is_admin' : user in self.conversation.admins.all(),
             'read' : user in self.read_by.all(),
+            'read_count' : len(self.read_by.all()),
             'sender' : self.sender.serialize() if self.sender else None, 
             'content' : self.content,
             'timestamp': self.timestamp,

@@ -5,14 +5,15 @@ import AuthContext from "./AuthContext";
 const ConversationsContext = createContext();
 export default ConversationsContext;
 
-export const ConversationsProvider = ({ children}) => {
+export const ConversationsProvider = ({ children }) => {
+
     const [conversations, setConversations] = useState([]);
     const [activeConversation, setActiveConversation] = useState(null);
     const [chatSocket, setChatSocket] = useState(null);
     const [typingAlerts, setTypingAlerts] = useState([]);
-    console.log(typingAlerts);
-    const activeConversationId = activeConversation ? activeConversation.id : null;
     const [messages, setMessages] = useState([]);
+
+    const activeConversationId = activeConversation ? activeConversation.id : null;
 
     const { authTokens, user} = useContext(AuthContext); 
     
@@ -256,6 +257,7 @@ export const ConversationsProvider = ({ children}) => {
         }
     };
 
+    
 
     // Load conversations for the first time
     useEffect(() => {
@@ -265,6 +267,7 @@ export const ConversationsProvider = ({ children}) => {
 
     // Load a conversation's messages
     useEffect( () => {
+        setMessages([]);
         let headers;
 
         if (authTokens){

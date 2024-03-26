@@ -139,7 +139,10 @@ const Conversation = () => {
     <ul className='w-full h-[calc(100vh-129px)] overflow-y-auto p-5'>
         { messages.length > 0 && messages.map( (message, index) => {
           if (message.is_notification) return <Notification key={index} messageContent={message.content} timestamp={message.timestamp}/>
-          return <Message key={index} message={message} handleOpenDeleteModal={handleOpenDeleteModal}/>
+          return <Message key={index} message={message} 
+          isGroupChat={activeConversation.is_group_chat} 
+          numberOfPartners={activeConversation.partners.length} 
+          handleOpenDeleteModal={handleOpenDeleteModal}/>
         })}
         <TypingAlert pfp={activeConversation.partners[0].pfp}/>
     </ul>

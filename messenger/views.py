@@ -322,6 +322,9 @@ def get_conversation_messages(request):
     except Conversation.DoesNotExist:
         return Http404(f'ERROR : conversation with id={conversation_id} does not exist')
     
+    for message in conversation.messages.all():
+        message.read_by.add(request.user) if request.user != message.sender and request.user not in message.read_by.all() else None 
+    
     return JsonResponse([message.serialize(request.user) for message in conversation.messages.all() if request.user not in message.cleared_by.all()], safe=False)
 
 
