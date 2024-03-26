@@ -11,7 +11,7 @@ module.exports = {
         'bounce-2' : 'bounce-2 1s infinite',
         'bounce-3' : 'bounce-3 1s infinite',
         'blink' : 'blink 1s infinite',
-        'typewriter' : 'typewriter 3s steps(25) infinite, blink 1s infinite',
+        'typewriter' : 'typewriter 2s steps(38) infinite, blink 0.7s infinite',
         'float' : 'float 5s infinite'
       },
       keyframes : {
@@ -49,8 +49,7 @@ module.exports = {
         },
         'typewriter' : {
           '0%' : { width : '0%'}, 
-          '75%' : {width : '70%'},
-          '100%' : {width: '70%'}
+          '90%' : {width: '100%'}
         },
         'float' : { 
           '0%': { transform: 'translateY(0px)' },

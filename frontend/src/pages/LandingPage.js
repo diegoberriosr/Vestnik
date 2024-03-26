@@ -43,47 +43,41 @@ const LandingPage = () => {
   return (
     <>
     <div className='bg-cream h-screen overflow-y-invisible'>
-      <nav className="w-full flex items-center justify-between px-1.5 sm:px-2.5 md:px-5 lg:px-10 py-5 text-xs sm:text-sm md:text-md lg:text-lg">
-        <div className='flex items-center text-sm sm:text-md md:text-lg lg:text-xl font-bold text-sky-500 space-x-2'>
+      <nav className="w-full flex items-center justify-between px-3 py-1.5">
+        <div className='flex items-center text-sky-500 space-x-2'>
             <FaFacebookMessenger className='text-lg sm:text-lg md:text-2xl lg:text-4xl'/>
-            <span className='text-gray-900'>Vestnik</span>
+            <span className='text-sm sm:text-lg md:text-xl lg:text-2xl font-bold text-gray-900 '>Vestnik</span>
         </div>
         <div className='flex items-center space-x-5'>
-            <span>Privacy policy</span>
-            <span>Terms of service</span>
-            <span>About</span>
-            <button className='px-2.5 py-0.5 bg-sky-300 text-white font-semibold border border-dark-blue rounded-full hover:opacity-90' onClick={handleLoginModal}>
+            <span className='hidden md:block'>Privacy policy</span>
+            <span className='hidden md:block '>Terms of service</span>
+            <span className='hidden md:block'>About</span>
+            <button className='px-2 py-1 sm:px-3 sm:py-1.5 bg-sky-300 text-white font-semibold border border-dark-blue rounded-full  text-sm sm:text-lg md:text-xl lg:text-2xl hover:opacity-90' onClick={handleLoginModal}>
                 Log in
             </button>
-            <button className='px-2.5 py-0.5 bg-sky-500 text-white font-semibold border border-dark-blue rounded-full hover:opacity-90' onClick={handleRegisterModal}>
+            <button className='px-2 py-1 sm:px-3 sm:py-1.5 bg-sky-500 text-white font-semibold border border-dark-blue rounded-full  text-sm sm:text-lg md:text-xl lg:text-2xl hover:opacity-90' onClick={handleRegisterModal}>
                 Register
             </button>
         </div>
       </nav>
-      <main className='relative w-full flex-col mt-10 px-4 md:px-8 lg:px-16'>
-        <div className='absolute top-0 w-6/12 h-full'>
-            <h3 className='text-lg sm:text-xl md:text-2xl lg:text-6xl font-bold'>
+      <main className='relative w-full flex flex-col items-center md:items-start mt-10 px-4 md:px-8 lg:px-16'>
+            <h3 className='flex flex-col items-center sm:items-start text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold'>
               <p>You can chat</p>
-              <div className='w-[70%] whitespace-nowrap border-r border-black overflow-hidden animate-typewriter'>anywhere, anytime</div>
+              <span className='inline-block whitespace-nowrap overflow-hidden animate-typewriter border-r border-black'>anywhere, anytime</span>
             </h3>
             <p className='mt-5'>Stay connected with ease, wherever you are - chat anytime, anywhere, effortlessly engage in conversation</p>
-            <button className='mt-5 py-1 px-5 flex items-center border border-dark-blue text-white rounded-full text-xl bg-gradient-to-t from-sky-500 to-sky-300 hover:opacity-90' onClick={handleRegisterModal}>
-                <PiMessengerLogoLight className='text-sm sm:text-md md:text-xl lg:text-3xl mr-1.5'/>
-               <span className='text-xs sm:text-sm md:text'>Give Vestnik a try</span>
+            <button className='mt-5 px-3 py-1.5 flex items-center border border-dark-blue text-white rounded-full bg-gradient-to-t from-sky-500 to-sky-300 hover:opacity-90' onClick={handleRegisterModal}>
+                <PiMessengerLogoLight className='text-lg sm:text-2xl md:text-3xl lg:text-4xl mr-1.5'/>
+               <span className='text-md sm:text-lg md:text-xl lg:text-2xl'>Give Vestnik a try</span>
             </button>
-        </div>
-        <PlaceholderMessage animation='animate-float' position='left-[2.5%] top-80' pfp={DoogieDoodle} name='Luna' message='Hei!'/>
-        <PlaceholderMessage animation='animate-float' position='left-[12.5%] top-72' pfp={DogJumpDoodle} name='Paco' message='Hallo!'/>
-        <PlaceholderMessage animation='animate-float' position='left-[22%] top-64' pfp={clumsy} name='Arto' message='Terve!'/>
-        <PlaceholderMessage animation='animate-float' position='left-[34%] top-64' pfp ={LovingDoodle} name='Юрий' message='Привет!' reverse/>
-        <PlaceholderMessage animation='animate-float' position='left-[43%] top-80' pfp={SelfieDoodle} name='John' message='Hi!'/>
+            <figure className='z-[25] fixed bottom-0 md:right-0 w-[100%] h-[40%] sm:w-[50%] sm:h-[50%]'>
+              <img src={LayingDoodle} alt='woman holding phone doodle' className='h-full w-full object-fill'/>
+            </figure>
       </main>
       <footer>
-        <img src={LayingDoodle} alt='woman holding phone doodle' className='z-[25] fixed -bottom-10 sm:-bottom-10 md:-bottom-20 lg:-bottom-40 right-0 w-6/12'/>
         <svg xmlns="http://www.w3.org/2000/svg" className='fixed bottom-0' viewBox="0 0 1440 320">
   <path fill="#0ea5e9" fillOpacity="1" d="M0,192L80,165.3C160,139,320,85,480,96C640,107,800,181,960,181.3C1120,181,1280,107,1360,69.3L1440,32L1440,320L1360,320C1280,320,1120,320,960,320C800,320,640,320,480,320C320,320,160,320,80,320L0,320Z"></path>
 </svg>
-              <img src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png' alt='google store logo' width='200' className='fixed bottom-0 left-1 z-[40]'/>
       </footer>
     </div>
     <Modal isVisible={loginModal}>
