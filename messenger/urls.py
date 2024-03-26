@@ -15,6 +15,7 @@ urlpatterns = [
     path('users', views.get_users, name='get users'),
     path('users/ids', views.get_users_by_id, name='get users by id'),
     path('conversations', views.get_conversations, name='get conversations'),
+    path('conversation', views.get_conversation, name='get conversation'),
     path('conversations/create', views.create_conversation, name='create conversation'),
     path('conversations/messages', views.get_conversation_messages, name='get conversation messages'),
     path('conversations/messages/last', views.get_last_message, name='get conversation last message'),
@@ -27,6 +28,7 @@ urlpatterns = [
     path('message', views.get_message, name='get message'),
     path('messages/starred', views.get_starred_messages, name='starred messages'),
     path('messages/create', views.create_message, name='create message'),
+    path('messages/see', views.see_message, name='see message'),
     path('messages/delete', views.delete_message, name='delete message'),
     path('messages/star', views.star_message, name='star message')
 ]

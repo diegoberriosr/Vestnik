@@ -40,35 +40,97 @@ export const ConversationsProvider = ({ children }) => {
     };
 
     const handleSocketNewMessage = (data, res) => {
-        setConversations( prevStatus => {
-            let updatedStatus = [...prevStatus];
-            const index = updatedStatus.findIndex( conversation => conversation.id === data.conversation_id);
+        
+        console.log(conversations)
+        
+        const index = conversations.findIndex( conversation => conversation.id === data.conversation_id);
 
-            updatedStatus[index].last_message = res.data;
-
-            if ( updatedStatus.length > 0 ) {
-                let filteredConversations = updatedStatus.filter( conversation => conversation.id !== data.conversation_id);
-                return [updatedStatus[index], ...filteredConversations]                            
-            }
-
-            return [updatedStatus];
-        });
-
-        if (activeConversation) {
-            setActiveConversation( prevStatus => {
-                let updatedStatus = {...prevStatus};
-                updatedStatus.last_message = res.data;
-                return updatedStatus;
-            });
+        if (index === -1) {
             
-            setMessages( prevStatus => {
-
-                let updatedStatus = [...prevStatus];
+            let headers;
+        
+            if (authTokens){
+                headers = {
+                    'Authorization' : 'Bearer ' + String(authTokens.access)
+                }
+            };
+            
+            axios({
+                url : 'http://127.0.0.1:8000/conversation',
+                method : 'GET',
+                headers: headers,
+                params : { conversation_id : data.conversation_id }
                 
-                if (updatedStatus.length > 0) return [...prevStatus, res.data];
-                return [res.data];
+            })
+            .then( response => {
+                setConversations( prevStatus => {
+                    return [response.data, ...prevStatus];
+                })
+            })
+            .catch( error => {
+                console.log(error);
             })
         }
+
+        if (activeConversation && Number(activeConversation.id) === Number(data.conversation_id)) {
+            let headers;
+        
+            if (authTokens){
+                headers = {
+                    'Authorization' : 'Bearer ' + String(authTokens.access)
+                }
+            };
+
+            axios({
+                url : 'http://127.0.0.1:8000/messages/see',
+                method : 'PUT',
+                headers : headers,
+                data : { 'message_id' : data.message_id}
+            })
+            .then( response => {
+                setConversations( prevStatus => {
+                    let updatedStatus = [...prevStatus];
+                    const index = updatedStatus.findIndex( conversation => Number(conversation.id) === Number(data.conversation_id));
+                    console.log(index, 'IIIIIINDEX')
+                    updatedStatus[index].last_message = response.data
+                    const filteredConversations = updatedStatus.filter( conversation => Number(conversation.id) !== Number(data.conversation_id));
+                    return [updatedStatus[index], ...filteredConversations];
+                })
+
+                setActiveConversation( prevStatus => {
+                    let updatedStatus = {...prevStatus};
+                    updatedStatus.last_message = response.data;
+                    return updatedStatus;
+                });
+                
+                setMessages( prevStatus => {
+    
+                    let updatedStatus = [...prevStatus];
+                    
+                    if (updatedStatus.length > 0) return [...prevStatus, response.data];
+                    return [res.data];
+                })
+            })
+            .catch( error => {
+                console.log(error)
+            })
+        }
+
+        else {
+            setConversations( prevStatus => {
+                let updatedStatus = [...prevStatus];
+                const index = updatedStatus.findIndex( conversation => conversation.id === data.conversation_id);
+    
+                updatedStatus[index].last_message = res.data;
+    
+                if ( updatedStatus.length > 0 ) {
+                    let filteredConversations = updatedStatus.filter( conversation => conversation.id !== data.conversation_id);
+                    return [updatedStatus[index], ...filteredConversations]                            
+                }
+    
+                return [updatedStatus];
+            });    
+        };
     };
 
     const handleSocketDeleteMessage = (data, res) => {
@@ -257,7 +319,6 @@ export const ConversationsProvider = ({ children }) => {
         }
     };
 
-    
 
     // Load conversations for the first time
     useEffect(() => {
@@ -356,21 +417,24 @@ export const ConversationsProvider = ({ children }) => {
             }
 
             if (data.type === 'typing_alert'){
-                const index = conversations.findIndex( conversation => Number(conversation.id) === Number(data.conversation_id));
-                const typer = conversations[index].partners.filter( partner => Number(partner.id) === Number(data.origin_id))
-                
-                setTypingAlerts( prevStatus => {
-                     return  [...prevStatus, { conversation_id : data.conversation_id, origin_id : data.origin_id, name : typer[0].name}];
-                });
-
-                const timer = setTimeout( () => {
+                console.log(conversations);
+                if (conversations.length > 0){
+                    const index = conversations.findIndex( conversation => Number(conversation.id) === Number(data.conversation_id));
+                    const typer = conversations[index].partners.filter( partner => Number(partner.id) === Number(data.origin_id))
+                    
                     setTypingAlerts( prevStatus => {
-                        return prevStatus.filter( alert => alert.conversation_id !== data.conversation_id && alert.origin_id !== data.origin_id);
+                         return  [...prevStatus, { conversation_id : data.conversation_id, origin_id : data.origin_id, name : typer[0].name}];
                     });
-                    console.log('Alert typing is over');
-                }, 10000);
-
-                return () => clearTimeout(timer);
+    
+                    const timer = setTimeout( () => {
+                        setTypingAlerts( prevStatus => {
+                            return prevStatus.filter( alert => alert.conversation_id !== data.conversation_id && alert.origin_id !== data.origin_id);
+                        });
+                        console.log('Alert typing is over');
+                    }, 10000);
+    
+                    return () => clearTimeout(timer);
+                }
             }
         };
 

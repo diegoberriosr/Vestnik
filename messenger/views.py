@@ -51,6 +51,7 @@ def get_users(request):
 
     return JsonResponse([ user.serialize() for user in users.all()], safe=False)
 
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_users_by_id(request):
@@ -78,6 +79,7 @@ def get_users_by_id(request):
         
     return JsonResponse([ user.g_serialize(conversation) for user in users], safe=False)
 
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_conversations(request):
@@ -88,6 +90,28 @@ def get_conversations(request):
     
     return JsonResponse( [conversation.inbox_serialize(request.user) for conversation in conversations], safe=False)
 
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_conversation(request):
+
+    conversation_id = request.GET.get('conversation_id', '')
+
+    if conversation_id is None or conversation_id == '':
+        return HttpResponseBadRequest(f'ERROR: a valid conversation id must be provided.')
+    
+    try:
+        conversation = Conversation.objects.get(id=conversation_id)
+    except Conversation.DoesNotExist:
+        raise Http404(f'ERROR: conversation with id={conversation_id} does not exist.')
+    
+
+    if request.user not in conversation.members.all():
+        return HttpResponseForbidden(f'ERROR: requester does not have permission to perform this action.')
+    
+
+    return JsonResponse([ conversation.inbox_serialize(request.user)], safe=False)
+    
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -385,6 +409,28 @@ def create_message(request):
 
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
+def see_message(request):
+
+    message_id = json.loads(request.body).get('message_id')
+
+    if message_id is None or message_id == '':
+        return HttpResponseBadRequest('ERROR: a valid message id must be provided.')
+    
+    try:
+        message = Message.objects.get(id=message_id)
+    except Message.DoesNotExist:
+        raise Http404(f'ERROR: message with id={message_id} does not exist.')
+    
+    if request.user not in message.conversation.members.all():
+        return HttpResponseForbidden('ERROR: requester does not have permissions to perform this action.')
+    
+    message.read_by.add(request.user) if request.user not in message.read_by.all() and request.user != message.sender else None
+
+    return JsonResponse( message.serialize(request.user), safe=False) 
+
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
 def delete_message(request):
 
     message_id = json.loads(request.body).get('message_id', '')
@@ -421,8 +467,6 @@ def get_last_message(request):
     conversation_id = request.GET.get('conversation_id', '')
     is_notification = request.GET.get('is_notification', '')
 
-
-
     try:
         conversation = Conversation.objects.get(id=conversation_id)
     except Conversation.DoesNotExist:
@@ -457,6 +501,7 @@ def star_message(request):
     message.starred_by.add(request.user) if request.user not in message.starred_by.all() else message.starred_by.remove(request.user)
     
     return HttpResponse('Success.')
+
 
 @api_view(['GET'])
 def check_email(request):
