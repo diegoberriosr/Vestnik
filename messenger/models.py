@@ -39,6 +39,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     pfp = models.TextField()
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+    is_online = models.BooleanField(default=False)
+    last_seen = models.DateTimeField(null=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['name']

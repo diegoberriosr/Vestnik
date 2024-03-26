@@ -1,10 +1,5 @@
 import { useState } from 'react';
 import LayingDoodle from '../assets/LayingDoodle.png';
-import DoogieDoodle from '../assets/DoogieDoodle.png';
-import DogJumpDoodle from '../assets/DogJumpDoodle.png';
-import LovingDoodle from '../assets/LovingDoodle.png';
-import SelfieDoodle from '../assets/SelfieDoodle.png';
-import clumsy from '../assets/clumsy.png';
 
 // Icon Imports
 import { PiMessengerLogoLight } from "react-icons/pi";
@@ -14,7 +9,7 @@ import { FaFacebookMessenger } from "react-icons/fa";
 import Modal from '../components/general/Modal';
 import Login from '../components/login/Login';
 import Register from '../components/register/Register';
-import PlaceholderMessage from '../components/messages/PlaceholderMessage';
+
 
 const LandingPage = () => {
 
