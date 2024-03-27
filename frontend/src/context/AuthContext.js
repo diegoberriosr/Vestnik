@@ -1,4 +1,4 @@
-import {useState, createContext } from 'react';
+import {useState, createContext} from 'react';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
@@ -11,7 +11,6 @@ export const AuthProvider = ({ children }) => {
 
     const [authTokens, setAuthTokens] = useState( localStorage.getItem('authTokens' ? localStorage.getItem('authTokens') : null));
     const [user, setUser] = useState( localStorage.getItem('user') ? localStorage.getItem('user') : null);
-
     const navigate = useNavigate();
 
     const loginUser = (data, setLoading, setAlertMessage) => {

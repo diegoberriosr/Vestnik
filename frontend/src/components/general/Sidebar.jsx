@@ -9,16 +9,28 @@ import Modal from './Modal';
 import EditProfile from './EditProfile';
 
 import AuthContext from '../../context/AuthContext';
+import ConversationsContext from '../../context/ConversationsContext';
 
 const Sidebar = () => {
 
   const [profileModal, setProfileModal] = useState(false);
   const [shrink, setShrink] = useState(false);
   const currentUrl = useLocation().pathname;
+  
   const { user, logoutUser } = useContext(AuthContext);
+  const { chatSocket, getAllOnlineUserIds, conversations} = useContext(ConversationsContext);
 
   const navigate = useNavigate();
 
+  const handleLogoutUser = () => {
+    console.log('disconnecting...')
+    chatSocket.send(JSON.stringify({
+      'type' : 'online_status_update',
+      'receiver_ids' : getAllOnlineUserIds(conversations),
+      'origin_id' : user.id,
+    }));
+    logoutUser()
+  };
 
   useEffect( () => {
     if(shrink) {
@@ -36,7 +48,7 @@ const Sidebar = () => {
         <div className={`h-10 w-10 ${ currentUrl === '/users' ? 'bg-gray-200' : 'hover:bg-gray-100'} rounded-lg flex items-center justify-center cursor-pointer transition-colors duration-500`} onClick={() => navigate('/users')}>
           <MdPeopleAlt className='text-2xl text-gray-600'/>
         </div> 
-        <div className='h-10 w-10 hover:bg-gray-100 rounded-lg flex items-center justify-center cursor-pointer transition-colors duration-500' onClick={logoutUser}>
+        <div className='h-10 w-10 hover:bg-gray-100 rounded-lg flex items-center justify-center cursor-pointer transition-colors duration-500' onClick={handleLogoutUser}>
           <CiLogout className='text-2xl text-gray-600'/>
         </div>
         <div className='relative mt-auto h-10 w-10 rounded-full cursor-pointer' onClick={() => {setProfileModal(true)}}>

@@ -11,15 +11,13 @@ export const ConversationsProvider = ({ children }) => {
     const [activeConversation, setActiveConversation] = useState(null);
     const [chatSocket, setChatSocket] = useState(null);
     const [typingAlerts, setTypingAlerts] = useState([]);
+    const [onlineStatus, setOnlineStatus] = useState(false);
+    console.log(onlineStatus);
 
     const [messages, setMessages] = useState([]);
 
     const conversationsRef = useRef(conversations);
     const activeConversationRef = useRef(activeConversation);
-    console.log(activeConversation);
-    useEffect(() => {
-    conversationsRef.current = conversations;
-    }, [conversations]);
 
     const activeConversationId = activeConversation ? activeConversation.id : null;
 
@@ -41,6 +39,12 @@ export const ConversationsProvider = ({ children }) => {
         })
         .then( res => {
             setConversations(res.data);
+            chatSocket.send(JSON.stringify({
+                'type' : 'online_status_update',
+                'receiver_ids' : getAllOnlineUserIds(res.data),
+                'origin_id' : user.id,
+            }));
+            setOnlineStatus(true);
         })
         .catch( err => {
             console.log(err);
@@ -313,7 +317,7 @@ export const ConversationsProvider = ({ children }) => {
         };
     }
 
-    const handleTypingAlert = (data, conversations) => {
+    const handleSocketTypingAlert = (data, conversations) => {
         if (conversations.length > 0){
             const index = conversations.findIndex( conversation => Number(conversation.id) === Number(data.conversation_id));
             const typer = conversations[index].partners.filter( partner => Number(partner.id) === Number(data.origin_id))
@@ -333,15 +337,64 @@ export const ConversationsProvider = ({ children }) => {
         }
     };
 
+    const getAllOnlineUserIds = (conversations) => {
+        const allUsers = conversations.flatMap( conversation => conversation.partners);
+        const uniqueUsers = allUsers.reduce( (acc, user) => {
+            if(!acc.some( existingUser => existingUser.id === user.id)) {
+                acc.push(user);
+            }
+            return acc;
+        }, [])
+        const onlineIds = uniqueUsers.filter( user => user.is_online).map( user => user.id);
+        return onlineIds;
+    };
+
+    const handleSocketUpdateUserOnlineStatus = (data, activeConversation) => {
+        setConversations( prevStatus => {
+            let updatedStatus = prevStatus.map( conversation => {
+                const updatedPartners = conversation.partners.map( partner => {
+                    if ( Number(partner.id) === Number(data.origin_id)) return {...partner, is_online : !partner.is_online}
+                    return partner
+                })
+                return {...conversation, partners : updatedPartners}
+            })
+            return updatedStatus;
+        });
+
+        if (activeConversation) {
+            const index = activeConversation.partners.findIndex( partner => Number(partner.id) === Number(data.origin_id));
+            if ( index > -1 ) {
+                setActiveConversation( prevStatus => {
+                    let updatedStatus = {...prevStatus};
+                    updatedStatus.partners = updatedStatus.partners.map(partner => {
+                        if (Number(partner.id) === Number(data.origin_id)) return {...partner, is_online : !partner.is_online}
+                        return partner
+                    })
+
+                    return updatedStatus;
+                });
+            }
+            
+        };
+    };
+
 
     // Load conversations for the first time
     useEffect(() => {
-        getConversations();
+        console.log('socket changed')
+        if (chatSocket && !onlineStatus){
+            chatSocket.onopen = () => {
+                console.log('socket open!')
+                getConversations();
+            }
+        }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [chatSocket]);
 
     // Load a conversation's messages
     useEffect( () => {
+        console.log(getAllOnlineUserIds(conversationsRef.current));
+
         setMessages([]);
         activeConversationRef.current = activeConversation
         let headers;
@@ -386,12 +439,21 @@ export const ConversationsProvider = ({ children }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [activeConversationId]);
 
+    // Conversations effect
+    useEffect(() => {
+        conversationsRef.current = conversations;
+        }, [conversations]);
+
     // Web sockets
     useEffect( () => {
 
         let url = `ws://127.0.0.1:8000/ws/${user.user_id}/`
         const socket = new WebSocket(url);
         setChatSocket(socket);
+        
+        socket.onclose = () => {
+        }
+
         socket.onmessage = (e) => {
             let headers;
         
@@ -402,6 +464,7 @@ export const ConversationsProvider = ({ children }) => {
             }
 
             let data = JSON.parse(e.data);
+            console.log(data);
 
             if (data.type === 'new_message') {
                 handleSocketNewMessage(data, conversationsRef.current, activeConversationRef.current)
@@ -439,17 +502,21 @@ export const ConversationsProvider = ({ children }) => {
             }
 
             if (data.type === 'typing_alert'){
-                handleTypingAlert(data, conversationsRef.current);
+                handleSocketTypingAlert(data, conversationsRef.current);
             };
 
             if (data.type === 'update_unseen_messages') {
                 handleUpdateUnseenMessages(data, activeConversationRef.current);
             }
 
+            if( data.type === 'online_status_update') {
+                console.log(`${data.origin_id} esta vendiendo merca`);
+                handleSocketUpdateUserOnlineStatus(data, activeConversationRef.current);
+            }
         };      
         return () => socket.close()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [conversations]);
+    }, []);
 
     const data = {
         conversations:conversations,
@@ -459,7 +526,8 @@ export const ConversationsProvider = ({ children }) => {
         messages:messages,
         setMessages:setMessages,
         chatSocket:chatSocket,
-        typingAlerts:typingAlerts
+        typingAlerts:typingAlerts,
+        getAllOnlineUserIds:getAllOnlineUserIds
     };
 
    return <ConversationsContext.Provider value={data}>

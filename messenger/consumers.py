@@ -21,7 +21,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         data = json.loads(text_data)
         type = data['type']
         receiver_ids = data['receiver_ids']
-        conversation_id = data['conversation_id']
 
         for receiver_id in receiver_ids:
                print(f'sending to {receiver_id}')
@@ -74,13 +73,21 @@ class ChatConsumer(AsyncWebsocketConsumer):
                             'origin_id' : data['origin_id']
                         }
                     )
+
+               elif type == 'online_status_update':
+                   await self.channel_layer.group_send(
+                       f'chat_{receiver_id}', {
+                           'type' : type,
+                           'origin_id' : data['origin_id']
+                       }
+                   )
                                                         
                else:
                    await self.channel_layer.group_send(
                      f'chat_{receiver_id}', {
                     'type' : type,
                     'message_id' : data['message_id'],
-                    'conversation_id' : conversation_id,
+                    'conversation_id' : data['conversation_id'],
                     })
 
     async def new_message(self, event):
@@ -148,4 +155,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({
             'type' : event['type'],
             'conversation_id' : event['conversation_id']
+        }))
+
+    async def online_status_update(self, event):
+        print('updating online status')
+        await self.send(text_data=json.dumps({
+            'type' : event['type'],
+            'origin_id' : event['origin_id']
         }))
