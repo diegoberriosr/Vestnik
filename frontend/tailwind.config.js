@@ -12,7 +12,8 @@ module.exports = {
         'bounce-3' : 'bounce-3 1s infinite',
         'blink' : 'blink 1s infinite',
         'typewriter' : 'typewriter 2s steps(38) infinite, blink 0.7s infinite',
-        'float' : 'float 5s infinite'
+        'float' : 'float 5s infinite',
+        'materialize' : 'materialize 0.25s forwards'
       },
       keyframes : {
         'alert-downwards' : {
@@ -56,6 +57,10 @@ module.exports = {
           '50%': { transform: 'translateY(-10px)' },
           '100%': { transform: 'translateY(0px)' },
         },
+        'materialize' : {
+          '0%' : { transform : 'scale(0.70)', opacity : 0},
+          '100%' : {transform : 'scale(1)', opacity : 1}
+        }
       },
       colors : {
         'cream' : '#EEEEEE',
