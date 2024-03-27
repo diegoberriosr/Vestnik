@@ -48,7 +48,8 @@ const UserMiniature = ({ profile }) => {
 
   return (
     <article className='w-full h-20 flex items-center space-x-2.5 hover:bg-gray-100 p-1 cursor-pointer' onClick={handleNewConversation}>
-      <figure className='w-10 h-10 rounded-full'>
+      <figure className='relative w-10 h-10 rounded-full'>
+      { profile.is_online && <div className='absolute -right-1 -top-1 w-4 h-4 rounded-full border-2 border-white bg-green-600'/> }
         <img src={profile.pfp} alt='user pfp' className='w-10 h-10 rounded-full object-fill'/>
       </figure>
       <span className='font-semibold'>{profile.name}</span>

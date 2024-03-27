@@ -22,11 +22,24 @@ export const AuthProvider = ({ children }) => {
             data : { email : data.email , password : data.password}
         })
         .then( res => {
+  
             setAuthTokens(res.data);
             localStorage.setItem('authTokens', JSON.stringify(data));
             setUser(jwtDecode(res.data.access));
-            setLoading(false);
-            navigate('/inbox');
+
+            axios({
+                url : 'http://127.0.0.1:8000/login/status',
+                method : 'PUT',
+                headers : { 'Authorization' : 'Bearer ' + String(res.data.access)}
+            })
+            .then( () => {
+                setLoading(false);
+                navigate('/inbox');
+            })
+            .catch( err => {
+                console.log(err);
+                setLoading(false)
+            });
         })
         .catch( err => {
             console.log(err);
@@ -54,11 +67,22 @@ export const AuthProvider = ({ children }) => {
 
 
     const logoutUser = () => {
-        setAuthTokens(null);
-        setUser(null);
-        localStorage.removeItem('authTokens');
-        localStorage.removeItem('user');
-        navigate('/login');
+        axios({
+            url : 'http://127.0.0.1:8000/login/status',
+            method : 'PUT',
+            headers : { 'Authorization' : 'Bearer ' + String(authTokens.access)}
+        })
+        .then( () => {
+            setAuthTokens(null);
+            setUser(null);
+            localStorage.removeItem('authTokens');
+            localStorage.removeItem('user');
+            navigate('/login');
+        }
+        )
+        .catch( err => {
+            console.log(err);
+        })
     };
 
     const values = {

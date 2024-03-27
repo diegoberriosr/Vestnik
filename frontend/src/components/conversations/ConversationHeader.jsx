@@ -1,4 +1,5 @@
 import { useContext } from 'react';
+import { formatDate } from '../../utils/formatDate';
 
 // Icon imports
 import { MdArrowBackIos } from "react-icons/md";
@@ -22,7 +23,8 @@ const ConversationHeader = ({ setDisplayInformation}) => {
     <>
             <div className='flex items-center'>
             <MdArrowBackIos className='block xl:hidden mr-5 text-sky-500 cursor-pointer' onClick={() => setActiveConversation(null)}/>
-            <figure className='h-10 w-10 rounded-full mb-1'>
+            <figure className='relative h-10 w-10 rounded-full mb-1'>
+                { activeConversation.partners[0].is_online && <div className='absolute -right-1 -top-1 w-4 h-4 rounded-full border-2 border-white bg-green-600'/> }
                 <img src={activeConversation.partners[0].pfp} alt='conversation partner pfp' className='w-full h-full rounded-full object-fill'/>
             </figure>
             <div className='ml-2'>
@@ -30,7 +32,7 @@ const ConversationHeader = ({ setDisplayInformation}) => {
                 { typingMessage ?
                   <div className='w-full truncate text-xs text-sky-500 italic'>typing...</div>
                   :
-                  <div className='text-gray-600 text-xs'>Online/offline</div>
+                  <div className='text-gray-600 text-xs'>{ activeConversation.partners[0].is_online ? 'Online' : `Last active: ${formatDate(activeConversation.partners[0].last_seen)}`}</div>
                 }
             </div>
         </div>

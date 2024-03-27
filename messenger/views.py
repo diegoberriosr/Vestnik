@@ -3,6 +3,7 @@ from rest_framework.permissions import IsAuthenticated
 from django.http.response import HttpResponse, JsonResponse, Http404, HttpResponseBadRequest, HttpResponseForbidden
 from django.db.models import Q
 from django.db.models import Max
+from django.utils import timezone
 import json
 
 from .models import User, Conversation, Message
@@ -20,6 +21,18 @@ def register_user(request):
     new_user = User(email=email, name=username)
     new_user.set_password(password)
     new_user.save()
+
+    return HttpResponse('Success.')
+
+
+@api_view(['PUT'])
+def update_login_status(request):
+    user = request.user
+    user.is_online = not user.is_online
+    user.save()
+    if not user.is_online:
+        user.last_seen = timezone.now()
+        user.save()
 
     return HttpResponse('Success.')
 

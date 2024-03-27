@@ -23,7 +23,8 @@ const ConversationMiniature = ({ conversation }) => {
   const activeConversationId = activeConversation ? activeConversation.id : null
   return (
     <li className={`w-full h-14 p-5 flex items-center space-x-3 ${ conversation.id === activeConversationId ? 'bg-gray-200' : '' } hover:bg-gray-100  rounded transition-colors duration-300`} onClick={() => setActiveConversation(conversation)}>
-      <figure className='w-10 h-10 rounded-full mb-1'> 
+      <figure className='relative w-10 h-10 rounded-full mb-1'>
+        {conversation.partners[0].is_online && <div className={`absolute -right-1 -top-1 w-4 h-4 rounded-full border-2 ${ conversation.id === activeConversationId ? 'border-gray-200' : 'border-white'} bg-green-600`} />} 
         <img src={conversation.partners[0].pfp} alt='conversation partner pfp' className='w-full h-full rounded-full'/>
       </figure>
       <article className='w-10/12'>

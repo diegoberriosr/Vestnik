@@ -61,7 +61,7 @@ const LoginForm = ({ handleLoginModal, handleRegisterModal }) => {
       <form onSubmit={(e) => handleSubmit(e)}>
         <Input name='email' type='email' value={values.email} id='email' label='E-mail address' handleChange={handleChange} handleBlur={handleBlur}/>
         <Input name='password' type='password' value={values.password} id='password' label='Password' handleChange={handleChange} handleBlur={handleBlur}/>
-        <button disabled={disabled} onClick={() => loginUser(values, setLoading, setAlertMessage)}
+        <button disabled={disabled} type='submit'
         className={`${disabled ? 'opacity-50' : 'hover:bg-opacity-90'} mt-5 h-8 w-full flex items-center justify-center text-white bg-sky-500 rounded`}>
           { loading ? <ClipLoader loading={loading} size={25} color='#FFFFFF'/> : 'Log in' }
         </button>

@@ -39,6 +39,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     pfp = models.TextField()
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+    
     is_online = models.BooleanField(default=False)
     last_seen = models.DateTimeField(null=True)
 
@@ -53,7 +54,9 @@ class User(AbstractBaseUser, PermissionsMixin):
             'email' : self.email,
             'name' : self.name,
             'info' : self.info,
-            'pfp' : self.pfp
+            'pfp' : self.pfp,
+            'is_online': self.is_online,
+            'last_seen' : self.last_seen
         }
     
     def g_serialize(self, conversation):
@@ -63,7 +66,9 @@ class User(AbstractBaseUser, PermissionsMixin):
             'is_admin' : self in conversation.admins.all(),
             'name' : self.name,
             'info' : self.info,
-            'pfp' : self.pfp
+            'pfp' : self.pfp,
+            'is_online' : self.is_online,
+            'last_seen' : self.last_seen
         }
 
 

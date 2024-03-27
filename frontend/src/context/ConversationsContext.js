@@ -16,7 +16,7 @@ export const ConversationsProvider = ({ children }) => {
 
     const conversationsRef = useRef(conversations);
     const activeConversationRef = useRef(activeConversation);
-
+    console.log(activeConversation);
     useEffect(() => {
     conversationsRef.current = conversations;
     }, [conversations]);

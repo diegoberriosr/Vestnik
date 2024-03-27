@@ -15,7 +15,7 @@ const Message = ({ message, handleOpenDeleteModal, isGroupChat, numberOfPartners
   return (
     <li className={`mt-5 max-w-6/12 flex ${message.sender.id === user.id ?  'flex-row-reverse' : 'justify-start'} space-x-3.5`}>
         <figure className='relative w-10 h-10 rounded-full'>
-          <div className='absolute -right-1 -top-1 w-4 h-4 rounded-full border-2 border-white bg-green-600'/>
+         { message.sender.is_online && <div className='absolute -right-1 -top-1 w-4 h-4 rounded-full border-2 border-white bg-green-600'/> }
           <img src={message.sender.pfp} alt='message sender pfp' className='w-full h-full rounded-full object-fill'/>
         </figure>
         <div className={`w-full space-y-2 flex flex-col ${ message.sender.id === user.id ? 'items-end px-3.5' : 'items-start' }`}>
