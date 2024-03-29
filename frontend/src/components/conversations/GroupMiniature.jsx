@@ -49,7 +49,7 @@ const GroupMiniature = ({ group }) => {
             </div>
         </div>
         <p className='text-gray-500 w-full flex items-center justify-between'>
-            { typingMessage && <span className='text-sky-500 w-full text-truncate font-bold text-xs italic'>{typingMessage}</span> }
+            { typingMessage && <span className='text-sky-500 w-full text-truncate text-xs italic'>{typingMessage}</span> }
             { group.last_message && !typingMessage &&
             <>
               <span className='max-w-[60%] truncate text-sm'>{group.last_message.content}</span>

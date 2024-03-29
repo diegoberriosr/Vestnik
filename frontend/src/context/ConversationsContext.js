@@ -1,5 +1,8 @@
 import { useState, createContext, useEffect, useContext, useRef} from "react";
 import axios from "axios";
+import useSound from "use-sound";
+import IncomingMessage from '../assets/IncomingMessage.mp3'
+
 import AuthContext from "./AuthContext";
 
 const ConversationsContext = createContext();
@@ -12,9 +15,8 @@ export const ConversationsProvider = ({ children }) => {
     const [chatSocket, setChatSocket] = useState(null);
     const [typingAlerts, setTypingAlerts] = useState([]);
     const [onlineStatus, setOnlineStatus] = useState(false);
-    console.log(onlineStatus);
-
     const [messages, setMessages] = useState([]);
+    const [conversationLoading, setConversationLoading] = useState(false);
 
     const conversationsRef = useRef(conversations);
     const activeConversationRef = useRef(activeConversation);
@@ -22,6 +24,7 @@ export const ConversationsProvider = ({ children }) => {
     const activeConversationId = activeConversation ? activeConversation.id : null;
 
     const { authTokens, user} = useContext(AuthContext); 
+    const [play] = useSound(IncomingMessage);
 
     const getConversations = () => {
         let headers;
@@ -52,6 +55,7 @@ export const ConversationsProvider = ({ children }) => {
     };
 
     const handleSocketNewMessage = (data, conversations, activeConversation) => {
+        console.log('xddddd');
         const index = conversations.findIndex( conversation => Number(conversation.id) === Number(data.conversation_id));
 
         let headers;
@@ -71,6 +75,7 @@ export const ConversationsProvider = ({ children }) => {
             })
             .then( res => {
                 setConversations( prevStatus => {
+                    console.log('updating conversations')
                     let updatedStatus = [...prevStatus];
                     updatedStatus[index].last_message = res.data;
                     const unread_messages = updatedStatus[index].unread_messages + 1;
@@ -87,16 +92,21 @@ export const ConversationsProvider = ({ children }) => {
                 });
 
                 if (activeConversation && Number(activeConversation.id) === Number(data.conversation_id)) {
+                    console.log('inside active conversation')
                     setActiveConversation(conversations[index]);
                     setMessages( prevStatus => {
                         if (prevStatus.length > 0) return [...prevStatus, res.data];
                         return [res.data];
-                    })
+                    });
+                    console.log('about to play')
+                    play();
+                    console.log('play')
                 }
             })
             .catch( error => console.log(error));
         }
 
+        
         else {
            console.log('index not found');
            axios({
@@ -393,8 +403,7 @@ export const ConversationsProvider = ({ children }) => {
 
     // Load a conversation's messages
     useEffect( () => {
-        console.log(getAllOnlineUserIds(conversationsRef.current));
-
+        setConversationLoading(true);
         setMessages([]);
         activeConversationRef.current = activeConversation
         let headers;
@@ -426,6 +435,8 @@ export const ConversationsProvider = ({ children }) => {
 
                     return updatedStatus;
                 });
+
+                setConversationLoading(false);
                 chatSocket.send(JSON.stringify({
                     'type' : 'update_unseen_messages',
                     'receiver_ids' : activeConversation.partners.map( partner => partner.id),
@@ -433,6 +444,7 @@ export const ConversationsProvider = ({ children }) => {
                 }))
             })
             .catch( err => {
+                setConversationLoading(false);
                 console.log(err)
             });
         };
@@ -527,7 +539,8 @@ export const ConversationsProvider = ({ children }) => {
         setMessages:setMessages,
         chatSocket:chatSocket,
         typingAlerts:typingAlerts,
-        getAllOnlineUserIds:getAllOnlineUserIds
+        getAllOnlineUserIds:getAllOnlineUserIds,
+        conversationLoading:conversationLoading
     };
 
    return <ConversationsContext.Provider value={data}>

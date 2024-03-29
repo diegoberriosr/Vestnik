@@ -1,7 +1,7 @@
 
 const TypingAlert = ({ pfp }) => {
   return (
-    <li className='flex mt-5 space-x-3'>
+    <li className='flex mt-5 space-x-3 animate-materialize'>
       <figure className='w-10 h-10 rounded-full'>
         <img src={pfp} alt='partner pfp' className='w-full h-full rounded-full object-fill'/>
       </figure>

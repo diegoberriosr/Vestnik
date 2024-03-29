@@ -1,6 +1,8 @@
-import { useContext, useState, useEffect } from 'react';
+import { useContext, useState, useEffect, useRef } from 'react';
 import { useFormik } from 'formik';
 import axios from 'axios';
+import useSound from "use-sound";
+import Pop from '../../assets/Pop.mp3';
 
 
 // Icon imports
@@ -16,26 +18,29 @@ import Notification from '../messages/Notification';
 import TypingAlert from '../alerts/TypingAlert';
 import Modal from './Modal';
 import MessageMenu from '../conversations/MessageMenu';
+import MoonLoader from 'react-spinners/MoonLoader';
 
 // Context imports
 import ConversationsContext from '../../context/ConversationsContext';
 import AuthContext from '../../context/AuthContext';
 
 const Conversation = () => {
-  
+
   const [displayInformation, setDisplayInformation] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
   const [shrink, setShrink] = useState(false);
   const [selectedMessage, setSelectedMessage] = useState(null);
-  
+  const [loadingSend, setLoadingSend] = useState(false);
   const [disabled, setDisabled] = useState(true);
   
-  const {activeConversation, messages, setMessages, setConversations, chatSocket, typingAlerts } = useContext(ConversationsContext);
+
+  const {activeConversation, messages, setMessages, setConversations, chatSocket, typingAlerts, conversationLoading } = useContext(ConversationsContext);
   const { authTokens, user } = useContext(AuthContext);
+  const [play] = useSound(Pop);
 
   const typingPartnerIds = typingAlerts.map( alert => Number(alert.origin_id));
   const typingPartners = activeConversation ? activeConversation.partners.filter( partner => typingPartnerIds.includes(Number(partner.id))) : [];
-
+  const messagesContainerRef = useRef(null);
 
   const {values, handleChange, handleBlur, setFieldValue} = useFormik({
     initialValues : {
@@ -43,11 +48,17 @@ const Conversation = () => {
     }
   });
 
+  const scrollToBottom = () => {
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+    }
+  }
+
   const handleSendMessage = (e) => {
                                                           
     if (e) e.preventDefault();
     if (!disabled){
-        
+        setLoadingSend(true);
         setFieldValue('content', '');
         let headers
         
@@ -77,6 +88,10 @@ const Conversation = () => {
             return arrangedArray;
           });
 
+          setLoadingSend(false);
+
+          play();
+
           chatSocket.send(JSON.stringify({
             'type' : 'new_message',
             'receiver_ids' : activeConversation.partners.map( partner => partner.id),
@@ -85,6 +100,7 @@ const Conversation = () => {
           }))
         })
         .catch( err => {
+          setLoadingSend(false);
           console.log(err)
         })
     }
@@ -131,6 +147,12 @@ const Conversation = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [values.content])
   
+  useEffect( () => {
+    if((activeConversation && !conversationLoading) || loadingSend ){
+      scrollToBottom();
+    }
+  }, [activeConversation, conversationLoading, loadingSend])
+
   if (!activeConversation) return null;
   
 
@@ -139,7 +161,10 @@ const Conversation = () => {
     <header className='w-full h-16 flex items-center justify-between px-5 shadow'>
         {activeConversation && activeConversation.is_group_chat ? <GroupChatHeader setDisplayInformation={setDisplayInformation}/> : <ConversationHeader setDisplayInformation={setDisplayInformation}/>}
     </header>
-    <ul className='w-full h-[calc(100vh-129px)] overflow-y-auto p-5'>
+    <ul ref={messagesContainerRef} className='w-full h-[calc(100vh-129px)] overflow-y-auto p-5'>
+      { conversationLoading && <div className='w-full h-full flex items-center justify-center'>
+          <MoonLoader loading={conversationLoading} color='#2a52be' size={150}/>
+        </div>}
         { messages.length > 0 && messages.map( (message, index) => {
           if (message.is_notification) return <Notification key={index} messageContent={message.content} timestamp={message.timestamp}/>
           return <Message key={index} message={message} 
@@ -152,17 +177,17 @@ const Conversation = () => {
         )}
     </ul>
     <footer className='w-full h-16 flex items-center justify-between px-5  border border-l-0 border-r-0 border-b-0 z-[25]'>
-        <FaImage className='text-3xl text-sky-500 cursor-pointer'/>
-        <form className='w-[90%]' onSubmit={e => handleSendMessage(e)}>
+        <form className='w-full flex justify-between items-center' onSubmit={e => handleSendMessage(e)}>
+          <FaImage className='text-3xl text-sky-500 cursor-pointer'/>
           <input name='content' value={values.content} 
-          className='w-full h-10 pl-5 bg-gray-100 rounded-full focus:outline-none focus:border-2 focus:border-sky-500 mx-2 sm:mx-0' 
+          className='w-[90%] h-10 pl-5 bg-gray-100 rounded-full focus:outline-none focus:border-2 focus:border-sky-500 mx-2 sm:mx-0' 
           placeholder='Type a message'
           onChange={handleChange}
           onBlur={handleBlur}/>
+          <button type='submit' disabled={disabled} className={`${disabled ? 'opacity-50' : ''} h-10 w-10 bg-sky-500 rounded-full text-center text-white flex items-center justify-center`}>
+              { loadingSend ? <MoonLoader loading={loadingSend} color='#FFFFFF' size={30}/> : <BiSolidSend className='text-2xl'/>}
+          </button>
         </form>
-        <button disabled={disabled} className={`${disabled ? 'opacity-50' : ''} ml-3 md:ml-0 h-10 w-10 bg-sky-500 rounded-full text-center text-white flex items-center justify-center`} onClick={handleSendMessage}>
-            <BiSolidSend className='text-2xl'/>
-        </button>
     </footer>
     <ConversationDrawer isVisible={displayInformation} setDisplayInformation={setDisplayInformation} isGroup={activeConversation.is_group_chat}/>
     <Modal isVisible={deleteModal}>
