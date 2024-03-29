@@ -37,7 +37,7 @@ const Conversation = () => {
   const {activeConversation, messages, setMessages, setConversations, chatSocket, typingAlerts, conversationLoading } = useContext(ConversationsContext);
   const { authTokens, user } = useContext(AuthContext);
   const [play] = useSound(Pop);
-
+  console.log(activeConversation)
   const typingPartnerIds = typingAlerts.map( alert => Number(alert.origin_id));
   const typingPartners = activeConversation ? activeConversation.partners.filter( partner => typingPartnerIds.includes(Number(partner.id))) : [];
   const messagesContainerRef = useRef(null);
@@ -154,7 +154,7 @@ const Conversation = () => {
   }, [activeConversation, conversationLoading, loadingSend]);
 
   useEffect( () => {
-    if (activeConversation && messages.length > 0 && messages[messages.length - 1].sender.id !== user.id) {
+    if (activeConversation && messages.length > 0 &&  messages[messages.length -1].sender && messages[messages.length - 1].sender.id !== user.id) {
       chatSocket.send(JSON.stringify({
         'type' : 'update_unseen_messages',
         'receiver_ids' : activeConversation.partners.map( partner => partner.id),

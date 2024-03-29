@@ -18,7 +18,7 @@ const NewGroupChat = ({ shrink, setShrink }) => {
   const [users, setUsers] = useState([]);
 
   const { authTokens } = useContext(AuthContext);
-  const { setActiveConversation, setConversations} = useContext(ConversationsContext);
+  const { setActiveConversation, setConversations, chatSocket} = useContext(ConversationsContext);
 
 
   const {values, handleChange, handleBlur} = useFormik({
@@ -52,6 +52,12 @@ const NewGroupChat = ({ shrink, setShrink }) => {
         if (prevStatus.length > 0) return [res.data, ...prevStatus];
         return [res.data];
       });
+      chatSocket.send(JSON.stringify({
+        'type' : 'new_message',
+        'receiver_ids' : res.data.partners.map( partner => partner.id),
+        'message_id' : res.data.id,
+        'conversation_id' : res.data.id
+      }));
       setShrink(true);
     })
     .catch( err => {

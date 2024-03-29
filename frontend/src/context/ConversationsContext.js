@@ -430,7 +430,7 @@ export const ConversationsProvider = ({ children }) => {
                     'type' : 'update_unseen_messages',
                     'receiver_ids' : activeConversation.partners.map( partner => partner.id),
                     'conversation_id' : activeConversation.id
-                }))
+                }));
             })
             .catch( err => {
                 setConversationLoading(false);

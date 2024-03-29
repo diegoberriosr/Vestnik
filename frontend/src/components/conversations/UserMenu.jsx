@@ -146,9 +146,9 @@ const UserMenu = ({ shrink, setShrink, user }) => {
   return (
     <div className={`relative mt-auto mb-auto w-[500px] h-[400px] p-5 bg-white rounded ${shrink ? 'animate-shrink' : 'animate-grow'}`}>
       <h3 className='font-semibold'>Select an action</h3>
-      <RoundedCheckbox value='message' containerStyle='mt-5 flex items-start'  labelText={`Message ${user.name}`} descriptionText='Start a new conversation or continue an already existing one with them' handleChange={setOption}/>    
-      <RoundedCheckbox value='admin' containerStyle='mt-5 flex items-start' labelText={`Update ${user.name}'s administrator status`} descriptionText="Add or remove them from this group's administrator list" handleChange={setOption}/>   
-      <RoundedCheckbox value='remove' containerStyle='mt-5 flex items-start' labelText={`Remove ${user.name}`} descriptionText='Remove them from this group.' handleChange={setOption}/>   
+      <RoundedCheckbox selectedValue={option} value='message' containerStyle='mt-5 flex items-start'  labelText={`Message ${user.name}`} descriptionText='Start a new conversation or continue an already existing one with them' handleChange={setOption}/>    
+      <RoundedCheckbox selectedValue={option} value='admin' containerStyle='mt-5 flex items-start' labelText={`Update ${user.name}'s administrator status`} descriptionText="Add or remove them from this group's administrator list" handleChange={setOption}/>   
+      <RoundedCheckbox selectedValue={option} value='remove' containerStyle='mt-5 flex items-start' labelText={`Remove ${user.name}`} descriptionText='Remove them from this group.' handleChange={setOption}/>   
       <div className='absolute bottom-2 right-5 h-20 w-full flex items-center justify-end space-x-5 border border-b-0 border-r-0 border-l-0'>
         <button onClick={() => setShrink(true)}>Cancel</button>
         <button disabled={disabled} className={`w-[80px] h-10 flex items-center justify-center text-white bg-sky-400
