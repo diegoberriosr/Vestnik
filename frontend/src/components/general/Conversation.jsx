@@ -151,11 +151,21 @@ const Conversation = () => {
     if((activeConversation && !conversationLoading) || loadingSend ){
       scrollToBottom();
     }
-  }, [activeConversation, conversationLoading, loadingSend])
+  }, [activeConversation, conversationLoading, loadingSend]);
+
+  useEffect( () => {
+    if (activeConversation && messages.length > 0 && messages[messages.length - 1].sender.id !== user.id) {
+      chatSocket.send(JSON.stringify({
+        'type' : 'update_unseen_messages',
+        'receiver_ids' : activeConversation.partners.map( partner => partner.id),
+        'conversation_id' : activeConversation.id
+    }))      
+    }
+  }, [messages, activeConversation, chatSocket, user])
+
 
   if (!activeConversation) return null;
   
-
   return (
   <main className={`relative ${ activeConversation ? 'w-screen' : ''} w-screen xl:w-[70%] h-screen`}>
     <header className='w-full h-16 flex items-center justify-between px-5 shadow'>

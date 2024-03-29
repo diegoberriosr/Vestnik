@@ -55,7 +55,6 @@ export const ConversationsProvider = ({ children }) => {
     };
 
     const handleSocketNewMessage = (data, conversations, activeConversation) => {
-        console.log('xddddd');
         const index = conversations.findIndex( conversation => Number(conversation.id) === Number(data.conversation_id));
 
         let headers;
@@ -75,7 +74,6 @@ export const ConversationsProvider = ({ children }) => {
             })
             .then( res => {
                 setConversations( prevStatus => {
-                    console.log('updating conversations')
                     let updatedStatus = [...prevStatus];
                     updatedStatus[index].last_message = res.data;
                     const unread_messages = updatedStatus[index].unread_messages + 1;
@@ -92,23 +90,19 @@ export const ConversationsProvider = ({ children }) => {
                 });
 
                 if (activeConversation && Number(activeConversation.id) === Number(data.conversation_id)) {
-                    console.log('inside active conversation')
                     setActiveConversation(conversations[index]);
                     setMessages( prevStatus => {
                         if (prevStatus.length > 0) return [...prevStatus, res.data];
                         return [res.data];
                     });
-                    console.log('about to play')
                     play();
-                    console.log('play')
-                }
+                    }
             })
             .catch( error => console.log(error));
         }
 
         
         else {
-           console.log('index not found');
            axios({
             url : 'http://127.0.0.1:8000/conversation',
             method : 'GET',
@@ -116,13 +110,10 @@ export const ConversationsProvider = ({ children }) => {
             params :  { conversation_id : data.conversation_id}
            })
            .then( res => {
-            console.log(res.data);
             setConversations(prevStatus => {
                 const updatedConversations = prevStatus.length > 0 ? [...res.data, ...prevStatus] : [...res.data];
-                console.log('Updated conversations:', updatedConversations);
                 return updatedConversations;
             })
-            console.log(conversations);
            })
            .catch( error => console.log(error))
         }
@@ -391,10 +382,8 @@ export const ConversationsProvider = ({ children }) => {
 
     // Load conversations for the first time
     useEffect(() => {
-        console.log('socket changed')
         if (chatSocket && !onlineStatus){
             chatSocket.onopen = () => {
-                console.log('socket open!')
                 getConversations();
             }
         }
@@ -476,7 +465,6 @@ export const ConversationsProvider = ({ children }) => {
             }
 
             let data = JSON.parse(e.data);
-            console.log(data);
 
             if (data.type === 'new_message') {
                 handleSocketNewMessage(data, conversationsRef.current, activeConversationRef.current)
