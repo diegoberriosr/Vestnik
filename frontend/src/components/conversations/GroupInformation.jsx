@@ -1,4 +1,5 @@
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
+import axios from 'axios';
 
 // Icon imports
 import { IoAddOutline } from "react-icons/io5";
@@ -7,14 +8,43 @@ import { FaRegEdit } from "react-icons/fa";
 
 // Component imports
 import AdminBadge from '../alerts/AdminBadge';
+import MoonLoader from 'react-spinners/MoonLoader';
 
 // Context imports
 import AuthContext from '../../context/AuthContext'
 import ConversationsContext from '../../context/ConversationsContext'
 
 const GroupInformation = ({ setAddUsersModal, handleUserMenuModal, setChangeNameModal }) => {
-  const { user } = useContext(AuthContext);
-  const { activeConversation} = useContext(ConversationsContext);
+  const [loading, setLoading] = useState(false);
+  const { user, authTokens } = useContext(AuthContext);
+  const { activeConversation, setConversations, setActiveConversation, setMessages} = useContext(ConversationsContext);
+  const handleLeaveGroup = () => {
+    let headers;
+
+    if (authTokens) {
+        headers = {
+            'Authorization' : 'Bearer ' + String(authTokens.access)
+        }
+    }
+
+    axios({
+        url : 'http://127.0.0.1:8000/groups/members/update',
+        method : 'PUT',
+        headers : headers,
+        data : { 'group_id' : activeConversation.id, user_ids : [user.id]}
+    })
+    .then( () => {
+        setConversations( prevStatus => {
+            return prevStatus.filter( conversation => Number(conversation.id) !== Number(activeConversation.id));
+        })
+
+        setActiveConversation(null);
+        setMessages([]);
+    })
+    .catch( err => {
+        console.log(err)
+    })
+  }
 
   return (
     <>
@@ -29,7 +59,7 @@ const GroupInformation = ({ setAddUsersModal, handleUserMenuModal, setChangeName
             <h3 className='text-lg sm:text-xl md:text-2xl lg:text-4xl xl:text-6xl mr-auto ml-auto'>{activeConversation.name}</h3>
             <div className='w-full text-sm md:text-md mt-1 sm:mt-5 flex items-center justify-center space-x-2.5'>
                 { activeConversation.is_admin && 
-                <button className='border border-sky-500 text-sky-500 hover:bg-sky-500 hover:text-white px-3 py-1.5 flex justify-center items-center space-x-1.5 rounded transition-colors duration-300'>
+                <button className='border border-sky-500 text-sky-500 hover:bg-sky-500 hover:text-white px-3 py-1.5 flex justify-center items-center space-x-1.5 rounded transition-colors duration-300' onClick={() => setChangeNameModal(true)}>
                     <span>Edit name</span>
                     <FaRegEdit className='mt-0.5'/>
                 </button> }
@@ -46,7 +76,9 @@ const GroupInformation = ({ setAddUsersModal, handleUserMenuModal, setChangeName
                         </figure>
                         <p className='w-full flex items-center justify-between border-b'>
                             <span className='flex items-center'>You { activeConversation.is_admin && <AdminBadge/>} </span>
-                            <button className='border border-red-500 text-red-500 text-center rounded px-1 py-0.5 hover:text-white hover:bg-red-500 transition-colors duration-300'>Leave this group</button>
+                            <button className='border border-red-500 text-red-500 text-center rounded px-1 py-0.5 hover:text-white hover:bg-red-500 transition-colors duration-300' onClick={handleLeaveGroup}>
+                                { loading ? <MoonLoader loading={loading} color='#FFFFFF' size={10}/> : 'Leave group' }
+                            </button>
                         </p>
                     </div>
                     {activeConversation.partners.map( (partner,index) =>
