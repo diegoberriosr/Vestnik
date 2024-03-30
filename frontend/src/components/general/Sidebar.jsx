@@ -23,7 +23,6 @@ const Sidebar = () => {
   const navigate = useNavigate();
 
   const handleLogoutUser = () => {
-    console.log('disconnecting...')
     chatSocket.send(JSON.stringify({
       'type' : 'online_status_update',
       'receiver_ids' : getAllOnlineUserIds(conversations),
@@ -34,8 +33,12 @@ const Sidebar = () => {
 
   useEffect( () => {
     if(shrink) {
-      setShrink(false);
-      setProfileModal(false);
+      const timer = setTimeout( () => {
+        setShrink(false);
+        setProfileModal(false);
+      }, 250);
+
+      return () => clearTimeout(timer);
     }
   }, [shrink]);
  

@@ -45,9 +45,9 @@ def edit_profile(request):
     info = json.loads(request.body).get('info', '')
     pfp = json.loads(request.body).get('pfp', '')
 
-
     user = request.user
     user.name = name
+    user.info = info
     user.save()
 
     return HttpResponse('Success')
@@ -166,6 +166,7 @@ def create_group_chat(request):
     # Get the group's name and ids of the users to be added to the conversation
     name = json.loads(request.body).get('name')
     user_ids = json.loads(request.body).get('user_ids')
+    
 
     users = []
     users.append(request.user)

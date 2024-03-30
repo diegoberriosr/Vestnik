@@ -10,6 +10,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         token['id'] = user.id
         token['name'] = user.name
         token['pfp'] = user.pfp
+        token['info'] = user.info
         # ...
 
         return token
