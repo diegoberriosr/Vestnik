@@ -15,7 +15,7 @@ const AddUsers = ({ shrink, setShrink}) => {
   const [loading, setLoading] = useState(false);
   const [userIds, setUserIds] = useState([]);
   const partnerIds = activeConversation.partners.map( partner => partner.id);
-
+ 
   const handleCreateGroup = (e) => {
     if (e) e.preventDefault();
 

@@ -37,7 +37,7 @@ const Conversation = () => {
   const {activeConversation, messages, setMessages, setConversations, chatSocket, typingAlerts, conversationLoading } = useContext(ConversationsContext);
   const { authTokens, user } = useContext(AuthContext);
   const [play] = useSound(Pop);
-  console.log(activeConversation)
+
   const typingPartnerIds = typingAlerts.map( alert => Number(alert.origin_id));
   const typingPartners = activeConversation ? activeConversation.partners.filter( partner => typingPartnerIds.includes(Number(partner.id))) : [];
   const messagesContainerRef = useRef(null);

@@ -283,7 +283,7 @@ def update_group_members(request):
         except User.DoesNotExist:
             raise Http404(f'ERROR: user with id={user_id} not found.')
         
-        return JsonResponse([user.serialize() for user in users], safe=False)
+    return JsonResponse([user.serialize() for user in users], safe=False)
 
 
 @api_view(['PUT'])
