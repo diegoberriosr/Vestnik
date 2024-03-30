@@ -19,6 +19,7 @@ import TypingAlert from '../alerts/TypingAlert';
 import Modal from './Modal';
 import MessageMenu from '../conversations/MessageMenu';
 import MoonLoader from 'react-spinners/MoonLoader';
+import ImageInput from '../inputs/ImageInput';
 
 // Context imports
 import ConversationsContext from '../../context/ConversationsContext';
@@ -41,6 +42,7 @@ const Conversation = () => {
   const typingPartnerIds = typingAlerts.map( alert => Number(alert.origin_id));
   const typingPartners = activeConversation ? activeConversation.partners.filter( partner => typingPartnerIds.includes(Number(partner.id))) : [];
   const messagesContainerRef = useRef(null);
+  const image = new FormData();
 
   const {values, handleChange, handleBlur, setFieldValue} = useFormik({
     initialValues : {
@@ -188,7 +190,9 @@ const Conversation = () => {
     </ul>
     <footer className='w-full h-16 flex items-center justify-between px-5  border border-l-0 border-r-0 border-b-0 z-[25]'>
         <form className='w-full flex justify-between items-center' onSubmit={e => handleSendMessage(e)}>
-          <FaImage className='text-3xl text-sky-500 cursor-pointer'/>
+          <ImageInput image={image}>
+            <FaImage className='text-3xl text-sky-500 cursor-pointer'/>
+          </ImageInput>
           <input name='content' value={values.content} 
           className='w-[90%] h-10 pl-5 bg-gray-100 rounded-full focus:outline-none focus:border-2 focus:border-sky-500 mx-2 sm:mx-0' 
           placeholder='Type a message'
