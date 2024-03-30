@@ -283,6 +283,17 @@ def update_group_members(request):
         except User.DoesNotExist:
             raise Http404(f'ERROR: user with id={user_id} not found.')
         
+    
+    if (group.admins.count() == 0 and group.members.count() > 0):
+        group.admins.add(group.active_members.first())
+        content = f'{group.active_members.first()} is now an admin of this group'
+        notification = Message(conversation=group, sender=None, content=content, is_notification=True)
+        notification.save()
+
+    if(group.active_members.count() == 0):
+        group.delete()
+        return HttpResponse('Group was deleted due to lack of members.')
+    
     return JsonResponse([user.serialize() for user in users], safe=False)
 
 

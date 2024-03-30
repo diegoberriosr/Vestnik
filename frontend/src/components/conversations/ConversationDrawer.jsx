@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 
 import { IoChevronBack } from "react-icons/io5";
+import { MdDelete } from "react-icons/md";
 
 import GroupInformation from './GroupInformation';
 import ConversationInformation from './ConversationInformation';
@@ -62,7 +63,8 @@ const ConversationDrawer = ({ isVisible, setDisplayInformation, isGroup, isAdmin
             {isGroup ? <GroupInformation isAdmin={isAdmin} setAddUsersModal={setAddUsersModal} handleUserMenuModal={handleUserMenuModal} setChangeNameModal={setChangeNameModal}/> : <ConversationInformation/>}
           </div>
           <div className='absolute bottom-0 w-full'>
-            <button className='bg-red-900 text-white w-full h-10 rounded-t-lg text-center hover:opacity-90'>
+            <button className='flex items-center justify-center bg-red-500 text-white w-full h-10 rounded-t-lg hover:opacity-90'>
+              <MdDelete/>
               Delete conversation
             </button>
           </div>
