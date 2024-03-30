@@ -605,7 +605,9 @@ export const ConversationsProvider = ({ children }) => {
         chatSocket:chatSocket,
         typingAlerts:typingAlerts,
         getAllOnlineUserIds:getAllOnlineUserIds,
-        conversationLoading:conversationLoading
+        conversationLoading:conversationLoading,
+        alertMessage:alertMessage,
+        setAlerMessage:setAlerMessage
     };
 
    return <ConversationsContext.Provider value={data}>

@@ -111,6 +111,7 @@ class Message(models.Model):
     conversation = models.ForeignKey(Conversation, on_delete=models.CASCADE, related_name='messages')
     is_notification = models.BooleanField(default=False)
     content = models.CharField(max_length=4000)
+    image = models.TextField(default=None, null=True) # A link to a message image
     timestamp = models.DateTimeField(default=timezone.now)
     read_by = models.ManyToManyField(User, related_name='read_messages')
     cleared_by = models.ManyToManyField(User, related_name='cleared_messages')
