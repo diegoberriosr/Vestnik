@@ -19,6 +19,7 @@ const GroupInformation = ({ setAddUsersModal, handleUserMenuModal, setChangeName
   const { user, authTokens } = useContext(AuthContext);
   const { activeConversation, setConversations, setActiveConversation, setMessages} = useContext(ConversationsContext);
   const handleLeaveGroup = () => {
+    setLoading(true)
     let headers;
 
     if (authTokens) {
@@ -38,11 +39,13 @@ const GroupInformation = ({ setAddUsersModal, handleUserMenuModal, setChangeName
             return prevStatus.filter( conversation => Number(conversation.id) !== Number(activeConversation.id));
         })
 
+        setLoading(false);
         setActiveConversation(null);
         setMessages([]);
     })
     .catch( err => {
-        console.log(err)
+        console.log(err);
+        setLoading(false);
     })
   }
 
