@@ -55,14 +55,13 @@ const AddUsers = ({ shrink, setShrink}) => {
         if (prevStatus.length > 0) return [...prevStatus, ...notifications]
         return [...notifications]
       });
-      
+      console.log([...activeConversation.partners.map( partner => partner.id ), ...userIds])
       chatSocket.send(JSON.stringify({
         'type' : 'add_members',
         'conversation_id' : activeConversation.id,
-        'receiver_ids' : activeConversation.partners.map( partner => partner.id ),
+        'receiver_ids' : [...activeConversation.partners.map( partner => partner.id ), ...userIds],
         'target_ids' : userIds
-      }))
-
+      }));
       setShrink(true);
     })
     .catch( err => {
