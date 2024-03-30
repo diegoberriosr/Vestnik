@@ -19,6 +19,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         print('receiving')
         data = json.loads(text_data)
+        print(data)
+        
         type = data['type']
         receiver_ids = data['receiver_ids']
 
@@ -74,6 +76,17 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         }
                     )
 
+               elif type == 'update_profile' :
+                   await self.channel_layer.group_send(
+                       f'chat_{receiver_id}', {
+                           'type' : type,
+                           'origin_id' : data['origin_id'],
+                           'new_name' : data['new_name'],
+                           'new_info' : data['new_info'],
+                           'new_pfp' : data['new_pfp']
+                       }
+                   )
+
                elif type == 'online_status_update':
                    await self.channel_layer.group_send(
                        f'chat_{receiver_id}', {
@@ -91,7 +104,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     })
 
     async def new_message(self, event):
-        print('on custom send')
         await self.send(text_data=json.dumps({
             'type' : event['type'],
             'message_id' : event['message_id'],
@@ -100,7 +112,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
 
     async def delete_message(self, event):
-        print('---- message deletion -----')
         await self.send(text_data=json.dumps({
             'type' : event['type'],
             'message_id' : event['message_id'],
@@ -108,7 +119,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         }))
 
     async def update_group_admin(self, event):
-        print('updating admin')
         await self.send(text_data=json.dumps({
             'type' : event['type'],
             'conversation_id' : event['conversation_id'],
@@ -116,7 +126,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         }))
 
     async def remove_member(self, event):
-        print('removing member')
         await self.send(text_data=json.dumps({
             'type' : event['type'],
             'conversation_id' : event['conversation_id'],
@@ -125,7 +134,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         }))
 
     async def add_members(self, event):
-        print('adding member(s)')
         await self.send(text_data=json.dumps({
             'type' : event['type'],
             'conversation_id' : event['conversation_id'],
@@ -133,7 +141,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         }))
 
     async def update_group_name(self, event):
-        print('changing group name')
         await self.send(text_data=json.dumps({
             'type' : event['type'],
             'conversation_id' : event['conversation_id'],
@@ -142,7 +149,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
 
     async def typing_alert(self, event):
-        print('typing alert')
         await self.send(text_data=json.dumps({
             'type' : event['type'],
             'conversation_id' : event['conversation_id'],
@@ -151,15 +157,23 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
 
     async def update_unseen_messages(self, event):
-        print('updating seen status')
         await self.send(text_data=json.dumps({
             'type' : event['type'],
             'conversation_id' : event['conversation_id']
         }))
 
     async def online_status_update(self, event):
-        print('updating online status')
         await self.send(text_data=json.dumps({
             'type' : event['type'],
             'origin_id' : event['origin_id']
+        }))
+
+    async def update_profile(self, event):
+        print('updating profile')
+        await self.send(text_data=json.dumps({
+            'type' : event['type'],
+            'origin_id' : event['origin_id'],
+            'new_name' : event['new_name'],
+            'new_info' : event['new_info'],
+            'new_pfp' : event['new_pfp']
         }))

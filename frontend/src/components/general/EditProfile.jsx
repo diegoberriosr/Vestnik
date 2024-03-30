@@ -11,12 +11,15 @@ import MoonLoader from 'react-spinners/MoonLoader';
 
 // Context imports
 import AuthContext from '../../context/AuthContext';
+import ConversationsContext from '../../context/ConversationsContext';
 
 const EditProfile = ({ shrink, setShrink }) => {
 
   const [disabled, setDisabled] = useState(true);
   const [loading, setLoading] = useState(false);
   const {user, authTokens, setUser} = useContext(AuthContext);
+  const { chatSocket, getAllOnlineUserIds, conversations } = useContext(ConversationsContext);
+
   const [imageUrl, setImageUrl] = useState('');
 
   const image = new FormData();
@@ -50,11 +53,19 @@ const EditProfile = ({ shrink, setShrink }) => {
     })
     .then( () => {
       setUser( prevStatus => {
-        console.log(user);
         let updatedStatus = {...prevStatus};
         updatedStatus.name = values.name;
         return updatedStatus;
       });
+
+      chatSocket.send(JSON.stringify({
+        'type' : 'update_profile',
+        'receiver_ids' : getAllOnlineUserIds(conversations),
+        'origin_id' : user.id,
+        'new_name' : values.name,
+        'new_info' : values.info,
+        'new_pfp' : values.pfp
+      }))
 
       setLoading(false);
       setShrink(true);
@@ -102,10 +113,10 @@ const EditProfile = ({ shrink, setShrink }) => {
             </div>
         </form>
         <div className='mt-1 h-20 w-full flex items-center justify-end space-x-5'>
-        <button onClick={() => setShrink(true)}>Cancel</button>
-        <button disabled={disabled} className={`w-[80px] h-10 flex items-center justify-center text-white bg-sky-500
+        <button type='button' onClick={() => setShrink(true)}>Cancel</button>
+        <button type='submit' disabled={disabled} className={`w-[80px] h-10 flex items-center justify-center text-white bg-sky-500
          rounded-lg ${ disabled || loading ? 'opacity-50' : 'hover:bg-sky-600 hover:text-gray-50'} transition-colors duration-300`}
-         onClick={handleEditProfile}>
+         >
           { loading ? <MoonLoader loading={loading} color='#FFFFFF' size={25}/> : 'Continue'}
         </button>  
         </div>

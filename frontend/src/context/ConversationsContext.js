@@ -18,7 +18,7 @@ export const ConversationsProvider = ({ children }) => {
     const [messages, setMessages] = useState([]);
     const [conversationLoading, setConversationLoading] = useState(false);
     const [alertMessage, setAlerMessage] = useState(null);
-    
+
     const conversationsRef = useRef(conversations);
     const activeConversationRef = useRef(activeConversation);
     const activeConversationId = activeConversation ? activeConversation.id : null;
@@ -431,6 +431,26 @@ export const ConversationsProvider = ({ children }) => {
         };
     };
 
+    const handleSocketUpdateProfile = (data, conversations, activeConversation) => {
+        if(conversations.length === 0) return;
+
+        conversations.forEach( (conversation, i) => {
+            const partnerIds = conversation.partners.map( partner => Number(partner.id))
+
+            if (partnerIds.includes(Number(data.origin_id))) {
+                setConversations( prevStatus => {
+                    let updatedStatus = [...prevStatus]
+                    const partnerIndex = updatedStatus[i].partners.findIndex( partner => Number(partner.id) === Number(data.origin_id))
+                    updatedStatus[i].partners[partnerIndex] = {...updatedStatus[i].partners[partnerIndex], name : data.new_name, info : data.new_info, pfp : data.new_pfp}
+                    
+                    return updatedStatus;
+                    })
+                
+                if( activeConversation && Number(activeConversation.id) === Number(conversation.id)) setActiveConversation(conversation[i]);
+            }
+        })
+    }
+
 
     // Load conversations for the first time
     useEffect(() => {
@@ -565,6 +585,10 @@ export const ConversationsProvider = ({ children }) => {
 
             if( data.type === 'online_status_update') {
                 handleSocketUpdateUserOnlineStatus(data, activeConversationRef.current);
+            }
+
+            if (data.type === 'update_profile') {
+                handleSocketUpdateProfile(data, conversationsRef.current, activeConversationRef.current);
             }
         };      
         return () => socket.close()
