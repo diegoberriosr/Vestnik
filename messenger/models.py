@@ -32,6 +32,8 @@ class CustomUserManager(BaseUserManager):
 
         return self.create_user(email, name, password, **other_fields) 
 
+AUTH_PROVIDERS = {'email' : 'email', 'google' : 'google', 'github' : 'github'}
+
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(_("email_address"), unique=True)
     name = models.CharField(max_length=64)
@@ -39,7 +41,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     pfp = models.TextField()
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
-    
     is_online = models.BooleanField(default=False)
     last_seen = models.DateTimeField(null=True)
 

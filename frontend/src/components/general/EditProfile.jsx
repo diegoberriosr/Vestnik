@@ -87,7 +87,7 @@ const EditProfile = ({ shrink, setShrink }) => {
  
   return (
     <div className={`relative w-screen h-screen sm:w-[500px] sm:h-[400px] shadow p-5 ${ shrink ? 'animate-shrink' : 'animate-grow' } bg-white mt-auto mb-auto rounded`}>
-        <IoMdClose className='absolute top-3 right-3 text-2xl text-gray-400 cursor pointer' onClick={() => setShrink(true)}/>
+        <IoMdClose className='absolute top-3 right-3 text-2xl text-gray-400 cursor-pointer' onClick={() => setShrink(true)}/>
         <h2 className='font-semibold'>Profile</h2>
         <p className='mt-1 text-gray-600 text-sm'>Edit your public information.</p>
         <form onSubmit={e => handleEditProfile(e)}>
