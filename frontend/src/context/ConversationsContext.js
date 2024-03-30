@@ -17,7 +17,8 @@ export const ConversationsProvider = ({ children }) => {
     const [onlineStatus, setOnlineStatus] = useState(false);
     const [messages, setMessages] = useState([]);
     const [conversationLoading, setConversationLoading] = useState(false);
-
+    const [alertMessage, setAlerMessage] = useState(null);
+    
     const conversationsRef = useRef(conversations);
     const activeConversationRef = useRef(activeConversation);
     const activeConversationId = activeConversation ? activeConversation.id : null;
@@ -563,7 +564,6 @@ export const ConversationsProvider = ({ children }) => {
             }
 
             if( data.type === 'online_status_update') {
-                console.log(`${data.origin_id} esta vendiendo merca`);
                 handleSocketUpdateUserOnlineStatus(data, activeConversationRef.current);
             }
         };      
