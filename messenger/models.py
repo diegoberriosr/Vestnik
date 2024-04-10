@@ -128,6 +128,7 @@ class Message(models.Model):
             'read_count' : len(self.read_by.all()),
             'sender' : self.sender.serialize() if self.sender else None, 
             'content' : self.content,
+            'image' : self.image if self.image else None,
             'timestamp': self.timestamp,
             'stared' : user in self.starred_by.all()
         }

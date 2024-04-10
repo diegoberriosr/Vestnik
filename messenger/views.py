@@ -4,9 +4,12 @@ from django.http.response import HttpResponse, JsonResponse, Http404, HttpRespon
 from django.db.models import Q
 from django.db.models import Max
 from django.utils import timezone
+from django.conf import settings
 import json
+import boto3
 
 from .models import User, Conversation, Message
+from .utils import post_image_to_bucket
 
 # Create your views here.
 
@@ -41,15 +44,25 @@ def update_login_status(request):
 @permission_classes([IsAuthenticated])
 def edit_profile(request):
 
-    name = json.loads(request.body).get('name', '')
-    info = json.loads(request.body).get('info', '')
-    pfp = json.loads(request.body).get('pfp', '')
+    name = request.POST.get('name')
+    info = request.POST.get('info')
+    pfp = request.FILES.get('pfp')
 
     user = request.user
     user.name = name
     user.info = info
-    user.save()
 
+    if pfp is not None:
+        s3 = boto3.client(
+            's3',
+            aws_access_key_id=settings.AWS_ACCESS_KEY,
+            aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY
+        )
+
+        post_image_to_bucket(s3, pfp, user, 'pfp', f'profiles/{user.pk}')
+    
+    user.save()
+    
     return HttpResponse('Success')
 
 
@@ -411,8 +424,9 @@ def get_starred_messages(request):
 @permission_classes([IsAuthenticated])
 def create_message(request):
 
-    conversation_id = json.loads(request.body).get('conversation_id', '')
-    content = json.loads(request.body).get('content', '')
+    conversation_id = request.POST.get('conversation_id')
+    content = request.POST.get('content')
+    image = request.FILES.get('image')
 
     if conversation_id is None or conversation_id == '' or content is None or content == '':
         return HttpResponseBadRequest('ERROR: A valid conversation id and a non-empty message content must be provided.')
@@ -427,7 +441,17 @@ def create_message(request):
         return HttpResponseForbidden('ERROR: requester is not part of this conversation.')
 
     new_message = Message(conversation=conversation, content=content, sender=request.user)
-    new_message.save()
+
+
+    if image is not None:
+        s3 = boto3.client(
+            's3',
+            aws_access_key_id=settings.AWS_ACCESS_KEY,
+            aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY
+        )
+
+        post_image_to_bucket(s3, image, new_message, 'image', f'conversations/{conversation.id}')
+        new_message.save()
 
     for user in conversation.members.all():
         conversation.active_members.add(user) if user not in conversation.active_members.all() else None

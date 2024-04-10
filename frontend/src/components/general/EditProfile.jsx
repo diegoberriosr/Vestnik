@@ -21,7 +21,7 @@ const EditProfile = ({ shrink, setShrink }) => {
   const { chatSocket, getAllOnlineUserIds, conversations } = useContext(ConversationsContext);
 
   const [imageUrl, setImageUrl] = useState('');
-
+  const [file, setFile] = useState(null);
   const image = new FormData();
 
   const {values, handleChange, handleBlur} = useFormik({
@@ -33,6 +33,7 @@ const EditProfile = ({ shrink, setShrink }) => {
   });
 
   const handleEditProfile = (e) => {
+    console.log('sending...')
     if (e) e.preventDefault();
     if (values.name.length === 0 ) return;
 
@@ -41,15 +42,23 @@ const EditProfile = ({ shrink, setShrink }) => {
 
     if (authTokens) {
       headers = {
-        'Authorization' : 'Bearer ' + String(authTokens.access)
+        'Authorization' : 'Bearer ' + String(authTokens.access),
+        'Content-Type' : ''
       }
     };
+
+    const data = new FormData();
+    
+    data.append('name', values.name);
+    data.append('info', values.info);
+
+    if (file) data.append('pfp', file); 
 
     axios({
       url : 'http://127.0.0.1:8000/update/profile',
       method : 'PUT',
       headers : headers,
-      data : { name : values.name, info : values.info,  pfp : values.pfp}
+      data : data
     })
     .then( () => {
       setUser( prevStatus => {
@@ -92,7 +101,7 @@ const EditProfile = ({ shrink, setShrink }) => {
         <p className='mt-1 text-gray-600 text-sm'>Edit your public information.</p>
         <form onSubmit={e => handleEditProfile(e)}>
         <div className='mt-5 space-y-2 flex items-center space-x-5'>
-              <ImageInput image={image} generateUrl handleGenerateUrl={setImageUrl}>
+              <ImageInput image={image} generateUrl handleGenerateUrl={setImageUrl} setFiles={setFile}>
                   <figure className='w-12 h-12 rounded-full cursor-pointer'>
                     <img src={imageUrl.length > 0 ? imageUrl : user.pfp} alt='user pfp' className='w-full h-full rounded-full object-fit'/>
                   </figure>
@@ -116,7 +125,7 @@ const EditProfile = ({ shrink, setShrink }) => {
         <button type='button' onClick={() => setShrink(true)}>Cancel</button>
         <button type='submit' disabled={disabled} className={`w-[80px] h-10 flex items-center justify-center text-white bg-sky-500
          rounded-lg ${ disabled || loading ? 'opacity-50' : 'hover:bg-sky-600 hover:text-gray-50'} transition-colors duration-300`}
-         >
+         onClick={handleEditProfile}>
           { loading ? <MoonLoader loading={loading} color='#FFFFFF' size={25}/> : 'Continue'}
         </button>  
         </div>

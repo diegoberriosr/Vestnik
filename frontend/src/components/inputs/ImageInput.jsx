@@ -3,7 +3,7 @@ import { useState } from 'react';
 // Icon imports
 import { IoMdClose } from "react-icons/io";
 
-const ImageInput = ({children, image, generateUrl, handleGenerateUrl}) => {
+const ImageInput = ({children, generateUrl, handleGenerateUrl, setFiles}) => {
   
   const [loaded, setLoaded] = useState(false);
 
@@ -11,7 +11,7 @@ const ImageInput = ({children, image, generateUrl, handleGenerateUrl}) => {
     const file = event.target.files[0];
 
     if (file) {
-        image.append('image', file);
+        setFiles(file);
         if (generateUrl) {
           const url = URL.createObjectURL(file)
           handleGenerateUrl(url);
@@ -22,7 +22,7 @@ const ImageInput = ({children, image, generateUrl, handleGenerateUrl}) => {
 
   const handleRemoveImage = (event) => {
     event.stopPropagation();
-    image.delete('image');
+    setFiles(null);
 
     if (generateUrl) handleGenerateUrl('');
     setLoaded(false);

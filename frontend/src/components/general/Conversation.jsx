@@ -33,7 +33,7 @@ const Conversation = () => {
   const [selectedMessage, setSelectedMessage] = useState(null);
   const [loadingSend, setLoadingSend] = useState(false);
   const [disabled, setDisabled] = useState(true);
-  
+  const [file, setFile] = useState(null);
 
   const {activeConversation, messages, setMessages, setConversations, chatSocket, typingAlerts, conversationLoading } = useContext(ConversationsContext);
   const { authTokens, user } = useContext(AuthContext);
@@ -42,7 +42,7 @@ const Conversation = () => {
   const typingPartnerIds = typingAlerts.map( alert => Number(alert.origin_id));
   const typingPartners = activeConversation ? activeConversation.partners.filter( partner => typingPartnerIds.includes(Number(partner.id))) : [];
   const messagesContainerRef = useRef(null);
-  const image = new FormData();
+
 
   const {values, handleChange, handleBlur, setFieldValue} = useFormik({
     initialValues : {
@@ -60,21 +60,29 @@ const Conversation = () => {
                                                           
     if (e) e.preventDefault();
     if (!disabled){
+
         setLoadingSend(true);
         setFieldValue('content', '');
         let headers
         
         if (authTokens) {
           headers = {
-            'Authorization' : 'Bearer ' + String(authTokens.access)
+            'Authorization' : 'Bearer ' + String(authTokens.access),
+            'Content-Type' : 'multipart/form-data'
           }
         };
+
+        const data = new FormData();
+        data.append('conversation_id', activeConversation.id);
+        data.append('content', values.content);
+
+        if (file) data.append('image', file);
     
         axios({
           url : 'http://127.0.0.1:8000/messages/create',
           method : 'POST',
           headers : headers,
-          data : { conversation_id : activeConversation.id, content : values.content}
+          data : data
         })
         .then( res => {
           setMessages( prevStatus => {
@@ -190,7 +198,7 @@ const Conversation = () => {
     </ul>
     <footer className='w-full h-16 flex items-center justify-between px-5  border border-l-0 border-r-0 border-b-0 z-[25]'>
         <form className='w-full flex justify-between items-center' onSubmit={e => handleSendMessage(e)}>
-          <ImageInput image={image}>
+          <ImageInput setFiles={setFile}>
             <FaImage className='text-3xl text-sky-500 cursor-pointer'/>
           </ImageInput>
           <input name='content' value={values.content} 
