@@ -439,9 +439,8 @@ def create_message(request):
     
     if request.user not in conversation.members.all():
         return HttpResponseForbidden('ERROR: requester is not part of this conversation.')
-
     new_message = Message(conversation=conversation, content=content, sender=request.user)
-
+    new_message.save()
 
     if image is not None:
         s3 = boto3.client(
@@ -451,13 +450,14 @@ def create_message(request):
         )
 
         post_image_to_bucket(s3, image, new_message, 'image', f'conversations/{conversation.id}')
-        new_message.save()
+
+    new_message.save()
 
     for user in conversation.members.all():
         conversation.active_members.add(user) if user not in conversation.active_members.all() else None
 
     return JsonResponse( new_message.serialize(request.user), safe=False)
-
+    
 
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])

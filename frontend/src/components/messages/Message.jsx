@@ -23,15 +23,13 @@ const Message = ({ message, handleOpenDeleteModal, isGroupChat, numberOfPartners
             <span className='text-gray-500 font-semibold'>{message.sender.name}</span>
             <span className='text-gray-400 text-sm'>{formatDate(message.timestamp)}</span>
           </p>
-        <div className={`max-w-[70%] ${ message.sender.id === user.id ? 'bg-sky-500 text-white' : 'bg-gray-100'} rounded-full rounded-full p-2.5 inline-block cursor-pointer`} onClick={ () => handleOpenDeleteModal(message)}>
+        <div className={`max-w-[70%] ${ message.sender.id === user.id ? 'bg-sky-500 text-white' : 'bg-gray-100'} ${ message.image ? 'rounded-2xl' : 'rounded-full'} p-2.5 inline-block cursor-pointer`} onClick={ () => handleOpenDeleteModal(message)}>
           { message.image && 
-          <figure className='min-w-[90%] max-w-[90%] min-h-[50%] max-h-[70%]'>
-            <img src={message.image} alt='message attatched pic' className='w-full h-full object-fill'/>
+          <figure className='w-[100%] mr-auto ml-auto'>
+            <img src={message.image} alt='message attatched pic' className='w-full h-full object-fill rounded-xl'/>
           </figure>
           }
-          <p>
-            { message.content}
-          </p>
+          <p>{message.content}</p>
         </div>
         { message.sender.id === user.id &&
         <p className='text-xs flex items-center mr-1'>
