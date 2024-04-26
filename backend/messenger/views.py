@@ -7,6 +7,7 @@ from django.utils import timezone
 from django.conf import settings
 import json
 import boto3
+import mimetypes
 
 from .models import User, Conversation, Message
 from .utils import post_image_to_bucket
@@ -502,6 +503,18 @@ def delete_message(request):
     conversation = message.conversation
 
     if permanent:
+        if message.image:
+            s3 = boto3(
+                's3',
+                aws_access_key_id=settings.AWS_ACCESS_KEY,
+                aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY
+            )
+
+            mimetype, _ = mimetypes.guess_type(message.image)
+            extension = mimetypes.guess_extension(mimetype)
+    
+            s3.delete_object(Bucket='bellr-image-storage', Key=f'conversations/{conversation.id}/image{extension}')
+
         message.delete()
 
     else:
