@@ -56,7 +56,7 @@ def edit_profile(request):
     if pfp is not None:
         s3 = boto3.client(
             's3',
-            aws_access_key_id=settings.AWS_ACCESS_KEY,
+            aws_access_key_id_id_id=settings.AWS_ACCESS_KEY_ID,
             aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY
         )
 
@@ -446,7 +446,7 @@ def create_message(request):
     if image is not None:
         s3 = boto3.client(
             's3',
-            aws_access_key_id=settings.AWS_ACCESS_KEY,
+            aws_access_key_id_id_id=settings.AWS_ACCESS_KEY_ID,
             aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY
         )
 
@@ -506,7 +506,7 @@ def delete_message(request):
         if message.image:
             s3 = boto3(
                 's3',
-                aws_access_key_id=settings.AWS_ACCESS_KEY,
+                aws_access_key_id_id=settings.AWS_ACCESS_KEY_ID,
                 aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY
             )
 
