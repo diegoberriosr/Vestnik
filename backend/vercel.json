@@ -1,13 +1,13 @@
 {
     "builds" : [{
-        "src" : "vestnik/wsgi.py",
+        "src" : "vestnik/asgi.py",
         "use" : "@vercel/python",
         "config" : { "maxLambdaSize" : "15mb", "runtime" : "python3.9"}
     }],
     "routes" : [
         {
             "src" : "/(.*)",
-            "dest" : "vestnik/wsgi.py"
+            "dest" : "vestnik/asgi.py"
         }
     ]
 }
