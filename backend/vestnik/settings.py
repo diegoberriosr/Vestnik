@@ -28,7 +28,7 @@ SECRET_KEY = 'django-insecure-jqp69(2(^6-@czc!3!krcs@2$k_p9553r)*4n^+fzs8grf^3fa
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['.vercel.app']
+ALLOWED_HOSTS = ['127.0.0.1', '.vercel.app']
 
 # Application definition
 
@@ -131,7 +131,7 @@ SIMPLE_JWT = {
 }
 
 
-WSGI_APPLICATION = 'vestnik.wsgi.application'
+WSGI_APPLICATION = 'vestnik.app'
 ASGI_APPLICATION = "vestnik.asgi.application"
 CHANNEL_LAYERS = {
     "default": {
