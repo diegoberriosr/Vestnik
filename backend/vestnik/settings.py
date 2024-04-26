@@ -28,7 +28,7 @@ SECRET_KEY = 'django-insecure-jqp69(2(^6-@czc!3!krcs@2$k_p9553r)*4n^+fzs8grf^3fa
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['.vercel.app']
 
 # Application definition
 
@@ -59,8 +59,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CORS_ALLOW_ALL_ORIGINS = True
-
 REST_FRAMEWORK = {
 
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -69,6 +67,10 @@ REST_FRAMEWORK = {
     )
     
 }
+
+CORS_ALLOWED_ORIGINS = [
+    'https://vestnik-phi.vercel.app'
+]
 
 ROOT_URLCONF = 'vestnik.urls'
 
