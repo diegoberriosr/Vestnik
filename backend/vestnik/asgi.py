@@ -23,5 +23,3 @@ application = ProtocolTypeRouter(
         ),
     }
 )
-
-app = application
