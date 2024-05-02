@@ -31,7 +31,7 @@ const ChangeName = ({ shrink, setShrink}) => {
     }
 
     axios({
-        url : 'http://127.0.0.1:8000/groups/name/update',
+        url : 'https://vestnik.onrender.com/groups/name/update',
         method : 'PUT',
         headers : headers,
         data : {'group_id' : activeConversation.id, name : values.name}

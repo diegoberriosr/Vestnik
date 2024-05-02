@@ -27,7 +27,7 @@ const UserMiniature = ({ profile }) => {
     };
 
     axios({
-      url : 'http://127.0.0.1:8000/conversations/create',
+      url : 'https://vestnik.onrender.com/conversations/create',
       method : 'POST',
       headers : headers,
       data : {'user_ids' : [profile.id ]}

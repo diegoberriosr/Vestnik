@@ -35,7 +35,7 @@ export const ConversationsProvider = ({ children }) => {
         };
 
         axios({
-            url : 'http://127.0.0.1:8000/conversations',
+            url : 'https://vestnik.onrender.com/conversations',
             method : 'GET',
             headers : headers
         })
@@ -66,7 +66,7 @@ export const ConversationsProvider = ({ children }) => {
 
         if (index > -1) {
             axios({
-                url : 'http://127.0.0.1:8000/message',
+                url : 'https://vestnik.onrender.com/message',
                 method : 'GET',
                 headers : headers,
                 params : { 'message_id' : data.message_id}
@@ -103,7 +103,7 @@ export const ConversationsProvider = ({ children }) => {
         
         else {
            axios({
-            url : 'http://127.0.0.1:8000/conversation',
+            url : 'https://vestnik.onrender.com/conversation',
             method : 'GET',
             headers : headers,
             params :  { conversation_id : data.conversation_id}
@@ -150,7 +150,7 @@ export const ConversationsProvider = ({ children }) => {
         }
 
         axios({
-            url : 'http://127.0.0.1:8000/users/ids',
+            url : 'https://vestnik.onrender.com/users/ids',
             method : 'GET',
             headers : headers,
             params: { conversation_id : data.conversation_id, user_ids : [data.target_id]}
@@ -252,7 +252,7 @@ export const ConversationsProvider = ({ children }) => {
         };
 
         axios({
-                url : `http://127.0.0.1:8000/conversation`,
+                url : `https://vestnik.onrender.com/conversation`,
                 method : 'GET',
                 headers : headers,
                 params : {conversation_id : data.conversation_id}                
@@ -284,7 +284,7 @@ export const ConversationsProvider = ({ children }) => {
         };
 
         axios({
-            url : `http://127.0.0.1:8000/users/ids`,
+            url : `https://vestnik.onrender.com/users/ids`,
             method : 'GET',
             headers : headers,
             params : {user_ids : data.target_ids, conversation_id : data.conversation_id}
@@ -476,7 +476,7 @@ export const ConversationsProvider = ({ children }) => {
         }
         if (activeConversation) {
             axios({
-                url: 'http://127.0.0.1:8000/conversations/messages',
+                url: 'https://vestnik.onrender.com/conversations/messages',
                 method : 'GET',
                 headers : headers,
                 params : { conversation_id : activeConversation.id}
@@ -520,7 +520,7 @@ export const ConversationsProvider = ({ children }) => {
     // Web sockets
     useEffect( () => {
 
-        let url = `ws://127.0.0.1:8000/ws/${user.user_id}/`
+        let url = `wss://vestnik.onrender.com/ws/${user.user_id}/`
         const socket = new WebSocket(url);
         setChatSocket(socket);
         
@@ -544,7 +544,7 @@ export const ConversationsProvider = ({ children }) => {
 
             if (data.type === 'delete_message') {
                 axios({
-                    url : 'http://127.0.0.1:8000/conversations/messages/last',
+                    url : 'https://vestnik.onrender.com/conversations/messages/last',
                     method : 'GET',
                     headers : headers,
                     params : { conversation_id : data.conversation_id}

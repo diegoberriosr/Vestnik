@@ -33,7 +33,7 @@ const NewConversation = () => {
       }
       setLoading(true);
       axios({
-        url : 'http://127.0.0.1:8000/users',
+        url : 'https://vestnik.onrender.com/users',
         method : 'GET',
         headers : headers,
         params : {s : values.s}

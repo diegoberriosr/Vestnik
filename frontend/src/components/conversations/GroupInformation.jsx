@@ -29,7 +29,7 @@ const GroupInformation = ({ setAddUsersModal, handleUserMenuModal, setChangeName
     }
 
     axios({
-        url : 'http://127.0.0.1:8000/groups/members/update',
+        url : 'https://vestnik.onrender.com/groups/members/update',
         method : 'PUT',
         headers : headers,
         data : { 'group_id' : activeConversation.id, user_ids : [user.id]}

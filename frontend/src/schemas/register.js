@@ -4,7 +4,7 @@ import axios from 'axios';
 let registerSchema = object({
     email : string().email('You must provide a valid e-mail address.').required('What is your e-mail address?').test('email', 'E-mail address is already taken', async value => {
         const res = await axios({
-            url : 'http://127.0.0.1:8000/email_exists/',
+            url : 'https://vestnik.onrender.com/email_exists/',
             method : 'GET',
             params : { email : value}
         })

@@ -55,7 +55,7 @@ const EditProfile = ({ shrink, setShrink }) => {
     if (file) data.append('pfp', file); 
 
     axios({
-      url : 'http://127.0.0.1:8000/update/profile',
+      url : 'https://vestnik.onrender.com/update/profile',
       method : 'PUT',
       headers : headers,
       data : data

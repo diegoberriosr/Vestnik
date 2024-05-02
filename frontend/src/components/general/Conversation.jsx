@@ -79,7 +79,7 @@ const Conversation = () => {
         if (file) data.append('image', file);
     
         axios({
-          url : 'http://127.0.0.1:8000/messages/create',
+          url : 'https://vestnik.onrender.com/messages/create',
           method : 'POST',
           headers : headers,
           data : data

@@ -33,7 +33,7 @@ const MessageMenu = ({shrink, setShrink, messageId, senderId, isAdmin}) => {
     }
 
     axios({
-        url : 'http://127.0.0.1:8000/messages/delete',
+        url : 'https://vestnik.onrender.com/messages/delete',
         method : 'PUT',
         headers : headers,   
         data : { message_id : messageId, permanent : option === 'deleteAll' ? true : false}

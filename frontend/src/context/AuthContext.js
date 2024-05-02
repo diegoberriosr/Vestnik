@@ -16,7 +16,7 @@ export const AuthProvider = ({ children }) => {
     const loginUser = (data, setLoading, setAlertMessage) => {
         setLoading(true);
         axios({
-            url : 'http://127.0.0.1:8000/api/token/',
+            url : 'https://vestnik.onrender.com/api/token/',
             method : 'POST',
             data : { email : data.email , password : data.password}
         })
@@ -27,7 +27,7 @@ export const AuthProvider = ({ children }) => {
             setUser(jwtDecode(res.data.access));
 
             axios({
-                url : 'http://127.0.0.1:8000/login/status',
+                url : 'https://vestnik.onrender.com/login/status',
                 method : 'PUT',
                 headers : { 'Authorization' : 'Bearer ' + String(res.data.access)}
             })
@@ -50,7 +50,7 @@ export const AuthProvider = ({ children }) => {
     const registerUser = (data, setLoading, setAlertMessage) => {
         setLoading(true);
         axios({
-            url : 'http://127.0.0.1:8000/register',
+            url : 'https://vestnik.onrender.com/register',
             method : 'POST',
             data : { email : data.email, username: data.username, password : data.password}
         })
@@ -67,7 +67,7 @@ export const AuthProvider = ({ children }) => {
 
     const logoutUser = () => {
         axios({
-            url : 'http://127.0.0.1:8000/login/status',
+            url : 'https://vestnik.onrender.com/login/status',
             method : 'PUT',
             headers : { 'Authorization' : 'Bearer ' + String(authTokens.access)}
         })

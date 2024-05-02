@@ -31,7 +31,7 @@ const MiniatureDropdownMenu = ({ conversationId, isGroup}) => {
         const url = isGroup ? 'groups/delete' : 'conversations/clear'
 
         axios({
-            url : `http://127.0.0.1:8000/${url}`,
+            url : `https://vestnik.onrender.com/${url}`,
             method : 'PUT',
             headers: headers,
             data : data
@@ -57,7 +57,7 @@ const MiniatureDropdownMenu = ({ conversationId, isGroup}) => {
     }
     
     axios({
-        url : 'http://127.0.0.1:8000/conversations/clear',
+        url : 'https://vestnik.onrender.com/conversations/clear',
         method : 'PUT',
         headers : headers,
         data : { conversation_id : conversationId } 

@@ -41,7 +41,7 @@ const NewGroupChat = ({ shrink, setShrink }) => {
 
     setLoading(true);
     axios({
-      url : 'http://127.0.0.1:8000/groups/create',
+      url : 'https://vestnik.onrender.com/groups/create',
       method : 'POST',
       headers : headers,
       data : { name : values.name, user_ids : users },
