@@ -19,10 +19,10 @@ def register_user(request):
 
     # Get e-mail address, username, and password from request's body
     email = json.loads(request.body).get('email', '')
-    username = json.loads(request.body).get('username', '')
+    name = json.loads(request.body).get('name', '')
     password = json.loads(request.body).get('password', '')
 
-    new_user = User(email=email, name=username)
+    new_user = User(email=email, name=name)
     new_user.set_password(password)
     new_user.save()
 
