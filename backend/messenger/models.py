@@ -38,7 +38,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(_("email_address"), unique=True)
     name = models.CharField(max_length=64)
     info = models.CharField(max_length=100, blank=True, null=True)
-    pfp = models.TextField()
+    pfp = models.TextField(default='https://images.nightcafe.studio//assets/profile.png?tr=w-1600,c-at_max')
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_online = models.BooleanField(default=False)
