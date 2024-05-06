@@ -71,10 +71,10 @@ const LoginForm = ({ handleLoginModal, handleRegisterModal }) => {
         <span className='absolute bg-white px-2 pb-1.5'>Or continue with</span>
       </div>
       <div className='w-full flex items-center justify-between mt-6'>
-        <button className='w-[49%] h-8 border border-gray-300 rounded text-gray-500 flex items-center justify-center hover:opacity-90'>
+        <button className='w-[49%] h-8 border border-gray-300 rounded text-gray-500 flex items-center justify-center hover:opacity-90 cursor-not-allowed'>
           <FaGoogle/>
         </button>
-        <button className='w-[49%] h-8 border border-gray-300 rounded text-gray-500 flex items-center justify-center hover:opacity-90'>
+        <button className='w-[49%] h-8 border border-gray-300 rounded text-gray-500 flex items-center justify-center hover:opacity-90 cursor-not-allowed'>
           <FaGithub/>
         </button>
       </div>

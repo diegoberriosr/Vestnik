@@ -76,7 +76,7 @@ const RegisterForm = ({ handleLoginModal, handleRegisterModal }) => {
           handleChange={handleChange} handleBlur={handleBlur}/>  
           <button disabled={disabled} onClick={() => {registerUser(values, setLoading, setAlertMessage)}}
         className={`${disabled ? 'opacity-50' : 'hover:bg-opacity-90'} mt-8 h-8 w-full flex items-center justify-center text-white bg-sky-500 rounded`}>
-          { loading ? <ClipLoader loading={loading} size={25} color='#FFFFFF'/> : 'Log in' }
+          { loading ? <ClipLoader loading={loading} size={25} color='#FFFFFF'/> : 'Create account' }
         </button>
         </form>
       <div className='mt-5 relative w-full flex items-center justify-center text-sm text-gray-500'> 
@@ -84,10 +84,10 @@ const RegisterForm = ({ handleLoginModal, handleRegisterModal }) => {
         <span className='absolute bg-white px-2 pb-1.5'>Or register with</span>
       </div>
       <div className='w-full flex items-center justify-between mt-6'>
-        <button className='w-[49%] h-8 border border-gray-300 rounded text-gray-500 flex items-center justify-center hover:opacity-90'>
+        <button className='w-[49%] h-8 border border-gray-300 rounded text-gray-500 flex items-center justify-center hover:opacity-90 cursor-not-allowed'>
           <FaGoogle/>
         </button>
-        <button className='w-[49%] h-8 border border-gray-300 rounded text-gray-500 flex items-center justify-center hover:opacity-90'>
+        <button className='w-[49%] h-8 border border-gray-300 rounded text-gray-500 flex items-center justify-center hover:opacity-90 cursor-not-allowed'>
           <FaGithub/>
         </button>
       </div>

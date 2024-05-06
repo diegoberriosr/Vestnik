@@ -33,7 +33,6 @@ const EditProfile = ({ shrink, setShrink }) => {
   });
 
   const handleEditProfile = (e) => {
-    console.log('sending...')
     if (e) e.preventDefault();
     if (values.name.length === 0 ) return;
 
