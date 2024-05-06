@@ -24,6 +24,7 @@ def register_user(request):
 
     new_user = User(email=email, name=username)
     new_user.set_password(password)
+    new_user.pfp = 'https://images.nightcafe.studio//assets/profile.png?tr=w-1600,c-at_max' # Set an anonymous user default pic
     new_user.save()
 
     return HttpResponse('Success.')
