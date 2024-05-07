@@ -64,7 +64,11 @@ def edit_profile(request):
     
     user.save()
     
-    return HttpResponse('Success')
+    return JsonResponse({
+        'name' : user.name,
+        'bio' : user.bio,
+        'pfp' : user.pfp
+    })
 
 
 @api_view(['GET'])
