@@ -66,7 +66,7 @@ def edit_profile(request):
     
     return JsonResponse({
         'name' : user.name,
-        'bio' : user.bio,
+        'info' : user.info,
         'pfp' : user.pfp
     })
 
