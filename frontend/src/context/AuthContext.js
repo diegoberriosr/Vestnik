@@ -52,7 +52,7 @@ export const AuthProvider = ({ children }) => {
         axios({
             url : 'https://vestnik.onrender.com/register',
             method : 'POST',
-            data : { email : data.email, username: data.username, password : data.password}
+            data : { email : data.email, name: data.name, password : data.password}
         })
         .then( () => 
             loginUser(data, setLoading, setAlertMessage)

@@ -33,6 +33,7 @@ const EditProfile = ({ shrink, setShrink }) => {
   });
 
   const handleEditProfile = (e) => {
+
     if (e) e.preventDefault();
     if (values.name.length === 0 ) return;
 
@@ -59,12 +60,8 @@ const EditProfile = ({ shrink, setShrink }) => {
       headers : headers,
       data : data
     })
-    .then( () => {
-      setUser( prevStatus => {
-        let updatedStatus = {...prevStatus};
-        updatedStatus.name = values.name;
-        return updatedStatus;
-      });
+    .then( (res) => {
+      setUser(res.data);
 
       chatSocket.send(JSON.stringify({
         'type' : 'update_profile',
