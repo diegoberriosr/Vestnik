@@ -81,7 +81,7 @@ const LoginForm = ({ handleLoginModal, handleRegisterModal }) => {
         </button>
       </div>
       <p className='w-full text-center mt-6 text-gray-500 text-xs'>New to Vestnik? <span className='underline hover:opacity-90 cursor-pointer' onClick={handleRegisterModal}>Create an account</span></p>
-      <p className='w-full text-center mt-6 text-gray-500 text-xs'>Don't want to register? <span className='underline hover:opacity-90 cursor-pointer' onClick={() => { setDisabled(true); loginUser({ email: 'testboy@mail.com', password : '12345'})}}>Try a demo account</span></p>
+      <p className='w-full text-center mt-2 text-gray-500 text-xs'>Don't want to register? <span className='underline hover:opacity-90 cursor-pointer' onClick={() => { setDisabled(true); loginUser({ email: 'testboy@mail.com', password : '12345'})}}>Try a demo account</span></p>
     </div>
     { alertMessage && <PopUpAlert message={alertMessage} error/>}
     </>
