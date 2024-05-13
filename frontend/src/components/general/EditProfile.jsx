@@ -32,6 +32,11 @@ const EditProfile = ({ shrink, setShrink }) => {
     }
   });
 
+  const handleUpdateImage = (url) => {
+    setImageUrl(url);
+    values.setFieldValue("pfp", url);
+  };
+
   const handleEditProfile = (e) => {
 
     if (e) e.preventDefault();
@@ -88,8 +93,7 @@ const EditProfile = ({ shrink, setShrink }) => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [values]);
 
-
- 
+  
   return (
     <div className={`relative w-screen h-screen sm:w-[500px] sm:h-[400px] shadow p-5 ${ shrink ? 'animate-shrink' : 'animate-grow' } bg-white mt-auto mb-auto rounded`}>
         <IoMdClose className='absolute top-3 right-3 text-2xl text-gray-400 cursor-pointer' onClick={() => setShrink(true)}/>
@@ -97,12 +101,14 @@ const EditProfile = ({ shrink, setShrink }) => {
         <p className='mt-1 text-gray-600 text-sm'>Edit your public information.</p>
         <form onSubmit={e => handleEditProfile(e)}>
         <div className='mt-5 space-y-2 flex items-center space-x-5'>
-              <ImageInput image={image} generateUrl handleGenerateUrl={setImageUrl} setFiles={setFile}>
+              <ImageInput image={image} generateUrl handleGenerateUrl={handleUpdateImage} setFiles={setFile}>
+                  <>
                   <figure className='w-12 h-12 rounded-full cursor-pointer'>
                     <img src={imageUrl.length > 0 ? imageUrl : user.pfp} alt='user pfp' className='w-full h-full rounded-full object-fit'/>
                   </figure>
+                  <button type='button' className='font-semibold'>Change</button>
+                  </>
               </ImageInput>
-                <button className='font-semibold'>Change</button>
              </div>
             <div className='mt-5 space-y-2'>
             <label className='font-semibold'>Name</label>

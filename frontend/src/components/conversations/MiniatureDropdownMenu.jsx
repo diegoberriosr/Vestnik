@@ -16,7 +16,6 @@ const MiniatureDropdownMenu = ({ conversationId, isGroup}) => {
   const { authTokens } = useContext(AuthContext);
   const { activeConversation, setActiveConversation, setConversations, setMessages} = useContext(ConversationsContext);
 
-
   const handleDelete = (e) => {
         e.stopPropagation()
         let headers;
@@ -76,6 +75,7 @@ const MiniatureDropdownMenu = ({ conversationId, isGroup}) => {
         console.log(err);
     })
   }
+  
   return (
     <div className='relative flex justify-center text-gray-900'>
         <PiDotsThreeBold className='text-xl cursor-pointer' onClick={(e) => { e.stopPropagation(); setMenuVisible(!menuVisible)}}/>
@@ -87,14 +87,6 @@ const MiniatureDropdownMenu = ({ conversationId, isGroup}) => {
             <li className='flex items-center space-x-2.5 hover:bg-gray-100 hover:font-semibold px-1 py-0.5 border-t border-gray-100 cursor-pointer' onClick={e => handleClear(e)}>
                 <GrClearOption className='text-red-500'/>
                 <span>Clear</span>
-            </li>
-            <li className='flex items-center space-x-2.5 hover:bg-gray-100 hover:font-semibold px-1 py-0.5 border-t border-gray-100 cursor-pointer'>
-                <MdPushPin className='text-gray-600'/>
-                <span>Pin</span>
-            </li>
-            <li className='flex items-center space-x-2.5 hover:bg-gray-100 px-1 hover:font-semibold py-0.5 border-t border-gray-100 cursor-pointer'>
-                <TbArchiveFilled className='text-gray-600'/>
-                <span>Archive</span>
             </li>
         </ul>
     </div>

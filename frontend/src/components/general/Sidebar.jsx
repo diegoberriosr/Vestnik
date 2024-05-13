@@ -28,7 +28,7 @@ const Sidebar = () => {
       'receiver_ids' : getAllOnlineUserIds(conversations),
       'origin_id' : user.id,
     }));
-    logoutUser()
+    logoutUser();
   };
 
   useEffect( () => {

@@ -22,7 +22,7 @@ export const ConversationsProvider = ({ children }) => {
     const conversationsRef = useRef(conversations);
     const activeConversationRef = useRef(activeConversation);
     const activeConversationId = activeConversation ? activeConversation.id : null;
-    const { authTokens, user} = useContext(AuthContext); 
+    const { authTokens, user, logoutUser } = useContext(AuthContext); 
     const [play] = useSound(IncomingMessage);
 
     const getConversations = () => {
@@ -525,6 +525,12 @@ export const ConversationsProvider = ({ children }) => {
         setChatSocket(socket);
         
         socket.onclose = () => {
+            chatSocket.send(JSON.stringify({
+                'type' : 'online_status_update',
+                'receiver_ids' : getAllOnlineUserIds(conversations),
+                'origin_id' : user.id,
+              }));
+              logoutUser();
         }
 
         socket.onmessage = (e) => {

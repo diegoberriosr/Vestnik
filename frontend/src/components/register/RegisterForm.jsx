@@ -74,7 +74,7 @@ const RegisterForm = ({ handleLoginModal, handleRegisterModal }) => {
           <Input name='password' type='password' value={values.password} id='password' label='Your password' 
           error={errors['password']} touched={touched['password']}
           handleChange={handleChange} handleBlur={handleBlur}/>  
-          <button type='button' disabled={disabled} onClick={() => {registerUser(values, setLoading, setAlertMessage)}}
+          <button type='submit' disabled={disabled}
         className={`${disabled ? 'opacity-50' : 'hover:bg-opacity-90'} mt-8 h-8 w-full flex items-center justify-center text-white bg-sky-500 rounded`}>
           { loading ? <ClipLoader loading={loading} size={25} color='#FFFFFF'/> : 'Create account' }
         </button>

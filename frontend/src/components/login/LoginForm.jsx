@@ -63,7 +63,7 @@ const LoginForm = ({ handleLoginModal, handleRegisterModal }) => {
       <form onSubmit={(e) => handleSubmit(e)}>
         <Input name='email' type='email' value={values.email} id='email' label='E-mail address' handleChange={handleChange} handleBlur={handleBlur}/>
         <Input name='password' type='password' value={values.password} id='password' label='Password' handleChange={handleChange} handleBlur={handleBlur}/>
-        <button disabled={disabled} type='button'
+        <button disabled={disabled} type='submit'
         className={`${disabled ? 'opacity-50' : 'hover:bg-opacity-90'} mt-5 h-8 w-full flex items-center justify-center text-white bg-sky-500 rounded`}>
           { loading ? <ClipLoader loading={loading} size={25} color='#FFFFFF'/> : 'Log in' }
         </button>
@@ -81,6 +81,7 @@ const LoginForm = ({ handleLoginModal, handleRegisterModal }) => {
         </button>
       </div>
       <p className='w-full text-center mt-6 text-gray-500 text-xs'>New to Vestnik? <span className='underline hover:opacity-90 cursor-pointer' onClick={handleRegisterModal}>Create an account</span></p>
+      <p className='w-full text-center mt-6 text-gray-500 text-xs'>Don't want to register? <span className='underline hover:opacity-90 cursor-pointer' onClick={() => { setDisabled(true); loginUser({ email: 'testboy@mail.com', password : '12345'})}}>Try a demo account</span></p>
     </div>
     { alertMessage && <PopUpAlert message={alertMessage} error/>}
     </>
