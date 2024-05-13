@@ -55,7 +55,7 @@ const LoginForm = ({ handleLoginModal, handleRegisterModal }) => {
 
   return (
     <>
-      <div className='relative mt-5 w-[400px] px-4 md:px-10 py-8 bg-white rounded-lg shadow-lg text-gray-900'>
+      <div className='relative mt-5 w-full sm:w-[400px] px-4 md:px-10 py-8 bg-white rounded-lg shadow-lg text-gray-900'>
       <div className='h-5 w-5 hover:bg-gray-200 text-gray-500 rounded-full absolute top-3 right-5 flex items-center justify-center text-xl'
       onClick={handleLoginModal}>
         <IoCloseSharp/>
